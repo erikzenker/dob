@@ -1,14 +1,15 @@
 #include <string>
+#include "EventManager.h"
 
 using namespace std;
 
 class FileSystemScanner {
+protected:
+  string mScanFolder;
+  EventManager * mpEventManager;
 
- protected:
-  string scan_folder;
-
- public:
-  FileSystemScanner(string scan_folder);
+public:
+  FileSystemScanner(string scanFolder, EventManager* pEventManager);
   ~FileSystemScanner();
   string GetScanFolder();
   virtual int StartToScan() =0;

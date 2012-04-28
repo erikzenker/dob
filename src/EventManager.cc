@@ -1,24 +1,36 @@
 #include <EventManager.h>
 
-void EventManager::PushBackEvent(inotify_event* pNewEvent){
-  mEventList.push_back(pNewEvent);
-  HandleEvent(pNewEvent);
+EventManager::EventManager(SyncManager * pSyncManager){
+  mpSyncManager = pSyncManager;
 
 }
 
-void EventManager::HandleEvent(inotify_event* pEvent){
+void EventManager::PushBackEvent(inotify_event* pNewEvent, string sourceFolder){
+  mEventList.push_back(pNewEvent);
+  HandleEvent(pNewEvent, sourceFolder);
+
+}
+
+void EventManager::HandleEvent(inotify_event* pEvent, string sourceFolder){
+  cerr <<"\nC Event " << inotifytools_event_to_str(pEvent->mask) <<" was triggered";
   switch(pEvent->mask){
   case IN_CREATE:
-    cerr << "\nC Handle create event";
+    mpSyncManager->SyncSourceFolder(sourceFolder);
     break;
   case IN_DELETE:
-    cerr << "\nC Handle delete event";
+    mpSyncManager->SyncSourceFolder(sourceFolder);
     break;
   case IN_MODIFY:
-    cerr << "\nC Handle modify event";
+    mpSyncManager->SyncSourceFolder(sourceFolder);
+    break;
+  case IN_CREATE | IN_ISDIR:
+    mpSyncManager->SyncSourceFolder(sourceFolder);
+    break;
+  case IN_DELETE | IN_ISDIR:
+    mpSyncManager->SyncSourceFolder(sourceFolder);
     break;
   default:
-    cerr << "\nC No handler for this event implementet";
+    cerr << "\nC No handler for this event implementet: " << inotifytools_event_to_str(pEvent->mask);
     break;
 
   }

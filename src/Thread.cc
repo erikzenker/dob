@@ -12,10 +12,25 @@ int Thread::Start(void* arg)
     
 }
 
-int Thread::Run(void* arg)
+int Thread::Stop()
+{
+  return pthread_cancel(mThreadId);
+
+}
+
+int Thread::Suspend(){
+
+}
+
+int Thread::Resume(){
+
+}
+
+void Thread::Run(void* arg)
 {
   Setup();
   Execute(arg);
+
 }
 
 /*static */

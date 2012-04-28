@@ -1,4 +1,6 @@
 #include <pthread.h>
+#include <signal.h>
+#include <stdlib.h>
 #include <iostream>
 
 class Thread
@@ -6,8 +8,12 @@ class Thread
 public:
   Thread();
   int Start(void* arg);
+  int Stop();
+  int Suspend();
+  int Resume();
+
 protected:
-  int Run(void* arg);
+  void Run(void* arg);
   static void* EntryPoint(void*);
   virtual void Setup();
   virtual void Execute(void* arg);

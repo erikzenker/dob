@@ -1,17 +1,22 @@
 #include <vector>
 #include <iostream>
+#include <string>
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
 #include <stdlib.h>
-
+#include "RemoteSyncManager.h"
 
 using namespace std;
 
 class EventManager{
 private:
   vector<inotify_event*> mEventList;
-  void HandleEvent(inotify_event* pEvent);
+  SyncManager* mpSyncManager;
+
+
+  void HandleEvent(inotify_event* pEvent, string sourceFolder);
 public:
-  void PushBackEvent(inotify_event* pNewEvent);
+  EventManager(SyncManager * pSyncManager);
+  void PushBackEvent(inotify_event* pNewEvent, string sourceFolder);
 };
 
