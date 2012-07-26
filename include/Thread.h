@@ -1,3 +1,6 @@
+#ifndef THREAD_H
+#define THREAD_H
+
 #include <pthread.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -24,3 +27,5 @@ private:
   void* mArg;
 
 };
+
+#endif /* THREAD_H */

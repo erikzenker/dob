@@ -1,0 +1,36 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: C Projects - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "D:\TEMP\RSP11.tmp" with contents
+[
+/nologo /MLd /W4 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR"Debug/" /Fp"Debug/C Projects.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"E:\C Projects\C Projects.cpp"
+]
+Creating command line "cl.exe @D:\TEMP\RSP11.tmp" 
+Creating temporary file "D:\TEMP\RSP12.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/C Projects.pdb" /debug /machine:I386 /out:"Debug/C Projects.exe" /pdbtype:sept 
+".\Debug\C Projects.obj"
+".\Debug\StdAfx.obj"
+]
+Creating command line "link.exe @D:\TEMP\RSP12.tmp"
+<h3>Output Window</h3>
+Compiling...
+C Projects.cpp
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/C Projects.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\C Projects.sbr""
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+C Projects.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
