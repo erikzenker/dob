@@ -9,13 +9,33 @@ InotifyFileSystemScanner::InotifyFileSystemScanner(string scanFolder, EventManag
   : FileSystemScanner(scanFolder, pEventManager ){
 }
 
+/*
+ * BUGS
+ *
+ * Failure on inotifytools_watch_recursively and a
+ * following seg fault on inotifytools_error()
+ * function. The reason now not known
+ *
+ * TODO
+ *
+ * when deleting a symlink from a watched folder, then
+ * the folder the symlink points to should be removed
+ * from watched folders.
+ * IDEA: save symlinks in kind of database so you
+ *       know the pointed folder
+ *	    
+ * Usefull function
+ *
+ * canonicalize_file_name ("/home/erik/OpenDropbox/Mail");
+ * http://www.gnu.org/software/libc/manual/html_node/Symbolic-Links.html
+ */
 int InotifyFileSystemScanner::StartToScan(){
   cerr << "\nC Start scanning folders";
   int events = IN_MODIFY | IN_CREATE | IN_DELETE;
   if ( !inotifytools_initialize()
        || !inotifytools_watch_recursively(mScanFolder.c_str(), events)){ 
-    
-    fprintf(stderr, "%s\n", inotifytools_error());
+
+    fprintf(stderr,"\nC %d", inotifytools_error());
     return -1;
   }
 
@@ -25,19 +45,7 @@ int InotifyFileSystemScanner::StartToScan(){
   while ( event ) {
     mpEventManager->PushBackEvent(event, mScanFolder);
 
-    //Usefull function
-    //canonicalize_file_name ("/home/erik/OpenDropbox/Mail");
-    //http://www.gnu.org/software/libc/manual/html_node/Symbolic-Links.html
-    /*
-      TODO
 
-      when deleting a symlink from a watched folder, then
-      the folder the symlink points to should be removed
-      from watched folders.
-      IDEA: save symlinks in kind of database so you
-            know the pointed folder
-     */
-    
     //Add/delete watches for added/deleted folders or files
 
     switch(event->mask){
@@ -48,14 +56,12 @@ int InotifyFileSystemScanner::StartToScan(){
       break;
     case IN_DELETE | IN_ISDIR:
       cerr << "\nC remove watch folder: " << event->name << " no cosequenz (TODO)";
-      //cerr << "\n" << canonicalize_file_name (mScanFolder.append(event->name).c_str());
       //inotifytools_initialize();
       //inotifytools_remove_watch_by_wd(event->wd);
       break;
     case IN_CREATE:
       cerr << "\nC Add new watch file: " << event->name;
       inotifytools_initialize();
-      //inotifytools_watch_recursively(mScanFolder.append(event->name).c_str(), events);      
       inotifytools_watch_recursively(mScanFolder.c_str(), events);
       break;
     case IN_CREATE | IN_ISDIR:
