@@ -19,14 +19,25 @@ RemoteSyncManager::RemoteSyncManager(){
  *        See more in "man rsync"
  */
 void RemoteSyncManager::SyncSourceFolder(string sourceFolder){
-  cerr << "\nC Syncronise Source and Destination Folder\n";
-  string rsync_query = "rsync -vzruL --delete ";
-  rsync_query
-    .append(sourceFolder)
-    .append(" ")
-    .append(mDestFolder);
+  // Mountpoint checks whether the remote device is mounted.
+  // Exit status zero if the directory is a mountpoint, 
+  // non-zero if not.
+  string mountpoint_query = "mountpoint -q ";
+  mountpoint_query.append(mDestFolder);
+
+  if(system(mountpoint_query.c_str()){
+    cerr << "\nC Syncronise source and destination folder\n";
+    string rsync_query = "rsync -vzruL --delete ";
+    rsync_query
+      .append(sourceFolder)
+      .append(" ")
+      .append(mDestFolder);
   
-  system(rsync_query.c_str());
+    system(rsync_query.c_str());
+  }
+  else{
+    cerr << "\nC Failed syncronise source and destination folder, because destination folder is not mounted";
 
-
+  }
+  
 }
