@@ -25,7 +25,7 @@ void RemoteSyncManager::SyncSourceFolder(string sourceFolder){
   string mountpoint_query = "mountpoint -q ";
   mountpoint_query.append(mDestFolder);
 
-  if(system(mountpoint_query.c_str()){
+  if(system(mountpoint_query.c_str())){
     cerr << "\nC Syncronise source and destination folder\n";
     string rsync_query = "rsync -vzruL --delete ";
     rsync_query
