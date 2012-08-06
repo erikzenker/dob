@@ -35,7 +35,7 @@ int InotifyFileSystemScanner::StartToScan(){
   if ( !inotifytools_initialize()
        || !inotifytools_watch_recursively(mScanFolder.c_str(), events)){ 
 
-    fprintf(stderr,"\nC %d", inotifytools_error());
+    fprintf(stderr,"\nC Error errno: %d", inotifytools_error());
     return -1;
   }
 
