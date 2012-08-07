@@ -46,5 +46,11 @@ clean:
 	rm -f $(OBJS) $(DEPS) $(LIBOBJS) $(LIBFILES) $(LIBRISSOBJ)
 	rm -f log.txt
 	rm -f odb	
+
+# install inotify
+inotify:
+	cd utils/inotify-tools && ./configure --prefix=/usr
+	cd utils/inotify-tools && make -f Makefile && sudo make install
+
 # include headerfile dependencies for sources
 -include $(DEPS)
