@@ -1,0 +1,18 @@
+#################################################
+#						# 
+# OPEN DROP BOX					#
+#						#
+# Author:  Erik Zenker				#
+# Contact: erikzenker@hotmail.com		# 
+# License: GPL					#  
+#	   					#
+#################################################
+
+INSTALL
+=======
+
+* Install rsync
+* Build inotify
+  ==> make inotify 
+* Build open_dropbox
+  ==> make
