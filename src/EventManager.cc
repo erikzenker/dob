@@ -13,6 +13,11 @@ void EventManager::PushBackEvent(inotify_event* pNewEvent, string sourceFolder){
 
 void EventManager::HandleEvent(inotify_event* pEvent, string sourceFolder){
   cerr <<"\nC Event " << inotifytools_event_to_str(pEvent->mask) <<" was triggered";
+  string syncFolder(inotifytools_filename_from_wd(pEvent->wd));
+  syncFolder.append(pEvent->name);
+  //int sourceFolderLength = sourceFolder.length();
+  cerr << "\nC " << syncFolder;
+
   switch(pEvent->mask){
   case IN_CREATE:
     mpSyncManager->SyncSourceFolder(sourceFolder);
