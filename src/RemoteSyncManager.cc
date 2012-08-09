@@ -55,7 +55,7 @@ void RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
   system(rsync_query.c_str());
   */
 
-  string cp_query = "cp -RL ";  
+  string cp_query = "cp -RLv ";  
   cp_query
     .append(syncFolder)
     .append(folder)
@@ -72,6 +72,19 @@ void RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
 
 void RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
 
+
+}
+
+void RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
+
+  string rm_query = "rm -Rv ";
+  rm_query
+    .append(mDestFolder)
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
+    .append(folder);
+
+  cerr << "\nC " << rm_query << "\n";
+  system(rm_query.c_str());
 
 
 }

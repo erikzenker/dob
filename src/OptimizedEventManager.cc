@@ -9,13 +9,12 @@ void OptimizedEventManager::HandleEvent(inotify_event* pEvent, string sourceFold
   string syncFolder(inotifytools_filename_from_wd(pEvent->wd));
   string folder(pEvent->name);
 
-  cerr << "\nC " << syncFolder;
   switch(pEvent->mask){
   case IN_CREATE:
     mpSyncManager->SyncFolder(sourceFolder, syncFolder, folder);
     break;
   case IN_DELETE:
-    mpSyncManager->SyncSourceFolder(sourceFolder);
+    mpSyncManager->RemoveFolder(sourceFolder, syncFolder, folder);
     break;
   case IN_MODIFY:
     mpSyncManager->SyncFolder(sourceFolder, syncFolder, folder);
@@ -24,7 +23,7 @@ void OptimizedEventManager::HandleEvent(inotify_event* pEvent, string sourceFold
     mpSyncManager->SyncFolder(sourceFolder, syncFolder, folder);
     break;
   case IN_DELETE | IN_ISDIR:
-    mpSyncManager->SyncSourceFolder(sourceFolder);
+    mpSyncManager->RemoveFolder(sourceFolder, syncFolder, folder);
     break;
   default:
     cerr << "\nC No handler for this event implementet: " << inotifytools_event_to_str(pEvent->mask);

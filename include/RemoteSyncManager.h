@@ -14,7 +14,7 @@ class RemoteSyncManager : public SyncManager{
   void SyncSourceFolder(string sourceFolder);
   void SyncFolder(string sourceFolder, string syncFolder, string folder);
   void SyncFile(string sourceFolder, string syncFolder);
-
+  void RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
 };
 

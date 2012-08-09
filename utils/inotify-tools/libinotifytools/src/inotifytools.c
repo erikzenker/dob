@@ -985,7 +985,8 @@ int inotifytools_watch_files( char const * filenames[], int events ) {
 		if ( wd < 0 ) {
 			if ( wd == -1 ) {
 				error = errno;
-				return 0;
+				fprintf( stderr, "\nC Failed to watch %s", filenames[i]);
+				return 1;
 			} // if ( wd == -1 )
 			else {
 				fprintf( stderr, "Failed to watch %s: returned wd was %d "
