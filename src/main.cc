@@ -18,8 +18,8 @@
 
 // Include Classes
 #include "InotifyFileSystemScanner.h"
-#include "WebdavSyncManager.h"
-#include "EventManager.h"
+#include "RemoteSyncManager.h"
+#include "OptimizedEventManager.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ int main(){
   string dest_folder = "/home/erik/OpenDropboxServer/";
 
   SyncManager * pSyncManager  = new RemoteSyncManager(dest_folder);
-  EventManager * pEventManager = new EventManager(pSyncManager);
+  EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
   InotifyFileSystemScanner inotifyScanner(scan_folder, pEventManager);
 
   pSyncManager->SyncSourceFolder(scan_folder);

@@ -41,3 +41,37 @@ void RemoteSyncManager::SyncSourceFolder(string sourceFolder){
   }
   
 }
+
+void RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
+  /* RSYNC MOD
+  string rsync_query = "rsync -vzruL --delete ";
+  rsync_query
+    .append(syncFolder)
+    .append(folder)
+    .append(" ")
+    .append(mDestFolder)
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
+  cerr << "\nC " << rsync_query;
+  system(rsync_query.c_str());
+  */
+
+  string cp_query = "cp -RL ";  
+  cp_query
+    .append(syncFolder)
+    .append(folder)
+    .append(" ")
+    .append(mDestFolder)
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
+  
+  cerr << "\nC " << cp_query;
+  system(cp_query.c_str());
+  
+
+
+}
+
+void RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
+
+
+
+}

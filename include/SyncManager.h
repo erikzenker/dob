@@ -30,7 +30,9 @@ protected:
 public:
   SyncManager(string destFolder);
   SyncManager();
-  virtual void SyncSourceFolder(string sourceFolder)=0;
+  virtual void SyncSourceFolder(string sourceFolder) =0;
+  virtual void SyncFolder(string sourceFolder, string syncFolder, string folder) =0;
+  virtual void SyncFile(string sourceFolder, string syncFolder) =0;
 
 };
 

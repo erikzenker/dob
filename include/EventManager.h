@@ -8,7 +8,7 @@
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
 #include <stdlib.h>
-#include "RemoteSyncManager.h"
+#include "SyncManager.h"
 
 using namespace std;
 
@@ -32,11 +32,11 @@ using namespace std;
  * 
  */
 class EventManager{
-private:
+protected:
   vector<inotify_event*> mEventList;
   SyncManager* mpSyncManager;
+  virtual void HandleEvent(inotify_event* pEvent, string sourceFolder) =0;
 
-  void HandleEvent(inotify_event* pEvent, string sourceFolder);
 public:
   EventManager(SyncManager * pSyncManager);
   void PushBackEvent(inotify_event* pNewEvent, string sourceFolder);
