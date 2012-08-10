@@ -5,7 +5,7 @@ void ConfigFileParser::parseConfigFile(string configFileName){
   string line;
   ifstream config_file_stream;
   config_file_stream.open(configFileName.c_str());
-
+  parsedValues.resize(keyWords.size(),"");
 
   if(config_file_stream.is_open())
   {
@@ -14,7 +14,7 @@ void ConfigFileParser::parseConfigFile(string configFileName){
       getline (config_file_stream,line);
       for(int i = 0; i < keyWords.size(); i++){
 	
-	parse(line.c_str(),str_p(keyWords[i].c_str()) >> *space_p >> ch_p('=') >> *space_p >> (*anychar_p)[&print][&push_back],space_p);
+	parse(line.c_str(),str_p(keyWords[i].c_str()) >> *space_p >> ch_p('=') >> *space_p >> (*anychar_p)[assign_a(parsedValues[i])],space_p);
 
       }
 
@@ -30,6 +30,12 @@ void ConfigFileParser::addKeyWord(string keyWord){
   keyWords.push_back(keyWord);
 }
 
-void ConfigFileParser::getValue(string keyWord){
+string ConfigFileParser::getValue(string keyWord){
+  assert(keyWords.size() == parsedValues.size());
+  for(int i = 0; i < keyWords.size(); i++){
+    if(!keyWord.compare(keyWords[i]))
+	return parsedValues[i];
 
+  }
+  return 0;
 }

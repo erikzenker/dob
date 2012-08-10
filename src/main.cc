@@ -21,24 +21,35 @@
 #include <RemoteSyncManager.h>
 #include <OptimizedEventManager.h>
 #include <ConfigFileParser.h>
+#include <CommandLineParser.h>
+
 
 using namespace std;
 
-int main(){
+int main(int argc, char *argv[]){
+  // Variable Definitions
   void* no_arg = NULL;
-  string scan_folder = "/home/erik/OpenDropbox/";
-  string dest_folder = "/home/erik/OpenDropboxServer/";
-  ConfigFileParser p;
-  p.addKeyWord("syncFolder");
-  p.addKeyWord("destFolder");
-  p.parseConfigFile("odb.conf");
-  
-  return 0;
-  SyncManager * pSyncManager  = new RemoteSyncManager(dest_folder);
-  EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
-  InotifyFileSystemScanner inotifyScanner(scan_folder, pEventManager);
+  string scanFolder;
+  string destFolder;
+  string configFileName;
+  ConfigFileParser configFileParser;
+  CommandLineParser commandLineParser;
 
-  pSyncManager->SyncSourceFolder(scan_folder);
+  // Parser
+  commandLineParser.parseCommandLine(argc, argv);
+  configFileName = commandLineParser.getConfigFileName();
+  configFileParser.addKeyWord("syncFolder");
+  configFileParser.addKeyWord("destFolder");
+  configFileParser.parseConfigFile(configFileName);
+  scanFolder = configFileParser.getValue("syncFolder");
+  destFolder = configFileParser.getValue("destFolder");
+  
+  // Programm
+  SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
+  EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
+  InotifyFileSystemScanner inotifyScanner(scanFolder, pEventManager);
+
+  pSyncManager->SyncSourceFolder(scanFolder);
   inotifyScanner.Start(no_arg);
 
   while(1){

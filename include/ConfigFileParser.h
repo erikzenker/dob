@@ -11,27 +11,36 @@
 using namespace std;
 using namespace BOOST_SPIRIT_CLASSIC_NS;
 
+
 namespace
 {
-vector<string> parsedValues;
-vector<string> keyWords;
-void print(char const* first, char const* last)
-{
-string str(first, last);
-cout << "\n" << str ;
+  vector<string> parsedValues;
+  vector<string> keyWords;
+/* Definition of semantic actions, but
+   is not needed anymore. Use now
+   predefined semantic actions from 
+   spirit parser framework
+
+  void print(char const* first, char const* last)
+  {
+    string str(first, last);
+    cout << "\n" << str ;
+  }
+
+  void push_back(char const* first, char const* last)
+  {
+    string str(first, last);
+    parsedValues.push_back(str);
+  }
+*/
 }
 
-void push_back(char const* first, char const* last)
-{
-string str(first, last);
-parsedValues.push_back(str);
-}
-}
+
 class ConfigFileParser{
-public:
-void parseConfigFile(string configFileName);
-void addKeyWord(string keyWord);
-void getValue(string keyWord);
+ public:
+  void parseConfigFile(string configFileName);
+  void addKeyWord(string keyWord);
+  string getValue(string keyWord);
 };
 
 #endif /* ConfigFileParser_H */
