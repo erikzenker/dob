@@ -14,12 +14,13 @@
 // Include Libraries
 #include <iostream>
 #include <string>
-#include "stdlib.h"
+#include <stdlib.h>
 
 // Include Classes
-#include "InotifyFileSystemScanner.h"
-#include "RemoteSyncManager.h"
-#include "OptimizedEventManager.h"
+#include <InotifyFileSystemScanner.h>
+#include <RemoteSyncManager.h>
+#include <OptimizedEventManager.h>
+#include <ConfigFileParser.h>
 
 using namespace std;
 
@@ -27,7 +28,12 @@ int main(){
   void* no_arg = NULL;
   string scan_folder = "/home/erik/OpenDropbox/";
   string dest_folder = "/home/erik/OpenDropboxServer/";
-
+  ConfigFileParser p;
+  p.addKeyWord("syncFolder");
+  p.addKeyWord("destFolder");
+  p.parseConfigFile("odb.conf");
+  
+  return 0;
   SyncManager * pSyncManager  = new RemoteSyncManager(dest_folder);
   EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
   InotifyFileSystemScanner inotifyScanner(scan_folder, pEventManager);

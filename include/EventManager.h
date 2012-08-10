@@ -3,11 +3,8 @@
 #define EventManager_H
 
 #include <vector>
-#include <iostream>
-#include <string>
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
-#include <stdlib.h>
 #include "SyncManager.h"
 
 using namespace std;
