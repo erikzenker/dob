@@ -13,7 +13,7 @@ CPP = g++
 
 #compiler flags
 LIBS		= -linotifytools -lpthread
-CPPINCLUDES 	= -I./include
+CPPINCLUDES 	= -I./include -I./utils/boost
 COMMON_CPPFLAGS = $(CPPINCLUDES)
 CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -g3 -fno-exceptions -fno-strict-aliasing -g
 LDFLAGS 	= -L. 
