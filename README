@@ -1,6 +1,6 @@
 #################################################
 #						# 
-# OPEN DROP BOX					#
+# OPEN DROPBOX					#
 #						#
 # Author:  Erik Zenker				#
 # Contact: erikzenker@hotmail.com		# 
@@ -11,8 +11,35 @@
 INSTALL
 =======
 
-* Install rsync
-* Build inotify
-  ==> make inotify 
-* Build open_dropbox
-  ==> make
+1. Install rsync
+   ==> pacman -S rsync (@Arch Linux)
+2. Build inotify
+   ==> make inotify 
+3. Build open_dropbox
+   ==> make all
+
+USAGE
+=======
+
+1. Create some folder you want use as syncronization folder
+   ==> mkdir /home/<Your username>/OpenDropbox
+
+2. Edit the configfile, if it not exist just create one
+   ==> create: touch odb.conf
+   ==> edit  : syncFolder = /home/<Your username>/OpenDropbox/
+       	       destFolder = /<syncronization>/<Folder>/
+
+3. Start the programm
+   ==> ./odb --config=odb.conf
+
+4. Enjoy the your syncronization deamon without doing anything
+
+TRICKS
+=======
+
+* You don't need to copy data into you syncronization folder.
+  The easiest way is just creating symlinks into it.
+  ==> cd /home/<Your username>/OpenDropbox
+  ==> ln -s ../<New Folder> .
+
+

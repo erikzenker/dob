@@ -1,12 +1,13 @@
 /*
  * ROADMAP
  *
- * 1. Copy mechanism (Rsync) --> done
- * 2. Versioning of backup data (Git)
- * 3. Mounting of server data
- * 4. Scanning of server data
- * 6. Ask in case of big data
- * 5. Graphical user interface
+ * * Copy mechanism (Rsync) --> done
+ * * Mounting of server data --> done with /script/mount_server but needs more work
+ * * Commandline installer
+ * * Scanning of server data
+ * * Ask in case of big data
+ * * Graphical user interface
+ * * Versioning of backup data (Git)
  *
  */
 
@@ -15,6 +16,8 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <gtkmm.h>
+#include <signal.h>
 
 // Include Classes
 #include <InotifyFileSystemScanner.h>
@@ -22,9 +25,26 @@
 #include <OptimizedEventManager.h>
 #include <ConfigFileParser.h>
 #include <CommandLineParser.h>
-
+#include <Tray.h>
 
 using namespace std;
+
+int gtkmm_test(int argc, char *argv[]){
+  /*Gtk::Main kit(argc, argv);
+  Tray window;
+  Gtk::Main::run(window); //Shows the window and returns when it is closed.
+  */
+
+  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
+  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file("gui/tray.glade");
+  Gtk::Window * pMainWindow = 0;
+  builder->get_widget("mainWindow", pMainWindow);
+  app->run(*pMainWindow);
+  
+  return 0;
+
+}
+
 
 int main(int argc, char *argv[]){
   // Variable Definitions
@@ -35,8 +55,14 @@ int main(int argc, char *argv[]){
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
 
+  //return gtkmm_test(argc, argv);
+
   // Parser
-  commandLineParser.parseCommandLine(argc, argv);
+  if(!commandLineParser.parseCommandLine(argc, argv)){
+    cout << "\nC No parameters found";
+    cout << "\nC Usage: ./odb --config=CONFIGFILE";
+    return 0;
+  }
   configFileName = commandLineParser.getConfigFileName();
   configFileParser.addKeyWord("syncFolder");
   configFileParser.addKeyWord("destFolder");
@@ -48,13 +74,12 @@ int main(int argc, char *argv[]){
   SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
   EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
   InotifyFileSystemScanner inotifyScanner(scanFolder, pEventManager);
-
   pSyncManager->SyncSourceFolder(scanFolder);
   inotifyScanner.Start(no_arg);
 
   while(1){
-    system("sleep 1s");
+  
   }
-
+  
   return 0;
 }

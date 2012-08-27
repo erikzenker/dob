@@ -10,13 +10,7 @@ InotifyFileSystemScanner::InotifyFileSystemScanner(string scanFolder, EventManag
 }
 
 /*
- * BUGS
- *
- * Failure on inotifytools_watch_recursively and a
- * following seg fault on inotifytools_error()
- * function. The reason now not known
- *
- * TODO
+ * @todo
  *
  * when deleting a symlink from a watched folder, then
  * the folder the symlink points to should be removed
@@ -24,6 +18,8 @@ InotifyFileSystemScanner::InotifyFileSystemScanner(string scanFolder, EventManag
  * IDEA: save symlinks in kind of database so you
  *       know the pointed folder
  *	    
+ * Handle more then one event at a time
+ *
  * Usefull function
  *
  * canonicalize_file_name ("/home/erik/OpenDropbox/Mail");
@@ -47,7 +43,6 @@ int InotifyFileSystemScanner::StartToScan(){
 
 
     //Add/delete watches for added/deleted folders or files
-
     switch(event->mask){
       case IN_DELETE:
 	cerr << "\nC remove watch file: " << event->name << " no consequenz (TODO)";

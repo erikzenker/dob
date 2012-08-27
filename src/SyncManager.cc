@@ -1,9 +1,9 @@
 #include "SyncManager.h"
 
 
-SyncManager::SyncManager(string destFolder){
+SyncManager::SyncManager(string destFolder) : 
+mDestFolder(destFolder){
   assert(opendir(destFolder.c_str()));
-  mDestFolder = destFolder;
 
 }
 

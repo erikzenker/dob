@@ -13,22 +13,22 @@
 
 using namespace std;
 
-/***
+/**
  *
- * @brief Handels simple events from FileSystemScanner
+ * @brief Handels events from FileSystemScanner
  * @class OptimizedEventManager
  *        OptimizedEventManager.h 
  *        "include/OptimizedEventManager.h"
- * @inher protected:
- *          vector<inotify_event*> mEventList;
- *          SyncManager* mpSyncManager;
- *        public:
- *          void PushBackEvent(inotify_event* pNewEvent, string sourceFolder);
  *
- ***/
+ * This EventManager is optimized towards the SimpleEventManager
+ * because on incoming events not the whole syncFolder will
+ * be syncronized, but just the changes. This is faster and
+ * more efficient.
+ *
+ **/
 class OptimizedEventManager : public EventManager{
 private:
-  void HandleEvent(inotify_event* pEvent, string sourceFolder);
+  bool HandleEvent(inotify_event* pEvent, string sourceFolder);
 public:
   OptimizedEventManager(SyncManager * pSyncManager);
  

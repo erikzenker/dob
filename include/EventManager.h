@@ -9,7 +9,7 @@
 
 using namespace std;
 
-/*
+/**
  * @brief Handels events from FileSystemScanner
  * @class EventManager
  *        EventManager.h 
@@ -27,12 +27,12 @@ using namespace std;
  *    char     name[];    Optional null-terminated name 
  *  };
  * 
- */
+ **/
 class EventManager{
 protected:
   vector<inotify_event*> mEventList;
   SyncManager* mpSyncManager;
-  virtual void HandleEvent(inotify_event* pEvent, string sourceFolder) =0;
+  virtual bool HandleEvent(inotify_event* pEvent, string sourceFolder) =0;
 
 public:
   EventManager(SyncManager * pSyncManager);

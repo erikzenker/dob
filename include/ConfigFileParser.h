@@ -35,7 +35,15 @@ namespace
 */
 }
 
-
+/**
+ * @brief Parses key/value pairs of configfile with help of boost::spirit
+ *
+ * The Configfile should exist out of key value pairs like
+ * KEY = VALUE. You can add keys you want to parse with the
+ * addkeyWord(string key) method and get the value with getValue(string key)
+ * after you parsed the configfile with parseConfigfile(string configFileName).
+ *
+ **/
 class ConfigFileParser{
  public:
   void parseConfigFile(string configFileName);

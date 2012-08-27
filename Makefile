@@ -3,40 +3,38 @@
 #
 DATE="`date +%y%m%d%H%M%S`"
 
-#commandline
-CMD = -O3 -g
+# commandline
+CMD = -O2 -g
 ARGS = 
 SPACE = " "
 
-#compiler, linker, archiver
+# compiler, linker, archiver
 CPP = g++
+DOXYGEN = doxygen
 
-#compiler flags
-LIBS		= -linotifytools -lpthread
+# compiler flags
+LIBS		= -linotifytools -lpthread $(shell pkg-config --libs gtkmm-3.0)
 CPPINCLUDES 	= -I./include -I./utils/boost
 COMMON_CPPFLAGS = $(CPPINCLUDES)
-CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -g3 -fno-exceptions -fno-strict-aliasing -g
+CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -g3 -fno-exceptions -fno-strict-aliasing -g $(shell pkg-config --cflags gtkmm-3.0)
 LDFLAGS 	= -L. 
 
 
-#
-# section below includes all the necessay rules for building riss
-#
-
-#build variables
+# build variables
 SRCS = $(wildcard src/*.cc src/*/*.cc)
 OBJS = $(SRCS:.cc=.o)
 DEPS = $(SRCS:.cc=.d)
+
 # for building the component libraries
 DEPS += $(LIBSRCS:.cc=.d)
 
 all: odb
 
-#build solver
+# build open dropbox
 odb: $(OBJS)
 	$(CPP) -o $@ $(OBJS) $(LIBS) $(LDFLAGS) $(CMD) $(CPPFLAGS) $(ARGS)
 
-#build object file and dependencies files
+# build object file and dependencies files
 .cc.o:
 	$(CPP) $(CMD) -MD $(CPPFLAGS) $(ARGS) -c -o $@ $<
 
@@ -51,6 +49,14 @@ clean:
 inotify:
 	cd utils/inotify-tools && ./configure --prefix=/usr
 	cd utils/inotify-tools && make -f Makefile && sudo make install
+
+# find all todos
+todo:
+	grep -n "@todo" include/*
+
+# generate documentation
+doc:
+	$(DOXYGEN) Doxygen.conf
 
 # include headerfile dependencies for sources
 -include $(DEPS)

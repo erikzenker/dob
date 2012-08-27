@@ -13,22 +13,17 @@
 
 using namespace std;
 
-/***
+/**
  *
- * @brief Handels simple events from FileSystemScanner
+ * @brief Handels events from FileSystemScanner in a simple way
  * @class SimpleEventManager
  *        SimpleEventManager.h 
  *        "include/SimpleEventManager.h"
- * @inher protected:
- *          vector<inotify_event*> mEventList;
- *          SyncManager* mpSyncManager;
- *        public:
- *          void PushBackEvent(inotify_event* pNewEvent, string sourceFolder);
  *
- ***/
+ **/
 class SimpleEventManager : public EventManager{
 private:
-  void HandleEvent(inotify_event* pEvent, string sourceFolder);
+  bool HandleEvent(inotify_event* pEvent, string sourceFolder);
 public:
   SimpleEventManager(SyncManager * pSyncManager);
  

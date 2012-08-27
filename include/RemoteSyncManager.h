@@ -6,15 +6,20 @@
 
 using namespace std;
 
+/**
+ *
+ * @todo SyncFolder: if file does not exist anymore no cp fail should be raised
+ *
+ **/
 class RemoteSyncManager : public SyncManager{
 
  public:
   RemoteSyncManager(string destFolder);
   RemoteSyncManager();
-  void SyncSourceFolder(string sourceFolder);
-  void SyncFolder(string sourceFolder, string syncFolder, string folder);
-  void SyncFile(string sourceFolder, string syncFolder);
-  void RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  bool SyncSourceFolder(string sourceFolder);
+  bool SyncFolder(string sourceFolder, string syncFolder, string folder);
+  bool SyncFile(string sourceFolder, string syncFolder);
+  bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
 };
 
