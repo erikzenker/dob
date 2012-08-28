@@ -5,26 +5,23 @@
 
 #include "InotifyFileSystemScanner.h"
 
-InotifyFileSystemScanner::InotifyFileSystemScanner(string scanFolder, EventManager* pEventManager) 
+InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, EventManager* const pEventManager) 
   : FileSystemScanner(scanFolder, pEventManager ){
 }
 
-/*
- * @todo
- *
- * when deleting a symlink from a watched folder, then
- * the folder the symlink points to should be removed
- * from watched folders.
- * IDEA: save symlinks in kind of database so you
- *       know the pointed folder
- *	    
- * Handle more then one event at a time
- *
+/**
+ * @todo when deleting a symlink from a watched folder, then
+ *       the folder the symlink points to should be removed
+ *       from watched folders.
+ *       IDEA: save symlinks in kind of database so you
+ *             know the pointed folder
+ *	 Handle more then one event at a time
+ * 
  * Usefull function
  *
  * canonicalize_file_name ("/home/erik/OpenDropbox/Mail");
  * http://www.gnu.org/software/libc/manual/html_node/Symbolic-Links.html
- */
+ **/
 int InotifyFileSystemScanner::StartToScan(){
   cerr << "\nC Start scanning folders";
   int events = IN_MODIFY | IN_CREATE | IN_DELETE;
@@ -79,6 +76,7 @@ int InotifyFileSystemScanner::StopToScan(){
 }
 
 void InotifyFileSystemScanner::Setup(){
+
 }
 
 void InotifyFileSystemScanner::Execute(void* arg){

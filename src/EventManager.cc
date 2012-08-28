@@ -1,12 +1,12 @@
 #include <EventManager.h>
 
-EventManager::EventManager(SyncManager * pSyncManager) : 
+EventManager::EventManager(SyncManager * const pSyncManager) : 
   mpSyncManager(pSyncManager){
   
   
 }
 
-void EventManager::PushBackEvent(inotify_event* pNewEvent, string sourceFolder){
+void EventManager::PushBackEvent(inotify_event* const pNewEvent, const string sourceFolder){
   mEventList.push_back(pNewEvent);
   if(HandleEvent(pNewEvent, sourceFolder)){
     mEventList.pop_back();

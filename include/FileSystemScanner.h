@@ -25,16 +25,17 @@ using namespace std;
  *
  **/
 class FileSystemScanner {
-protected:
-  string mScanFolder;
-  EventManager * mpEventManager;
-
 public:
-  FileSystemScanner(string scanFolder, EventManager* pEventManager);
+  FileSystemScanner(const string scanFolder, EventManager* const pEventManager);
   ~FileSystemScanner();
-  string GetScanFolder();
-  virtual int StartToScan() =0;
-  virtual int StopToScan() =0;
+  string GetScanFolder() const;
+  virtual int StartToScan() = 0;
+  virtual int StopToScan()  = 0;
+
+protected:
+  const string mScanFolder;
+  EventManager* const mpEventManager;
+
 
 };
 

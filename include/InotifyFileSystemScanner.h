@@ -35,11 +35,13 @@
  **/
 class InotifyFileSystemScanner : public FileSystemScanner, public Thread {
 public:
-  InotifyFileSystemScanner(string scanFolder, EventManager* pEventManager);
-  int StartToScan();
-  int StopToScan();
-  void Setup();
-  void Execute(void* arg);
+  InotifyFileSystemScanner(const string scanFolder, EventManager* const pEventManager);
+  virtual int StartToScan();
+  virtual int StopToScan();
+ protected:
+  virtual void Execute(void* arg);
+  virtual void Setup();
+
 
 };
 

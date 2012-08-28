@@ -29,14 +29,15 @@ using namespace std;
  * 
  **/
 class EventManager{
+public:
+  EventManager(SyncManager* const pSyncManager);
+  void PushBackEvent(inotify_event* const pNewEvent, string sourceFolder);
 protected:
   vector<inotify_event*> mEventList;
-  SyncManager* mpSyncManager;
-  virtual bool HandleEvent(inotify_event* pEvent, string sourceFolder) =0;
+  SyncManager* const mpSyncManager;
+  virtual bool HandleEvent(inotify_event* const pEvent, const string sourceFolder) = 0;
 
-public:
-  EventManager(SyncManager * pSyncManager);
-  void PushBackEvent(inotify_event* pNewEvent, string sourceFolder);
+
 };
 
 #endif /* EventManager_H */
