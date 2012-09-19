@@ -1,10 +1,12 @@
 #include <Tray.h>
 
-Tray::Tray()
+Tray::Tray(FileSystemScanner* pFileSystemScanner)
   : m_ButtonBox(Gtk::BUTTONBOX_SPREAD, 2),
     m_Button_blink("blink"),
     m_Button_hide("hide"),
-    m_Button_close("close")
+    m_Button_close("close"),
+    mpFileSystemScanner(pFileSystemScanner),
+    mSyncIsActive(false)
 {
   set_title("Gtk::StatusIcon example");
   set_border_width(5);
@@ -12,13 +14,8 @@ Tray::Tray()
   
   // Setting up the UIManager:
   Glib::RefPtr<Gtk::ActionGroup> refActionGroup = Gtk::ActionGroup::create();
-  refActionGroup->add(Gtk::ToggleAction::create("Toggle0", "enable something", "", true));
-  refActionGroup->add(Gtk::ToggleAction::create("Toggle1", "enable something else"));
-  refActionGroup->add(Gtk::Action::create("Preferences", Gtk::Stock::PREFERENCES));
-  refActionGroup->add(Gtk::Action::create("Info", Gtk::Stock::INFO));
-  refActionGroup->add(Gtk::Action::create("Help", Gtk::Stock::HELP));
-  refActionGroup->add(Gtk::Action::create("Quit", Gtk::Stock::QUIT),
-		      sigc::mem_fun(*this, &Tray::hide));
+  refActionGroup->add(Gtk::ToggleAction::create("Toggle0", "enable syncronization", "start or stop syncronication", false),sigc::mem_fun(*this, &Tray::start));
+  refActionGroup->add(Gtk::Action::create("Quit", Gtk::Stock::QUIT),sigc::mem_fun(*this, &Tray::hide));
 
   m_refUIManager = Gtk::UIManager::create();
   m_refUIManager->insert_action_group(refActionGroup);
@@ -27,10 +24,6 @@ Tray::Tray()
     "<ui>"
     "  <popup name='Popup'>"
     "    <menuitem action='Toggle0' />"
-    "    <menuitem action='Toggle1' />"
-    "    <menuitem action='Preferences' />"
-    "    <menuitem action='Info' />"
-    "    <menuitem action='Help' />"
     "    <separator/>"
     "    <menuitem action='Quit' />"
     "  </popup>"
@@ -40,7 +33,7 @@ Tray::Tray()
 
   // Setting up the StatusIcon:
   // You should use your own icon in real life.
-  m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::HOME);
+  m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::APPLY);
 
   // StatusIcon's signals (GTK+)
   GtkStatusIcon* gobj_StatusIcon = m_refStatusIcon->gobj();
@@ -97,11 +90,30 @@ bool Tray::on_delete_event(GdkEventAny* /* event */)
 }
 
 void Tray::on_show(){
-  fprintf(stderr, "\nC on_show");
   Gtk::Window::on_show();
   minimize();
 }
 
+void Tray::start(){
+  void* no_arg = NULL;
+  if(mSyncIsActive){
+    std::cerr << "\nC Stop Sync by GUI";
+    mpFileSystemScanner->StopToScan();
+    mSyncIsActive = false;
+    //m_refStatusIcon->set(Gtk::Stock::REFRESH);
+  }
+  else{
+    std::cerr << "\nC Start Sync by GUI";
+    //mpFileSystemScanner->GetEventManager()->GetSyncManager()->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
+    mpFileSystemScanner->StartToScan();
+    mSyncIsActive = true;
+    //m_refStatusIcon->set(Gtk::Stock::HOME);
+  }
+}
+
+Glib::RefPtr<Gtk::StatusIcon> Tray::GetStatusIcon() const{
+  return m_refStatusIcon;
+}
 
 void on_statusicon_activated(GtkWidget* widget, gpointer object)
 {

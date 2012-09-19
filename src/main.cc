@@ -29,19 +29,28 @@
 
 using namespace std;
 
-int gtkmm_test(int argc, char *argv[]){
-  /*Gtk::Main kit(argc, argv);
-  Tray window;
-  Gtk::Main::run(window); //Shows the window and returns when it is closed.
-  */
-
-  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
+int gtkmm_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
+  /*
+ Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
   Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file("gui/tray.glade");
   Gtk::Window * pMainWindow = 0;
   builder->get_widget("mainWindow", pMainWindow);
   app->run(*pMainWindow);
-  
+  */
+
+  Gtk::Main kit(argc, argv);
+  Tray tray(pFileSystemScanner);
+  pFileSystemScanner->GetEventManager()->GetSyncManager()->mrStatusIcon = tray.GetStatusIcon();
+  pFileSystemScanner->GetEventManager()->mrStatusIcon = tray.GetStatusIcon();
+  Gtk::Main::run(tray);
   return 0;
+
+  /*
+  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
+  Gtk::Window window;
+  Glib::RefPtr<Gtk::StatusIcon> m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::HOME);
+  return app->run(window);
+  */
 
 }
 
@@ -54,8 +63,6 @@ int main(int argc, char *argv[]){
   string configFileName;
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
-
-  //return gtkmm_test(argc, argv);
 
   // Parser
   if(!commandLineParser.parseCommandLine(argc, argv)){
@@ -73,13 +80,9 @@ int main(int argc, char *argv[]){
   // Programm
   SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
   EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
-  InotifyFileSystemScanner inotifyScanner(scanFolder, pEventManager);
-  pSyncManager->SyncSourceFolder(scanFolder);
-  inotifyScanner.Start(no_arg);
+  FileSystemScanner * pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
 
-  while(1){
-  
-  }
-  
-  return 0;
+  // GUI
+  return gtkmm_test(argc, argv, pFileSystemScanner);
+
 }

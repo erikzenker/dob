@@ -2,6 +2,7 @@
 #define RemoteSyncManager_H
 
 #include <string>
+#include <gtkmm.h>
 #include "SyncManager.h"
 
 using namespace std;

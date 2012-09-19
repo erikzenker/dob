@@ -55,14 +55,15 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
   cerr << "\nC " << rsync_query;
   system(rsync_query.c_str());
   */
-
+  
   string cp_query = "cp -RLv ";  
   cp_query
     .append(syncFolder)
     .append(folder)
     .append(" ")
     .append(mDestFolder)
-    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
+    .append(" ");
   
   cerr << "\nC " << cp_query;
   if(system(cp_query.c_str())){
@@ -70,6 +71,7 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
     return false;
   }
   return true;
+  
 }
 
 bool RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
@@ -78,7 +80,7 @@ bool RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
 }
 
 bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
-
+  
   string rm_query = "rm -Rv ";
   rm_query
     .append(mDestFolder)

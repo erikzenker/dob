@@ -12,4 +12,13 @@ FileSystemScanner::~FileSystemScanner(){
 
 string FileSystemScanner::GetScanFolder() const{
   return mScanFolder;
+
 }
+
+EventManager* FileSystemScanner::GetEventManager() const{
+  return mpEventManager;
+
+}
+
+
+

@@ -31,7 +31,10 @@ using namespace std;
 class EventManager{
 public:
   EventManager(SyncManager* const pSyncManager);
+  Glib::RefPtr<Gtk::StatusIcon> mrStatusIcon;
+  SyncManager* GetSyncManager() const;
   void PushBackEvent(inotify_event* const pNewEvent, string sourceFolder);
+
 protected:
   vector<inotify_event*> mEventList;
   SyncManager* const mpSyncManager;

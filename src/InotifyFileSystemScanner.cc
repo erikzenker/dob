@@ -23,13 +23,27 @@ InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, Even
  * http://www.gnu.org/software/libc/manual/html_node/Symbolic-Links.html
  **/
 int InotifyFileSystemScanner::StartToScan(){
+  return Start(NULL);
+}
+
+int InotifyFileSystemScanner::StopToScan(){
+  Stop();
+  cout << "\nC Stop scanning folders";
+  return 0;
+}
+
+void InotifyFileSystemScanner::Setup(){
+
+}
+
+void InotifyFileSystemScanner::Execute(void* arg){
   cerr << "\nC Start scanning folders";
   int events = IN_MODIFY | IN_CREATE | IN_DELETE;
   if ( !inotifytools_initialize()
        || !inotifytools_watch_recursively(mScanFolder.c_str(), events)){ 
 
     fprintf(stderr,"\nC Error errno: %d", inotifytools_error());
-    return -1;
+    //return -1;
   }
 
 
@@ -66,20 +80,5 @@ int InotifyFileSystemScanner::StartToScan(){
     // Handle next event
     event = inotifytools_next_event( -1 );
   }
-
-  return 0;
-}
-
-int InotifyFileSystemScanner::StopToScan(){
-  cout << "\nC Stop scanning folders";
-  return 0;
-}
-
-void InotifyFileSystemScanner::Setup(){
-
-}
-
-void InotifyFileSystemScanner::Execute(void* arg){
-  StartToScan();
-  
+  //return 0;
 }

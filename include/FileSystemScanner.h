@@ -29,6 +29,7 @@ public:
   FileSystemScanner(const string scanFolder, EventManager* const pEventManager);
   ~FileSystemScanner();
   string GetScanFolder() const;
+  EventManager* GetEventManager() const;
   virtual int StartToScan() = 0;
   virtual int StopToScan()  = 0;
 
