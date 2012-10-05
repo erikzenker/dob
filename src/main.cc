@@ -29,7 +29,7 @@
 
 using namespace std;
 
-int gtkmm_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
+int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
   /*
  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
   Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file("gui/tray.glade");
@@ -40,8 +40,9 @@ int gtkmm_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
 
   Gtk::Main kit(argc, argv);
   Tray tray(pFileSystemScanner);
-  pFileSystemScanner->GetEventManager()->GetSyncManager()->mrStatusIcon = tray.GetStatusIcon();
-  pFileSystemScanner->GetEventManager()->mrStatusIcon = tray.GetStatusIcon();
+
+  pFileSystemScanner->GetEventManager()->SignalEvent().connect(sigc::mem_fun(tray,
+              &Tray::OnEventManagerSignal) );
   Gtk::Main::run(tray);
   return 0;
 
@@ -83,6 +84,6 @@ int main(int argc, char *argv[]){
   FileSystemScanner * pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
 
   // GUI
-  return gtkmm_test(argc, argv, pFileSystemScanner);
+  return gui_test(argc, argv, pFileSystemScanner);
 
 }

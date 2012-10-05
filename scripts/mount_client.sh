@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SERVERADRESS=localhost
-USERNAME=erik-01
+USERNAME=erik
+PORT=2222
 
-sshfs $USERNAME@localhost:/home/$USERNAME /home/$(whoami)/OpenDropboxServer/
+sshfs $USERNAME@$SERVERADRESS:/home/$USERNAME /home/$(whoami)/OpenDropboxServer/ -p $PORT

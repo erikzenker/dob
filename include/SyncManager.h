@@ -28,7 +28,6 @@ protected:
   string mDestFolder;
 
 public:
-  Glib::RefPtr<Gtk::StatusIcon> mrStatusIcon;
   SyncManager(string destFolder);
   SyncManager();
   virtual bool SyncSourceFolder(string sourceFolder) =0;

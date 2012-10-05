@@ -1,11 +1,7 @@
 #include <Tray.h>
 
 Tray::Tray(FileSystemScanner* pFileSystemScanner)
-  : m_ButtonBox(Gtk::BUTTONBOX_SPREAD, 2),
-    m_Button_blink("blink"),
-    m_Button_hide("hide"),
-    m_Button_close("close"),
-    mpFileSystemScanner(pFileSystemScanner),
+  : mpFileSystemScanner(pFileSystemScanner),
     mSyncIsActive(false)
 {
   set_title("Gtk::StatusIcon example");
@@ -14,11 +10,11 @@ Tray::Tray(FileSystemScanner* pFileSystemScanner)
   
   // Setting up the UIManager:
   Glib::RefPtr<Gtk::ActionGroup> refActionGroup = Gtk::ActionGroup::create();
-  refActionGroup->add(Gtk::ToggleAction::create("Toggle0", "enable syncronization", "start or stop syncronication", false),sigc::mem_fun(*this, &Tray::start));
+  refActionGroup->add(Gtk::ToggleAction::create("Toggle0", "enable syncronization", "start or stop syncronication", false),sigc::mem_fun(*this, &Tray::ToggleSync));
   refActionGroup->add(Gtk::Action::create("Quit", Gtk::Stock::QUIT),sigc::mem_fun(*this, &Tray::hide));
 
-  m_refUIManager = Gtk::UIManager::create();
-  m_refUIManager->insert_action_group(refActionGroup);
+  mrUIManager = Gtk::UIManager::create();
+  mrUIManager->insert_action_group(refActionGroup);
 
   Glib::ustring ui_info =
     "<ui>"
@@ -29,39 +25,23 @@ Tray::Tray(FileSystemScanner* pFileSystemScanner)
     "  </popup>"
     "</ui>";
 
-  m_refUIManager->add_ui_from_string(ui_info);
+  mrUIManager->add_ui_from_string(ui_info);
 
   // Setting up the StatusIcon:
   // You should use your own icon in real life.
-  m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::APPLY);
+  mrStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::MEDIA_STOP);
 
   // StatusIcon's signals (GTK+)
-  GtkStatusIcon* gobj_StatusIcon = m_refStatusIcon->gobj();
+  GtkStatusIcon* gobj_StatusIcon = mrStatusIcon->gobj();
   g_signal_connect(G_OBJECT(gobj_StatusIcon), "activate", G_CALLBACK(on_statusicon_activated), this);
   g_signal_connect(G_OBJECT(gobj_StatusIcon), "popup-menu", G_CALLBACK(on_statusicon_popup), this);
 
   // Buttons' signals:
-  m_Button_blink.signal_clicked().connect(sigc::mem_fun(*this, &Tray::on_blink_clicked));
-  m_Button_hide.signal_clicked().connect(sigc::mem_fun(*this, &Tray::minimize));
-  m_Button_close.signal_clicked().connect(sigc::mem_fun(*this, &Tray::hide));
-
-  // Packing:
-  m_ButtonBox.pack_start(m_Button_blink);
-  m_ButtonBox.pack_start(m_Button_hide);
-  m_ButtonBox.pack_start(m_Button_close);
-
-  add(m_ButtonBox);
   show_all_children();
 }
 
 Tray::~Tray()
 {
-}
-
-bool Tray::disactive_blinking()
-{
-
-  return false; // close the timeout connection
 }
 
 void Tray::minimize()
@@ -72,48 +52,62 @@ void Tray::minimize()
 
 void Tray::show_popup_menu(guint button, guint activate_time)
 {
-  Gtk::Menu* pMenu = static_cast<Gtk::Menu*>(m_refUIManager->get_widget("/Popup"));
+  Gtk::Menu* pMenu = static_cast<Gtk::Menu*>(mrUIManager->get_widget("/Popup"));
  
   if(pMenu)
     pMenu->popup(button, activate_time);
 }
 
-void Tray::on_blink_clicked()
-{
-
-}
-
-bool Tray::on_delete_event(GdkEventAny* /* event */)
-{
-  minimize();
-  return true;
-}
 
 void Tray::on_show(){
   Gtk::Window::on_show();
   minimize();
 }
 
-void Tray::start(){
+void Tray::ToggleSync(){
   void* no_arg = NULL;
   if(mSyncIsActive){
     std::cerr << "\nC Stop Sync by GUI";
     mpFileSystemScanner->StopToScan();
     mSyncIsActive = false;
-    //m_refStatusIcon->set(Gtk::Stock::REFRESH);
+    SetPauseIcon();
   }
   else{
     std::cerr << "\nC Start Sync by GUI";
-    //mpFileSystemScanner->GetEventManager()->GetSyncManager()->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
+    mpFileSystemScanner->GetEventManager()->GetSyncManager()->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
     mpFileSystemScanner->StartToScan();
     mSyncIsActive = true;
-    //m_refStatusIcon->set(Gtk::Stock::HOME);
+    SetScanIcon();
   }
 }
 
-Glib::RefPtr<Gtk::StatusIcon> Tray::GetStatusIcon() const{
-  return m_refStatusIcon;
+void Tray::SetPauseIcon(){
+  mrStatusIcon->set(Gtk::Stock::MEDIA_STOP);
 }
+
+void Tray::SetSyncIcon(){
+  mrStatusIcon->set(Gtk::Stock::REFRESH);
+}
+
+void Tray::SetScanIcon(){
+  mrStatusIcon->set(Gtk::Stock::MEDIA_PLAY);
+}
+
+void Tray::OnEventManagerSignal(bool a, int b){
+  switch(b){
+  case 0:
+    SetPauseIcon();
+    break;
+  case 1:
+    SetSyncIcon();
+    break;
+  case 2:
+    SetScanIcon();
+    break;
+  };
+  cerr << "\nC OnEventManagerSignal was emitted with args: " <<a << ", " << b;
+}
+
 
 void on_statusicon_activated(GtkWidget* widget, gpointer object)
 {
@@ -131,3 +125,4 @@ void on_statusicon_popup(GtkStatusIcon* status_icon, guint button,
 {
   return static_cast<Tray*>(object)->show_popup_menu(button, activate_time);
 }
+

@@ -5,6 +5,7 @@
 #include <vector>
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
+#include <sigc++/sigc++.h>
 #include "SyncManager.h"
 
 using namespace std;
@@ -28,18 +29,26 @@ using namespace std;
  *  };
  * 
  **/
+typedef sigc::signal<void, bool, int> EventManagerSignal;
+
 class EventManager{
 public:
   EventManager(SyncManager* const pSyncManager);
-  Glib::RefPtr<Gtk::StatusIcon> mrStatusIcon;
   SyncManager* GetSyncManager() const;
   void PushBackEvent(inotify_event* const pNewEvent, string sourceFolder);
+  EventManagerSignal SignalEvent();
+  /* Member */
+
 
 protected:
+  virtual bool HandleEvent(inotify_event* const pEvent, const string sourceFolder) = 0;
+  void SetPauseIcon() const;
+  void SetSyncIcon() const;
+  void SetScanIcon() const;
+  /* Member */ 
   vector<inotify_event*> mEventList;
   SyncManager* const mpSyncManager;
-  virtual bool HandleEvent(inotify_event* const pEvent, const string sourceFolder) = 0;
-
+  EventManagerSignal mEventManagerSignal;
 
 };
 
