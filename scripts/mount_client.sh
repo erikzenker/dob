@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVERADRESS=localhost
+SERVERADRESS=opendropbox.mooo.com
 USERNAME=erik
 PORT=2222
 

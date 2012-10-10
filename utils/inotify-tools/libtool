@@ -275,7 +275,7 @@ hardcode_into_libs=yes
 sys_lib_search_path_spec="/usr/lib/gcc/i686-pc-linux-gnu/4.7.1 /usr/lib /lib "
 
 # Run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib /usr/lib /opt/cuda-toolkit/lib64 /opt/cuda-toolkit/lib /usr/lib/libfakeroot /usr/lib/xulrunner-14.0.1 "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /opt/cuda-toolkit/lib64 /opt/cuda-toolkit/lib /usr/local/lib/digilent/adept  /usr/lib/libfakeroot /usr/local/lib /usr/lib/xulrunner-15.0 "
 
 # Whether dlopen is supported.
 dlopen_support=unknown

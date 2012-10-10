@@ -165,7 +165,7 @@ CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
-DOXYGEN = NO_DOXYGEN
+DOXYGEN = /usr/bin/doxygen
 DSYMUTIL = 
 DUMPBIN = 
 ECHO_C = 
@@ -190,7 +190,7 @@ LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/erik/projects/open_drop_box/utils/inotify-tools/missing --run makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = /bin/mkdir -p
+MKDIR_P = /usr/bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
@@ -232,7 +232,7 @@ build_vendor = pc
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
-#docdir = $(shareddocdir)/libinotifytools/html
+docdir = $(shareddocdir)/libinotifytools/html
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
@@ -250,7 +250,7 @@ libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
-mkdir_p = /bin/mkdir -p
+mkdir_p = /usr/bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
 prefix = /usr
@@ -273,8 +273,8 @@ test_LDADD = libinotifytools.la
 EXTRA_DIST = example.c Doxyfile
 nobase_include_HEADERS = inotifytools/inotifytools.h inotifytools/inotify-nosys.h inotifytools/inotify.h
 AM_CFLAGS = -std=c99
-#shareddocdir = $(datadir)/doc
-#doc_DATA = doc/html/*
+shareddocdir = $(datadir)/doc
+doc_DATA = doc/html/*
 all: all-recursive
 
 .SUFFIXES:
@@ -760,8 +760,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean-local:
-uninstall-hook:
+#clean-local:
+#uninstall-hook:
 clean: clean-recursive
 
 clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
@@ -859,14 +859,14 @@ uninstall-am: uninstall-docDATA uninstall-libLTLIBRARIES \
 	uninstall-nobase_includeHEADERS
 
 
-#doc/html/*: inotifytools.c Doxyfile
-#	$(DOXYGEN)
+doc/html/*: inotifytools.c Doxyfile
+	$(DOXYGEN)
 
-#clean-local:
-#	rm -rf 'doc'
+clean-local:
+	rm -rf 'doc'
 
-#uninstall-hook:
-#	rm -rf '$(DESTDIR)/$(shareddocdir)/libinotifytools'
+uninstall-hook:
+	rm -rf '$(DESTDIR)/$(shareddocdir)/libinotifytools'
 
 dist-hook:
 	rm $(distdir)/inotifytools/inotify.h
