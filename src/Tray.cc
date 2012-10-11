@@ -105,7 +105,7 @@ void Tray::OnEventManagerSignal(bool a, int b){
     SetScanIcon();
     break;
   };
-  cerr << "\nC OnEventManagerSignal was emitted with args: " <<a << ", " << b;
+  //cerr << "\nC OnEventManagerSignal was emitted with args: " <<a << ", " << b;
 }
 
 
