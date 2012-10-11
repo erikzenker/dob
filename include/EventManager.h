@@ -3,6 +3,7 @@
 #define EventManager_H
 
 #include <vector>
+#include <fstream>
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
 #include <sigc++/sigc++.h>
@@ -37,14 +38,17 @@ public:
   SyncManager* GetSyncManager() const;
   void PushBackEvent(inotify_event* const pNewEvent, string sourceFolder);
   EventManagerSignal SignalEvent();
+
   /* Member */
 
 
 protected:
+  bool DispatchEvent(inotify_event* const pEvent, const string sourceFolder);
   virtual bool HandleEvent(inotify_event* const pEvent, const string sourceFolder) = 0;
   void SetPauseIcon() const;
   void SetSyncIcon() const;
   void SetScanIcon() const;
+  
   /* Member */ 
   vector<inotify_event*> mEventList;
   SyncManager* const mpSyncManager;
