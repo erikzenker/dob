@@ -24,6 +24,7 @@ int inotifytools_remove_watch_by_wd( int wd );
 int inotifytools_watch_file( char const * filename, int events );
 int inotifytools_watch_files( char const * filenames[], int events );
 int inotifytools_watch_recursively( char const * path, int events );
+int inotifytools_watch_recursively_follow_symlinks( char const * path, int events );
 int inotifytools_watch_recursively_with_exclude( char const * path,
                                                  int events,
                                                  char const ** exclude_list );

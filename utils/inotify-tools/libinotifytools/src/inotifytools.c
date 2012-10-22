@@ -1247,7 +1247,111 @@ struct inotify_event * inotifytools_next_events( int timeout, int num_events ) {
  *       as to whether or not those files will be watched.
  */
 int inotifytools_watch_recursively( char const * path, int events ) {
-	return inotifytools_watch_recursively_with_exclude( path, events, 0 );
+  return inotifytools_watch_recursively_with_exclude( path, events, 0 );
+}
+
+int inotifytools_watch_recursively_follow_symlinks( char const * path, int events ) {
+	niceassert( init, "inotifytools_initialize not called yet" );
+
+	DIR * dir;
+	char * my_path;
+	char const ** exclude_list = 0;
+	error = 0;
+	dir = opendir( path );
+	if ( !dir ) {
+		// If not a directory, don't need to do anything special
+		if ( errno == ENOTDIR ) {
+			return inotifytools_watch_file( path, events );
+		}
+		else {
+			error = errno;
+			return 0;
+		}
+	}
+
+	if ( path[strlen(path)-1] != '/' ) {
+		nasprintf( &my_path, "%s/", path );
+	}
+	else {
+		my_path = (char *)path;
+	}
+
+	static struct dirent * ent;
+	char * next_file;
+	static struct stat64 my_stat;
+	ent = readdir( dir );
+	// Watch each directory within this directory
+	while ( ent ) {
+		if ( (0 != strcmp( ent->d_name, "." )) &&
+		     (0 != strcmp( ent->d_name, ".." )) ) {
+			nasprintf(&next_file,"%s%s", my_path, ent->d_name);
+
+
+			if ( -1 == lstat64( next_file, &my_stat ) ) {
+				error = errno;
+				free( next_file );
+				if ( errno != EACCES ) {
+					error = errno;
+					if ( my_path != path ) free( my_path );
+					closedir( dir );
+					return 0;
+				}
+			}
+			// Here with S_ISLNK also symlinks will be followed
+			else if ( S_ISDIR( my_stat.st_mode ) ||
+			          S_ISLNK( my_stat.st_mode )) {
+			        free( next_file );
+				nasprintf(&next_file,"%s%s/", my_path, ent->d_name);
+				static unsigned int no_watch;
+				static char const ** exclude_entry;
+
+				no_watch = 0;
+				for (exclude_entry = exclude_list;
+					 exclude_entry && *exclude_entry && !no_watch;
+					 ++exclude_entry) {
+					static int exclude_length;
+
+					exclude_length = strlen(*exclude_entry);
+					if ((*exclude_entry)[exclude_length-1] == '/') {
+						--exclude_length;
+					}
+					if ( strlen(next_file) == (unsigned)(exclude_length + 1) &&
+					    !strncmp(*exclude_entry, next_file, exclude_length)) {
+						// directory found in exclude list
+						no_watch = 1;
+					}
+				}
+				if (!no_watch) {
+					static int status;
+					status = inotifytools_watch_recursively_with_exclude(
+					              next_file,
+					              events,
+					              exclude_list );
+					// For some errors, we will continue.
+					if ( !status && (EACCES != error) && (ENOENT != error) &&
+					     (ELOOP != error) ) {
+						free( next_file );
+						if ( my_path != path ) free( my_path );
+						closedir( dir );
+						return 0;
+					}
+				} // if !no_watch
+				free( next_file );
+			} // if isdir and islnk
+			else {
+				free( next_file );
+			}
+		}
+		ent = readdir( dir );
+		error = 0;
+	}
+
+	closedir( dir );
+
+	int ret = inotifytools_watch_file( my_path, events );
+	if ( my_path != path ) free( my_path );
+        return ret;
+
 }
 
 /**
@@ -1329,10 +1433,8 @@ int inotifytools_watch_recursively_with_exclude( char const * path, int events,
 					return 0;
 				}
 			}
-			// ERIK CHANGED HERE TO ENABLE
-			// WATCHES FOR LINKS
-			else if ( S_ISDIR( my_stat.st_mode ) ||
-			          S_ISLNK( my_stat.st_mode )) {
+			else if ( S_ISDIR( my_stat.st_mode ) &&
+			          !S_ISLNK( my_stat.st_mode )) {
 			        free( next_file );
 				nasprintf(&next_file,"%s%s/", my_path, ent->d_name);
 				static unsigned int no_watch;
@@ -1370,7 +1472,7 @@ int inotifytools_watch_recursively_with_exclude( char const * path, int events,
 					}
 				} // if !no_watch
 				free( next_file );
-			} // if isdir and islnk (CHANGED BY ERIK)
+			} // if isdir
 			else {
 				free( next_file );
 			}
