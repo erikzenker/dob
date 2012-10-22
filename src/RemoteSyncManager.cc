@@ -19,13 +19,7 @@ RemoteSyncManager::RemoteSyncManager(){
  *        See more in "man rsync"
  */
 bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
-  // Mountpoint checks whether the remote device is mounted.
-  // Exit status zero if the directory is a mountpoint, 
-  // non-zero if not.
-  string mountpoint_query = "mountpoint -q ";
-  mountpoint_query.append(mDestFolder);
-
-  if(!system(mountpoint_query.c_str())){
+  if(isMountpoint(mDestFolder)){
     cerr << "\nC Syncronise source and destination folder\n";
     string rsync_query = "rsync -vzruL --delete ";
     rsync_query
@@ -55,20 +49,25 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
   cerr << "\nC " << rsync_query;
   system(rsync_query.c_str());
   */
+  if(isMountpoint(mDestFolder)){
+    string cp_query = "cp -RLv ";  
+    cp_query
+      .append(syncFolder)
+      .append(folder)
+      .append(" ")
+      .append(mDestFolder)
+      .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
+      .append(" ");
   
-  string cp_query = "cp -RLv ";  
-  cp_query
-    .append(syncFolder)
-    .append(folder)
-    .append(" ")
-    .append(mDestFolder)
-    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
-    .append(" ");
-  
-  cerr << "\nC " << cp_query;
-  if(system(cp_query.c_str())){
-    cerr << "\nC Can't reach destination folder, maybe location is offline";
-    return false;
+    cerr << "\nC " << cp_query;
+    if(system(cp_query.c_str())){
+      cerr << "\nC Can't reach destination folder, maybe location is offline";
+      return false;
+    }
+  }
+  else{
+    cerr << "\nC Failed syncronise source and destination folder, because destination folder is not mounted";
+
   }
   return true;
   
@@ -94,4 +93,18 @@ bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, str
   }
   return true;
 
+}
+
+/**
+ * Mountpoint checks whether the remote device is mounted.
+ * Exit status zero if the directory is a mountpoint, 
+ * non-zero if not.
+ *
+ *
+ **/
+bool RemoteSyncManager::isMountpoint(string mountpoint){
+  string mountpoint_query = "mountpoint -q ";
+  mountpoint_query.append(mountpoint);
+  return !system(mountpoint_query.c_str());
+ 
 }

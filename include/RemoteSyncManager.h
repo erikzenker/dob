@@ -22,6 +22,9 @@ class RemoteSyncManager : public SyncManager{
   bool SyncFile(string sourceFolder, string syncFolder);
   bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
+ private:
+  bool isMountpoint(string mountpoint);
+
 };
 
 #endif /* RemoteSyncManager_H */

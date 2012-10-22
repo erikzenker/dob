@@ -29,32 +29,7 @@
 
 using namespace std;
 
-int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
-  /*
- Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
-  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file("gui/tray.glade");
-  Gtk::Window * pMainWindow = 0;
-  builder->get_widget("mainWindow", pMainWindow);
-  app->run(*pMainWindow);
-  */
-
-  Gtk::Main kit(argc, argv);
-  Tray tray(pFileSystemScanner);
-
-  pFileSystemScanner->GetEventManager()->SignalEvent().connect(sigc::mem_fun(tray,
-              &Tray::OnEventManagerSignal) );
-  Gtk::Main::run(tray);
-  return 0;
-
-  /*
-  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
-  Gtk::Window window;
-  Glib::RefPtr<Gtk::StatusIcon> m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::HOME);
-  return app->run(window);
-  */
-
-}
-
+int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner);
 
 int main(int argc, char *argv[]){
   // Variable Definitions
@@ -78,12 +53,38 @@ int main(int argc, char *argv[]){
   scanFolder = configFileParser.getValue("syncFolder");
   destFolder = configFileParser.getValue("destFolder");
   
-  // Programm
+  // Setup synccomponents
   SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
   EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
   FileSystemScanner * pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
 
   // GUI
   return gui_test(argc, argv, pFileSystemScanner);
+
+}
+
+int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
+  /*
+ Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
+  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file("gui/tray.glade");
+  Gtk::Window * pMainWindow = 0;
+  builder->get_widget("mainWindow", pMainWindow);
+  app->run(*pMainWindow);
+  */
+
+  Gtk::Main kit(argc, argv);
+  Tray tray(pFileSystemScanner);
+
+  pFileSystemScanner->GetEventManager()->SignalEvent().connect(sigc::mem_fun(tray,
+              &Tray::OnEventManagerSignal) );
+  Gtk::Main::run(tray);
+  return 0;
+
+  /*
+  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
+  Gtk::Window window;
+  Glib::RefPtr<Gtk::StatusIcon> m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::HOME);
+  return app->run(window);
+  */
 
 }

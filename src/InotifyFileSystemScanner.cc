@@ -40,7 +40,7 @@ void InotifyFileSystemScanner::Execute(void* arg){
   cerr << "\nC Start scanning folders";
   int events = IN_MODIFY | IN_CREATE | IN_DELETE;
   if ( !inotifytools_initialize()
-       || !inotifytools_watch_recursively(mScanFolder.c_str(), events)){ 
+       || !inotifytools_watch_recursively_follow_symlinks(mScanFolder.c_str(), events)){ 
 
     fprintf(stderr,"\nC Error errno: %d", inotifytools_error());
     //return -1;
