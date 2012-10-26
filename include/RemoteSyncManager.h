@@ -2,27 +2,27 @@
 #define RemoteSyncManager_H
 
 #include <string>
-#include <gtkmm.h>
+#include <stdio.h>
+#include <assert.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/shm.h>
+#include <stdlib.h>
 #include "SyncManager.h"
 
 using namespace std;
 
-/**
- *
- * @todo SyncFolder: if file does not exist anymore no cp fail should be raised
- *
- **/
 class RemoteSyncManager : public SyncManager{
 
  public:
   RemoteSyncManager(string destFolder);
-  RemoteSyncManager();
-  bool SyncSourceFolder(string sourceFolder);
-  bool SyncFolder(string sourceFolder, string syncFolder, string folder);
-  bool SyncFile(string sourceFolder, string syncFolder);
-  bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncSourceFolder(string sourceFolder);
+  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncFile(string sourceFolder, string syncFolder);
+  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
- private:
+ protected:
   bool isMountpoint(string mountpoint);
 
 };

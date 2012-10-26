@@ -27,10 +27,10 @@ using namespace std;
  *
  **/
 class OptimizedEventManager : public EventManager{
-private:
-  bool HandleEvent(inotify_event* pEvent, string sourceFolder);
-public:
+ public:
   OptimizedEventManager(SyncManager * pSyncManager);
+ private:
+  bool HandleEvent(inotify_event* pEvent, string sourceFolder);
  
 };
 

@@ -90,6 +90,8 @@ void Tray::SetSyncIcon(){
 }
 
 void Tray::SetScanIcon(){
+  //mrStatusIcon
+  //mrStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::MEDIA_PLAY);
   mrStatusIcon->set(Gtk::Stock::MEDIA_PLAY);
 }
 
@@ -105,7 +107,6 @@ void Tray::OnEventManagerSignal(bool a, int b){
     SetScanIcon();
     break;
   };
-  //cerr << "\nC OnEventManagerSignal was emitted with args: " <<a << ", " << b;
 }
 
 

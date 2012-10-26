@@ -17,7 +17,7 @@ using namespace std;
  *        "include/SyncManager.h"
  *
  * The SyncManager knows a destination folder where
- * it should syncronise data from. It gets a 
+ * it should syncronise data to. It gets a 
  * source folder from which it sould syncronise from
  * by using SyncSourceFolder. Several SyncManager
  * can be implemented by using diffent syncronise

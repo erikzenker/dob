@@ -6,7 +6,8 @@
 #include <iostream>
 #include <fstream>
 #include <boost/spirit/include/classic_core.hpp>
-#include <boost/spirit/include/classic_push_back_actor.hpp>
+#include <boost/spirit/include/classic_actor.hpp>
+#include "Profile.h"
 
 using namespace std;
 using namespace BOOST_SPIRIT_CLASSIC_NS;

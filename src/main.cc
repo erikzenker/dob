@@ -12,16 +12,17 @@
  */
 
 
-// Include Libraries
+// Include libraries
 #include <iostream>
 #include <string>
 #include <stdlib.h>
 #include <gtkmm.h>
 #include <signal.h>
 
-// Include Classes
+// Include classes
 #include <InotifyFileSystemScanner.h>
 #include <RemoteSyncManager.h>
+#include <LocalSyncManager.h>
 #include <OptimizedEventManager.h>
 #include <ConfigFileParser.h>
 #include <CommandLineParser.h>
@@ -54,7 +55,8 @@ int main(int argc, char *argv[]){
   destFolder = configFileParser.getValue("destFolder");
   
   // Setup synccomponents
-  SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
+  //SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
+  SyncManager * pSyncManager  = new LocalSyncManager(destFolder);
   EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
   FileSystemScanner * pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
 
@@ -73,11 +75,11 @@ int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
   */
 
   Gtk::Main kit(argc, argv);
-  Tray tray(pFileSystemScanner);
+  Tray *tray = new Tray(pFileSystemScanner);
 
-  pFileSystemScanner->GetEventManager()->SignalEvent().connect(sigc::mem_fun(tray,
+  pFileSystemScanner->GetEventManager()->SignalEvent().connect(sigc::mem_fun(*tray,
               &Tray::OnEventManagerSignal) );
-  Gtk::Main::run(tray);
+  Gtk::Main::run(*tray);
   return 0;
 
   /*

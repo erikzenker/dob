@@ -5,9 +5,6 @@ RemoteSyncManager::RemoteSyncManager(string destFolder):
 
 }
 
-RemoteSyncManager::RemoteSyncManager(){
-
-}
 /*
  * @note  Rsync command line parameters
  *        -r, --recursive   recurse into directories
@@ -25,9 +22,10 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
     rsync_query
       .append(sourceFolder)
       .append(" ")
-      .append(mDestFolder);
-  
+      .append(mDestFolder)
+      .append(" &");
     system(rsync_query.c_str());
+
   }
   else{
     cerr << "\nC Failed syncronise source and destination folder, because destination folder is not mounted";
