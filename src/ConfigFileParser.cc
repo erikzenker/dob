@@ -1,13 +1,24 @@
 #include "ConfigFileParser.h"
+ConfigFileParser::ConfigFileParser():
+  mpProfiles(new vector<Profile>){
 
-void ConfigFileParser::parseConfigFile(string configFileName){
+}
+
+/**
+ * @todo parser should use one grammar
+ **/
+void ConfigFileParser::ParseConfigFile(string configFileName){
+  namespace qi = boost::spirit::qi;
+  namespace ascii = boost::spirit::ascii;
+  //namespace phoenix = boost::phoenix;
+
+  //using qi::char_;
+  using ascii::space;
+
   cerr << "\nC Parse config file: " << configFileName;
   string line;
   ifstream config_file_stream;
   config_file_stream.open(configFileName.c_str());
-  parsedValues.resize(keyWords.size(),"");
-
-  vector<string> profiles;
 
   if(config_file_stream.is_open())
   {
@@ -15,17 +26,60 @@ void ConfigFileParser::parseConfigFile(string configFileName){
     {
       getline (config_file_stream,line);
 
-      //bool r = phrase_parse(line.begin(),line.end(),(*anychar_p),space_p);
-      //parse(line.c_str(),'[' >> (*anychar_p)[push_back_a(profiles)] >> ']', space_p);
-      //cout << "\n C profile: "<<profiles.back();
-      
-      
-      for(int i = 0; i < keyWords.size(); i++){
-	parse(line.c_str(),str_p(keyWords[i].c_str()) >> *space_p >> ch_p('=') >> *space_p >> (*anychar_p)[assign_a(parsedValues[i])],space_p);
+      //@todo profile should also be closed by "]"
+      //      tried to implement "]" but seems not to work
+      //      for some reason.
+      if(qi::phrase_parse(line.begin(),line.end()
+			  ,"[" >> (*qi::char_("a-zA-Z"))[boost::bind(&ConfigFileParser::CreateProfile, this, _1)]
+			  ,space))
+	{
+	  continue;
 
-
-      }
+	}
       
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("syncType=") 
+			  >>     
+			  qi::string("syncronize")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
+			  || qi::string("backup")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
+			  || qi::string("update")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)]
+			  ,space))
+	{
+	  continue;
+	  
+	}
+      
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("syncFolder=") 
+			  >>     
+			  (*qi::char_)[boost::bind(&ConfigFileParser::SetSyncFolder, this, _1)]
+			  ,space))
+	{
+	  continue;
+	  
+	}
+	
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("destFolder=") 
+			  >>     
+			  (*qi::char_)[boost::bind(&ConfigFileParser::SetDestFolder, this, _1)]
+			  ,space))
+	{
+	  continue;
+	  
+	}
+
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("destLocation=") 
+			  >>     
+			  qi::string("local")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
+			  | qi::string("remote")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
+			  ,space))
+	{
+	  continue;
+	  
+	}
+
     }
     config_file_stream.close();
 
@@ -34,16 +88,34 @@ void ConfigFileParser::parseConfigFile(string configFileName){
   config_file_stream.close();
 }
 
-void ConfigFileParser::addKeyWord(string keyWord){
-  keyWords.push_back(keyWord);
+void ConfigFileParser::CreateProfile (vector<char> name){
+  Profile p;
+  p.SetName(name);
+  mpProfiles->push_back(p);
+
 }
 
-string ConfigFileParser::getValue(string keyWord){
-  assert(keyWords.size() == parsedValues.size());
-  for(int i = 0; i < keyWords.size(); i++){
-    if(!keyWord.compare(keyWords[i]))
-	return parsedValues[i];
+void ConfigFileParser::SetSyncType (string syncType){
+  mpProfiles->back().SetSyncType(syncType);
 
-  }
-  return 0;
 }
+
+void ConfigFileParser::SetSyncFolder (vector<char> syncFolder){
+  mpProfiles->back().SetSyncFolder(syncFolder);
+
+}
+
+void ConfigFileParser::SetDestFolder (vector<char> destFolder){
+  mpProfiles->back().SetDestFolder(destFolder);
+
+}
+
+void ConfigFileParser::SetDestLocation (string destLocation){
+  mpProfiles->back().SetDestLocation(destLocation);
+
+}
+
+vector<Profile> *ConfigFileParser::GetProfiles(){
+  return mpProfiles;
+}
+

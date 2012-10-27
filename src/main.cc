@@ -35,36 +35,52 @@ int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner);
 int main(int argc, char *argv[]){
   // Variable Definitions
   void* no_arg = NULL;
+  vector<Profile>* pProfiles;
   string scanFolder;
   string destFolder;
   string configFileName;
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
+  SyncManager * pSyncManager;
+  EventManager * pEventManager;
+  FileSystemScanner * pFileSystemScanner;
 
-  // Parser
+  // Parse commandline and Configfile
   if(!commandLineParser.parseCommandLine(argc, argv)){
     cout << "\nC No parameters found";
     cout << "\nC Usage: ./odb --config=CONFIGFILE";
+    cout << "\n";
     return 0;
   }
   configFileName = commandLineParser.getConfigFileName();
-  configFileParser.addKeyWord("syncFolder");
-  configFileParser.addKeyWord("destFolder");
-  configFileParser.parseConfigFile(configFileName);
-  scanFolder = configFileParser.getValue("syncFolder");
-  destFolder = configFileParser.getValue("destFolder");
-  
-  // Setup synccomponents
-  //SyncManager * pSyncManager  = new RemoteSyncManager(destFolder);
-  SyncManager * pSyncManager  = new LocalSyncManager(destFolder);
-  EventManager * pEventManager = new OptimizedEventManager(pSyncManager);
-  FileSystemScanner * pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
+  configFileParser.ParseConfigFile(configFileName);
+  pProfiles = configFileParser.GetProfiles();
 
-  // GUI
+  // Start to run profiles
+  vector<Profile>::iterator profileIter;
+  for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
+    if(profileIter->IsValid()){
+      scanFolder = profileIter->GetSyncFolder();
+      destFolder = profileIter->GetDestFolder();
+  
+      // Setup synccomponents
+      pSyncManager  = new LocalSyncManager(destFolder);
+      pEventManager = new OptimizedEventManager(pSyncManager);
+      pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
+      profileIter->SetSyncManager(pSyncManager);
+      profileIter->SetEventManager(pEventManager);
+      profileIter->SetFileSystemScanner(pFileSystemScanner);
+
+    }
+
+  }
+  // Start experimental gui
   return gui_test(argc, argv, pFileSystemScanner);
 
 }
-
+/**
+ * @todo gui can only handle one profile should be able to handle more!
+ **/
 int gui_test(int argc, char *argv[], FileSystemScanner *pFileSystemScanner){
   /*
  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");

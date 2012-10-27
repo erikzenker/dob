@@ -5,7 +5,9 @@ CommandLineParser::CommandLineParser(){
 
 }
 
-
+/**
+ * @todo update spirit parser to new version 2.5 (use of qi)
+ **/
 bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
   cerr << "\nC Parse commandline";
   rule<phrase_scanner_t> args;

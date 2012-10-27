@@ -5,51 +5,34 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <boost/spirit/include/classic_core.hpp>
-#include <boost/spirit/include/classic_actor.hpp>
+#include <iostream>
+
+// phrase_parse includes
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/bind.hpp>
+
 #include "Profile.h"
 
 using namespace std;
-using namespace BOOST_SPIRIT_CLASSIC_NS;
-
-
-namespace
-{
-  vector<string> parsedValues;
-  vector<string> keyWords;
-/* Definition of semantic actions, but
-   is not needed anymore. Use now
-   predefined semantic actions from 
-   spirit parser framework
-
-  void print(char const* first, char const* last)
-  {
-    string str(first, last);
-    cout << "\n" << str ;
-  }
-
-  void push_back(char const* first, char const* last)
-  {
-    string str(first, last);
-    parsedValues.push_back(str);
-  }
-*/
-}
 
 /**
  * @brief Parses key/value pairs of configfile with help of boost::spirit
  *
- * The Configfile should exist out of key value pairs like
- * KEY = VALUE. You can add keys you want to parse with the
- * addkeyWord(string key) method and get the value with getValue(string key)
- * after you parsed the configfile with parseConfigfile(string configFileName).
- *
  **/
 class ConfigFileParser{
  public:
-  void parseConfigFile(string configFileName);
-  void addKeyWord(string keyWord);
-  string getValue(string keyWord);
+  ConfigFileParser();
+  void ParseConfigFile(string configFileName);
+  vector<Profile>* GetProfiles();
+ private:
+  void CreateProfile(vector<char> name);
+  void SetSyncType(string syncType);
+  void SetSyncFolder(vector<char> syncFolder);
+  void SetDestFolder(vector<char> destFolder);
+  void SetDestLocation(string destLocation);
+  vector<Profile> *mpProfiles;
 };
 
 #endif /* ConfigFileParser_H */

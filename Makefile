@@ -4,7 +4,7 @@
 DATE="`date +%y%m%d%H%M%S`"
 
 # commandline
-CMD = -O2 -g
+CMD = -O0 -g -J2
 ARGS = 
 SPACE = " "
 
@@ -14,7 +14,7 @@ DOXYGEN = doxygen
 
 # compiler flags
 LIBS		= -linotifytools -lpthread $(shell pkg-config --libs gtkmm-3.0)
-CPPINCLUDES 	= -I./include -I./utils/boost
+CPPINCLUDES 	= -I./include 
 COMMON_CPPFLAGS = $(CPPINCLUDES)
 CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -g3 -fno-exceptions -fno-strict-aliasing -g $(shell pkg-config --cflags gtkmm-3.0)
 LDFLAGS 	= -L. 
@@ -53,6 +53,7 @@ inotify:
 # find all todos
 todo:
 	grep -n "@todo" include/*
+	grep -n "@todo" src/*
 
 # generate documentation
 doc:
