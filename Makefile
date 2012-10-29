@@ -10,13 +10,14 @@ SPACE = " "
 
 # compiler, linker, archiver
 CPP = g++
+#CPP = colorgcc
 DOXYGEN = doxygen
 
 # compiler flags
 LIBS		= -linotifytools -lpthread $(shell pkg-config --libs gtkmm-3.0)
 CPPINCLUDES 	= -I./include 
 COMMON_CPPFLAGS = $(CPPINCLUDES)
-CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -g3 -fno-exceptions -fno-strict-aliasing -g $(shell pkg-config --cflags gtkmm-3.0)
+CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -g3 -fno-exceptions -fno-strict-aliasing -g $(shell pkg-config --cflags gtkmm-3.0) -zmuldefs
 LDFLAGS 	= -L. 
 
 
@@ -29,6 +30,7 @@ DEPS = $(SRCS:.cc=.d)
 DEPS += $(LIBSRCS:.cc=.d)
 
 all: odb
+	notify-send "Compilation done :)"	
 
 # build open dropbox
 odb: $(OBJS)

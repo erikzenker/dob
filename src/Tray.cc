@@ -1,7 +1,9 @@
 #include <Tray.h>
 
-Tray::Tray(FileSystemScanner* pFileSystemScanner)
-  : mpFileSystemScanner(pFileSystemScanner),
+//Glib::RefPtr<Gtk::StatusIcon> Tray::mrStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::MEDIA_STOP);
+
+Tray::Tray(vector<Profile>* pProfiles)
+  : mpProfiles(pProfiles),
     mSyncIsActive(false)
 {
   set_title("Gtk::StatusIcon example");
@@ -67,18 +69,37 @@ void Tray::on_show(){
 void Tray::ToggleSync(){
   void* no_arg = NULL;
   if(mSyncIsActive){
-    std::cerr << "\nC Stop Sync by GUI";
-    mpFileSystemScanner->StopToScan();
+    StopToScan();
     mSyncIsActive = false;
     SetPauseIcon();
   }
   else{
-    std::cerr << "\nC Start Sync by GUI";
-    mpFileSystemScanner->GetEventManager()->GetSyncManager()->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
-    mpFileSystemScanner->StartToScan();
+    StartToScan();
     mSyncIsActive = true;
     SetScanIcon();
+
   }
+}
+
+void Tray::StopToScan(){
+    vector<Profile>::iterator profileIter;
+    for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
+      std::cerr << "\nC Stop sync of profile: " << profileIter->GetName();
+      profileIter->GetFileSystemScanner()->StopToScan();
+
+    }
+
+}
+
+void Tray::StartToScan(){
+    vector<Profile>::iterator profileIter;
+    for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
+      std::cerr << "\nC Start sync of profile: " << profileIter->GetName();
+      profileIter->GetSyncManager()->SyncSourceFolder(profileIter->GetFileSystemScanner()->GetScanFolder());
+      profileIter->GetFileSystemScanner()->StartToScan();
+
+    }
+
 }
 
 void Tray::SetPauseIcon(){
@@ -90,8 +111,6 @@ void Tray::SetSyncIcon(){
 }
 
 void Tray::SetScanIcon(){
-  //mrStatusIcon
-  //mrStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::MEDIA_PLAY);
   mrStatusIcon->set(Gtk::Stock::MEDIA_PLAY);
 }
 

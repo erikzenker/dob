@@ -39,6 +39,7 @@ void InotifyFileSystemScanner::Setup(){
 void InotifyFileSystemScanner::Execute(void* arg){
   cerr << "\nC Start scanning folders";
   int events = IN_MODIFY | IN_CREATE | IN_DELETE;
+
   if ( !inotifytools_initialize()
        || !inotifytools_watch_recursively_follow_symlinks(mScanFolder.c_str(), events)){ 
 
@@ -47,7 +48,7 @@ void InotifyFileSystemScanner::Execute(void* arg){
   }
 
 
-  struct inotify_event * event = inotifytools_next_event( -1 );
+   struct inotify_event * event = inotifytools_next_event( -1 );
 
   while ( event ) {
     mpEventManager->PushBackEvent(event, mScanFolder);
