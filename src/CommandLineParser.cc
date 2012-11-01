@@ -1,21 +1,25 @@
 #include "CommandLineParser.h"
 
-CommandLineParser::CommandLineParser(){
-  
+CommandLineParser::CommandLineParser() :
+  mDebugLevel(LOG_INFO),
+  mConfigFileName(""){
 
 }
 
 /**
  * @todo update spirit parser to new version 2.5 (use of qi)
  **/
-bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
-  cerr << "\nC Parse commandline";
-  rule<phrase_scanner_t> args;
+bool CommandLineParser::ParseCommandLine(int argc, char *argv[]){
+  dbg_print(LOG_INFO, "\nC Parse commandline");
+  rule<phrase_scanner_t> config;
+  rule<phrase_scanner_t> debug;
   bool matched = false;
 
-  args = str_p("--config=")>>(*anychar_p)[assign_a(mConfigFileName)][assign_a(matched,true)];
+  config = str_p("--config=")>>(*anychar_p)[assign_a(mConfigFileName)][assign_a(matched,true)];
+  debug = str_p("-d=")>>(int_p)[assign_a(mDebugLevel)];
   for(int i = 1; i < argc; ++i){
-    parse(argv[i],(*args),space_p);
+    parse(argv[i],(*config),space_p);
+    parse(argv[i],(*debug),space_p);
 
   }
 
@@ -23,8 +27,12 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
 
 }
 
-string CommandLineParser::getConfigFileName() const{
+string CommandLineParser::GetConfigFileName() const{
   return mConfigFileName;
+}
+
+int CommandLineParser::GetDebugLevel() const{
+  return mDebugLevel;
 }
 
 

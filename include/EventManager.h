@@ -4,10 +4,12 @@
 
 #include <vector>
 #include <fstream>
+#include <unistd.h>
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
 #include <sigc++/sigc++.h>
-#include "SyncManager.h"
+#include <SyncManager.h>
+#include <dbg_print.h>
 
 using namespace std;
 

@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <dbg_print.h>
 
 #include "SyncManager.h"
 

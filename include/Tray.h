@@ -8,6 +8,7 @@
 #include <sigc++/sigc++.h>
 #include <FileSystemScanner.h>
 #include <Profile.h>
+#include <dbg_print.h>
 
 class Tray : public Gtk::Window
 {

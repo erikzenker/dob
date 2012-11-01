@@ -26,7 +26,7 @@ bool SimpleEventManager::HandleEvent(inotify_event* pEvent, string sourceFolder)
     mpSyncManager->SyncSourceFolder(sourceFolder);
     break;
   default:
-    cerr << "\nC No handler for this event implementet: " << inotifytools_event_to_str(pEvent->mask);
+    cerr << "\nC SimpleEventManager::HandleEvent: No handler for this event implementet: " << inotifytools_event_to_str(pEvent->mask);
     break;
 
   }

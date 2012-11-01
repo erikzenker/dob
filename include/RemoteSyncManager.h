@@ -9,7 +9,8 @@
 #include <sys/wait.h>
 #include <sys/shm.h>
 #include <stdlib.h>
-#include "SyncManager.h"
+#include <SyncManager.h>
+#include <dbg_print.h>
 
 using namespace std;
 

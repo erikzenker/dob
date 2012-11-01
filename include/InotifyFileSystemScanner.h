@@ -18,6 +18,7 @@
 
 #include "Thread.h"
 #include "FileSystemScanner.h"
+#include "dbg_print.h"
 
 /**
  * @brief Watches a folder for changes with the help of

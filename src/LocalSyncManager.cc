@@ -17,17 +17,18 @@ LocalSyncManager::LocalSyncManager(string destFolder):
  */
 bool LocalSyncManager::SyncSourceFolder(string sourceFolder){
   if(IsDir(mDestFolder)){
-    cerr << "\nC Syncronise source and destination folder\n";
+    dbg_print(LOG_DBG, "\nC LocalSyncManager::SyncSourceFolder: Syncronise source and destination folder");
+
     string rsync_query = "rsync -vzruL --delete ";
     rsync_query
       .append(sourceFolder)
       .append(" ")
       .append(mDestFolder);
-  
+    cerr << "\n";
     system(rsync_query.c_str());
   }
   else{
-    cerr << "\nC Failed syncronise source and destination folder, because destination folder is not directory";
+    dbg_print(LOG_DBG, "\nC LocalSyncManager::SyncSourceFolder: Failed syncronise source and destination folder, because destination folder is not mounted");
 
   }
   return true;
@@ -45,14 +46,15 @@ bool LocalSyncManager::SyncFolder(string sourceFolder, string syncFolder, string
       .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
       .append(" ");
   
-    cerr << "\nC " << cp_query;
+    
+    dbg_print(LOG_DBG,"\nC LocalSyncManager::SyncFolder: %s ", cp_query.c_str());
     if(system(cp_query.c_str())){
-      cerr << "\nC Can't reach destination folder, maybe location is offline";
+      dbg_print(LOG_DBG, "\nC LocalSyncManager::SyncFolder: Can't reach destination folder, maybe location is offline");
       return false;
     }
   }
   else{
-    cerr << "\nC Failed syncronise source and destination folder, because destination folder is not a directory";
+    dbg_print(LOG_DBG, "\nC LocalSyncManager::SyncFolder: Failed syncronise source and destination folder, because destination folder is not a directory");
 
   }
   return true;
@@ -72,9 +74,9 @@ bool LocalSyncManager::RemoveFolder(string sourceFolder, string syncFolder, stri
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
     .append(folder);
 
-  cerr << "\nC " << rm_query << "\n";
+  dbg_print(LOG_DBG, "\nC LocalSyncManager:RemoveFolder: %s\n", rm_query.c_str());
   if(system(rm_query.c_str())){
-    cerr << "\nC Can't reach destination folder, maybe location is offline";
+    dbg_print(LOG_DBG, "\nC LocalSyncManager:RemoveFolder: Can't reach destination folder, maybe location is offline");
     return false;
     }
   return true;
@@ -87,7 +89,7 @@ bool LocalSyncManager::IsDir(string directory){
 
   if ( -1 == lstat64(directory.c_str(), &my_stat ) ) {
     if (errno == ENOENT) return false;
-    fprintf(stderr, "Stat failed on %s: %s\n", directory.c_str(), strerror(errno));
+    dbg_print(LOG_WARN, "\nC Stat failed on %s: %s\n", directory.c_str(), strerror(errno));
     return false;
   }
   if(S_ISDIR( my_stat.st_mode ))

@@ -1,8 +1,11 @@
-/*
+/***
  * ROADMAP
- *
- * * Copy mechanism (Rsync) --> done
- * * Mounting of server data --> done with /script/mount_server but needs more work
+ * *
+ * * Copy mechanism (Rsync)                                                 --> done
+ * * Mounting of server data                                                --> done : by server installation in vm
+ * * Debug levels                                                           --> done : by dbg_print.h 
+ * * Also non X userinterface (console only)	
+ * * Give it some nice name
  * * Create InotifyFileSystemScanner alternative because is not threadsafe
  * * Replace libinotify with own implementation
  * * Write Wrapper for Inotify events for more general use
@@ -11,8 +14,8 @@
  * * Ask in case of big data
  * * Graphical user interface
  * * Versioning of backup data (Git)
- *
- */
+ * *
+ ***/
 
 // Include libraries
 #include <iostream>
@@ -29,10 +32,13 @@
 #include <ConfigFileParser.h>
 #include <CommandLineParser.h>
 #include <Tray.h>
+#include <dbg_print.h>
 
 using namespace std;
 
+
 int gui_test(int argc, char *argv[], vector<Profile> *pProfiles);
+int dbg_print_level;
 
 int main(int argc, char *argv[]){
   // Variable Definitions
@@ -46,17 +52,21 @@ int main(int argc, char *argv[]){
   SyncManager * pSyncManager;
   EventManager * pEventManager;
   FileSystemScanner * pFileSystemScanner;
+  
+  dbg_print_level = LOG_DBG;
 
   // Parse commandline and Configfile
-  if(!commandLineParser.parseCommandLine(argc, argv)){
-    cout << "\nC No parameters found";
-    cout << "\nC Usage: ./odb --config=CONFIGFILE";
-    cout << "\n";
+  if(!commandLineParser.ParseCommandLine(argc, argv)){
+    dbg_print(LOG_INFO, "\nC No commandline parameters found");
+    dbg_print(LOG_INFO, "\nC Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
     return 0;
+
   }
-  configFileName = commandLineParser.getConfigFileName();
+  dbg_print_level = commandLineParser.GetDebugLevel();
+  configFileName = commandLineParser.GetConfigFileName();
   configFileParser.ParseConfigFile(configFileName);
   pProfiles = configFileParser.GetProfiles();
+
 
   // Start to run profiles
   vector<Profile>::iterator profileIter;

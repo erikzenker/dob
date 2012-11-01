@@ -2,6 +2,7 @@
 #define CommandLineParser_H
 
 #include <string>
+#include <dbg_print.h>
 #include <boost/spirit/include/classic_core.hpp>
 
 using namespace std;
@@ -14,10 +15,12 @@ using namespace BOOST_SPIRIT_CLASSIC_NS;
 class CommandLineParser{
  public:
   CommandLineParser();
-  bool parseCommandLine(int argc, char *argv[]);
-  string getConfigFileName() const;
+  bool ParseCommandLine(int argc, char *argv[]);
+  string GetConfigFileName() const;
+  int GetDebugLevel() const;
  private:
   string mConfigFileName;
+  int mDebugLevel;
 };
 
 #endif /* CommandLineParser_H */

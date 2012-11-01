@@ -21,21 +21,22 @@ void EventManager::PushBackEvent(inotify_event* const pNewEvent, const string so
   mEventList.push_back(pNewEvent);
   if(HandleEvent(pNewEvent, sourceFolder)){
     mEventList.pop_back();
-    cerr << "\nC Last event was handled";
+    dbg_print(LOG_DBG, "\nC EventManager::PushBackEvent: Last event was handled");
 
   }
   else{
-    cerr << "\nC Last event was not handled, need to be redone! (" << mEventList.size() << " event(s) left for handling)";
+    dbg_print(LOG_DBG, "\nC EventManager::PushBackEvent: Last event was not handled, need to be redone! (%d event(s) left for handling)", mEventList.size());
     if(!DispatchEvent(pNewEvent, sourceFolder))
       mEventList.pop_back();
 
   }
+  usleep(100);
   SetScanIcon();
 
 }
 
 bool EventManager::DispatchEvent(inotify_event* const pEvent, const string sourceFolder){
-  cerr << "\nC Dispatch event";
+  dbg_print(LOG_DBG, "\nC EventManager::DispatchEvent: Dispatch event");
   string sync_folder(inotifytools_filename_from_wd(pEvent->wd));
   string folder(pEvent->name);
   string file_name("");
@@ -48,7 +49,7 @@ bool EventManager::DispatchEvent(inotify_event* const pEvent, const string sourc
     return !HandleEvent(pEvent, sourceFolder);
     
   }
-  cerr << "\nC Tried to dispatch event, but event was tropped because file is not there anymore";
+  dbg_print(LOG_DBG, "\nC EventManager::DispatchEvent: Tried to dispatch event, but event was tropped because file is not there anymore");
   return false;
 
 }

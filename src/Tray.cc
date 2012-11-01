@@ -38,7 +38,6 @@ Tray::Tray(vector<Profile>* pProfiles)
   g_signal_connect(G_OBJECT(gobj_StatusIcon), "activate", G_CALLBACK(on_statusicon_activated), this);
   g_signal_connect(G_OBJECT(gobj_StatusIcon), "popup-menu", G_CALLBACK(on_statusicon_popup), this);
 
-  // Buttons' signals:
   show_all_children();
 }
 
@@ -84,7 +83,7 @@ void Tray::ToggleSync(){
 void Tray::StopToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      std::cerr << "\nC Stop sync of profile: " << profileIter->GetName();
+      dbg_print(LOG_INFO, "\nC Stop sync of profile: [%s]",  profileIter->GetName().c_str());
       profileIter->GetFileSystemScanner()->StopToScan();
 
     }
@@ -94,7 +93,7 @@ void Tray::StopToScan(){
 void Tray::StartToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      std::cerr << "\nC Start sync of profile: " << profileIter->GetName();
+      dbg_print(LOG_INFO, "\nC Start sync of profile: [%s] ", profileIter->GetName().c_str());
       profileIter->GetSyncManager()->SyncSourceFolder(profileIter->GetFileSystemScanner()->GetScanFolder());
       profileIter->GetFileSystemScanner()->StartToScan();
 

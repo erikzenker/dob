@@ -8,8 +8,9 @@
 #include <inotifytools/inotifytools.h>
 #include <inotifytools/inotify.h>
 #include <stdlib.h>
-#include "SyncManager.h"
-#include "EventManager.h"
+#include <SyncManager.h>
+#include <EventManager.h>
+#include <dbg_print.h>
 
 using namespace std;
 

@@ -37,13 +37,13 @@ void InotifyFileSystemScanner::Setup(){
 }
 
 void InotifyFileSystemScanner::Execute(void* arg){
-  cerr << "\nC Start scanning folders";
+  dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Start scanning folder: %s", mScanFolder.c_str());
   int events = IN_MODIFY | IN_CREATE | IN_DELETE;
 
   if ( !inotifytools_initialize()
        || !inotifytools_watch_recursively_follow_symlinks(mScanFolder.c_str(), events)){ 
 
-    fprintf(stderr,"\nC Error errno: %d", inotifytools_error());
+    dbg_print(LOG_ERR,"\nC Error errno: %d", inotifytools_error());
     //return -1;
   }
 
@@ -57,22 +57,22 @@ void InotifyFileSystemScanner::Execute(void* arg){
     //Add/delete watches for added/deleted folders or files
     switch(event->mask){
       case IN_DELETE:
-	cerr << "\nC remove watch file: " << event->name << " no consequenz (TODO)";
+	dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: remove watch file: %s no consequenz (TODO)",event->name);
       //inotifytools_initialize();
       //inotifytools_remove_watch_by_wd(event->wd);
       break;
     case IN_DELETE | IN_ISDIR:
-      cerr << "\nC remove watch folder: " << event->name << " no cosequenz (TODO)";
+      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: remove watch file: %s no consequenz (TODO)", event->name);
       //inotifytools_initialize();
       //inotifytools_remove_watch_by_wd(event->wd);
       break;
     case IN_CREATE:
-      cerr << "\nC Add new watch file: " << event->name;
+      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Add new watch file: %s", event->name);
       inotifytools_initialize();
       inotifytools_watch_recursively(mScanFolder.c_str(), events);
       break;
     case IN_CREATE | IN_ISDIR:
-      cerr << "\nC Add new watch folder: " << event->name;
+      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Add new watch file: %s", event->name);
       inotifytools_initialize();
       inotifytools_watch_recursively(mScanFolder.c_str(), events);
       break;

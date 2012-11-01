@@ -17,18 +17,19 @@ RemoteSyncManager::RemoteSyncManager(string destFolder):
  */
 bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
   if(isMountpoint(mDestFolder)){
-    cerr << "\nC Syncronise source and destination folder\n";
+    dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncSourceFolder: Syncronise source and destination folder");
     string rsync_query = "rsync -vzruL --delete ";
     rsync_query
       .append(sourceFolder)
       .append(" ")
       .append(mDestFolder)
       .append(" &");
+    cerr << "\n";
     system(rsync_query.c_str());
 
   }
   else{
-    cerr << "\nC Failed syncronise source and destination folder, because destination folder is not mounted";
+    dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncSourceFolder: Failed syncronise source and destination folder, because destination folder is not mounted");
 
   }
   return true;
@@ -36,17 +37,6 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
 }
 
 bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  /* RSYNC MOD
-  string rsync_query = "rsync -vzruL --delete ";
-  rsync_query
-    .append(syncFolder)
-    .append(folder)
-    .append(" ")
-    .append(mDestFolder)
-    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
-  cerr << "\nC " << rsync_query;
-  system(rsync_query.c_str());
-  */
   if(isMountpoint(mDestFolder)){
     string cp_query = "cp -RLv ";  
     cp_query
@@ -57,14 +47,14 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
       .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
       .append(" ");
   
-    cerr << "\nC " << cp_query;
+    dbg_print(LOG_DBG,"\nC RemoteSyncManager::SyncFolder: %s ", cp_query.c_str());
     if(system(cp_query.c_str())){
-      cerr << "\nC Can't reach destination folder, maybe location is offline";
+      dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncFolder: Can't reach destination folder, maybe location is offline");
       return false;
     }
   }
   else{
-    cerr << "\nC Failed syncronise source and destination folder, because destination folder is not mounted";
+    dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncFolder: Failed syncronise source and destination folder, because destination folder is not mounted");
 
   }
   return true;
@@ -77,16 +67,15 @@ bool RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
 }
 
 bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
-  
   string rm_query = "rm -Rv ";
   rm_query
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
     .append(folder);
 
-  cerr << "\nC " << rm_query << "\n";
+  dbg_print(LOG_DBG, "\nC RemoteSyncManager:RemoveFolder: %s\n", rm_query.c_str());
   if(system(rm_query.c_str())){
-    cerr << "\nC Can't reach destination folder, maybe location is offline";
+    dbg_print(LOG_DBG, "\nC RemoteSyncManager:RemoveFolder: Can't reach destination folder, maybe location is offline");
     return false;
   }
   return true;
