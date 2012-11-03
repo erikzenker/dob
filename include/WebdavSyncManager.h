@@ -9,7 +9,7 @@ using namespace std;
 class WebdavSyncManager : public RemoteSyncManager{
 
  public:
-  WebdavSyncManager(string destFolder);
+  WebdavSyncManager(string destFolder, string synType);
 
 };
 

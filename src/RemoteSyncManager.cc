@@ -1,7 +1,7 @@
 #include "RemoteSyncManager.h"
 
-RemoteSyncManager::RemoteSyncManager(string destFolder):
-  SyncManager(destFolder){
+RemoteSyncManager::RemoteSyncManager(string destFolder, string syncType):
+  SyncManager(destFolder, syncType){
 
 }
 

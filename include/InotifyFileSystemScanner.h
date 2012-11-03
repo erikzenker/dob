@@ -1,9 +1,9 @@
-/* 
+/**
  * @file      InotifyFileSystemScanner.h
  * @author    Erik Zenker
  * @date      31.05.2012
  * @copyright Gnu Public License
- */
+ **/
 
 #ifndef InotifyFileSystemScanner_H
 #define InotifyFileSystemScanner_H
@@ -16,9 +16,10 @@
 #include <assert.h>
 #include <dirent.h>
 
-#include "Thread.h"
-#include "FileSystemScanner.h"
-#include "dbg_print.h"
+#include <Thread.h>
+#include <FileSystemScanner.h>
+#include <dbg_print.h>
+#include <Inotify.h>
 
 /**
  * @brief Watches a folder for changes with the help of

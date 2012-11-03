@@ -1,8 +1,16 @@
-#include <stdio.h>
-#include <stdarg.h>
+/* 
+ * @file      dbg_print.h
+ * @author    Erik Zenker
+ * @date      01.11.2012
+ * @copyright Gnu Public License
+ */
 
 #ifndef DBG_PRINT_H
 #define DBG_PRINT_H
+
+#include <stdio.h>
+#include <stdarg.h>
+
 
 // Defines
 #define LOG_FATAL    (1) // red

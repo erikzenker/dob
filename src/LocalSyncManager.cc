@@ -1,7 +1,7 @@
 #include "LocalSyncManager.h"
 
-LocalSyncManager::LocalSyncManager(string destFolder):
-  SyncManager(destFolder){
+LocalSyncManager::LocalSyncManager(string destFolder, string syncType):
+  SyncManager(destFolder, syncType){
 
 }
 
@@ -83,9 +83,13 @@ bool LocalSyncManager::RemoveFolder(string sourceFolder, string syncFolder, stri
 
 }
 
+/**
+ * @todo replace lstat64 by opendir
+ **/
 bool LocalSyncManager::IsDir(string directory){
 
   static struct stat64 my_stat;
+  
 
   if ( -1 == lstat64(directory.c_str(), &my_stat ) ) {
     if (errno == ENOENT) return false;

@@ -93,7 +93,7 @@ void Tray::StopToScan(){
 void Tray::StartToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      dbg_print(LOG_INFO, "\nC Start sync of profile: [%s] ", profileIter->GetName().c_str());
+      dbg_print(LOG_INFO, "\nC Start sync with profile: [%s] ", profileIter->GetName().c_str());
       profileIter->GetSyncManager()->SyncSourceFolder(profileIter->GetFileSystemScanner()->GetScanFolder());
       profileIter->GetFileSystemScanner()->StartToScan();
 

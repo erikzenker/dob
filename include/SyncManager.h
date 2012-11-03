@@ -24,17 +24,17 @@ using namespace std;
  * tools (cp, rsync etc.)
  **/
 class SyncManager{
-protected:
-  string mDestFolder;
-
 public:
-  SyncManager(string destFolder);
+  SyncManager(string destFolder, string syncType);
   SyncManager();
   virtual bool SyncSourceFolder(string sourceFolder) =0;
   virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder) =0;
   virtual bool SyncFile(string sourceFolder, string syncFolder) =0;
   virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder) =0;
 
+protected:
+  string mDestFolder;
+  string mSyncType;
 };
 
 #endif /* SyncManager_H */

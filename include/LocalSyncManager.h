@@ -14,7 +14,7 @@
 class LocalSyncManager : public SyncManager {
 
 public:
-  LocalSyncManager(string destFolder);
+  LocalSyncManager(string destFolder, string syncType);
   virtual bool SyncSourceFolder(string sourceFolder);
   virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
   virtual bool SyncFile(string sourceFolder, string syncFolder);

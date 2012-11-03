@@ -26,6 +26,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
     {
       getline (config_file_stream,line);
 
+      // Parse profile name
       //@todo profile should also be closed by "]"
       //      tried to implement "]" but seems not to work
       //      for some reason.
@@ -36,19 +37,17 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	  continue;
 
 	}
-      
+      // Parse sync type
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("syncType=") 
-			  >>     
-			  qi::string("syncronize")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
-			  || qi::string("backup")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
-			  || qi::string("update")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)]
+			  ,  qi::string("syncType=") >> qi::string("syncronize")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
+			  || qi::string("syncType=") >> qi::string("backup")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
+			  || qi::string("syncType=") >> qi::string("update")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)]
 			  ,space))
 	{
 	  continue;
 	  
 	}
-      
+      // Parse sync folder
       if(qi::phrase_parse(line.begin(), line.end()
 			  , qi::string("syncFolder=") 
 			  >>     
@@ -58,7 +57,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	  continue;
 	  
 	}
-	
+      // Parse destination folder
       if(qi::phrase_parse(line.begin(), line.end()
 			  , qi::string("destFolder=") 
 			  >>     
@@ -68,12 +67,10 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	  continue;
 	  
 	}
-
+      // Parse destination location
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destLocation=") 
-			  >>     
-			  qi::string("local")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
-			  | qi::string("remote")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
+			  , qi::string("destLocation=") >> qi::string("local")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
+			  | qi::string("destLocation=") >> qi::string("remote")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
 			  ,space))
 	{
 	  continue;
@@ -84,7 +81,8 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
     config_file_stream.close();
 
   }
-  else cerr << "\nC Unable to open file: "<< configFileName; 
+  else 
+    dbg_print(LOG_ERR, "\nC Unable to open configfile: %s", configFileName.c_str()); 
   config_file_stream.close();
 }
 

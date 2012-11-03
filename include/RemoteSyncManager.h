@@ -17,7 +17,7 @@ using namespace std;
 class RemoteSyncManager : public SyncManager{
 
  public:
-  RemoteSyncManager(string destFolder);
+  RemoteSyncManager(string destFolder, string syncType);
   virtual bool SyncSourceFolder(string sourceFolder);
   virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
   virtual bool SyncFile(string sourceFolder, string syncFolder);

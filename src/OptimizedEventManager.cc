@@ -5,7 +5,7 @@ OptimizedEventManager::OptimizedEventManager(SyncManager * pSyncManager)
 }
 
 bool OptimizedEventManager::HandleEvent(inotify_event* pEvent, string sourceFolder){
-  cerr <<"\nC Event " << inotifytools_event_to_str(pEvent->mask) <<" was triggered";
+  // cerr <<"\nC Event " << inotifytools_event_to_str(pEvent->mask) <<" was triggered";
   string syncFolder(inotifytools_filename_from_wd(pEvent->wd));
   string folder(pEvent->name);
 
@@ -26,7 +26,7 @@ bool OptimizedEventManager::HandleEvent(inotify_event* pEvent, string sourceFold
     return(mpSyncManager->RemoveFolder(sourceFolder, syncFolder, folder));
     break;
   default:
-    dbg_print(LOG_DBG, "\nC OptimizedEventManager::HandleEvent: No handler for this event implementet: ", inotifytools_event_to_str(pEvent->mask));
+    dbg_print(LOG_DBG, "\nC OptimizedEventManager::HandleEvent: No handler for this event implementet: ");
     break;
 
   }
