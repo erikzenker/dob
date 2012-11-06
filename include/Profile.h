@@ -1,3 +1,10 @@
+/**
+ * @file      Profile.h
+ * @author    Erik Zenker
+ * @date      01.11.2012
+ * @copyright Gnu Public License
+ **/
+
 #ifndef Profile_H
 #define Profile_H
 

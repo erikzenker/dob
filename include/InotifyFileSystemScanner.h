@@ -11,8 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
-#include <inotifytools/inotifytools.h>
-#include <inotifytools/inotify.h>
+#include <sys/inotify.h>
 #include <assert.h>
 #include <dirent.h>
 
@@ -20,6 +19,7 @@
 #include <FileSystemScanner.h>
 #include <dbg_print.h>
 #include <Inotify.h>
+#include <FileSystemEvent.h>
 
 /**
  * @brief Watches a folder for changes with the help of

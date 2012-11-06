@@ -1,15 +1,15 @@
 /***
  * ROADMAP
  * *
- * * Copy mechanism (Rsync)                                                 --> done
- * * Mounting of server data                                                --> done : by server installation in vm
- * * Debug levels                                                           --> done : by dbg_print.h 
+ * * Copy mechanism (Rsync)                                  --> done
+ * * Mounting of server data                                 --> done : by server installation in vm
+ * * Debug levels                                            --> done : by dbg_print.h 
  * * Also non X userinterface (console only)	
  * * Write destructors for all classes
  * * Give it some nice name
- * * Create InotifyFileSystemScanner alternative because is not threadsafe
- * * Replace libinotify with own implementation
- * * Write Wrapper for Inotify events for more general use
+ * * Replace libinotify with own implementation             --> done : by Inotify.h but not all functions
+ * * Write Wrapper for Inotify events for more general use  --> done : FileSystemEvent.h
+ * * Documentation for new classes
  * * Commandline installer
  * * Scanning of server data
  * * Ask in case of big data
@@ -65,32 +65,14 @@ int main(int argc, char *argv[]){
   configFileParser.ParseConfigFile(configFileName);
   pProfiles = configFileParser.GetProfiles();
 
-  // Make profiles (instanciate necessari sync objects)
+  // Make profiles (instanciate necessary sync objects)
   if(!profileFactory.MakeProfiles(pProfiles)){
     dbg_print(LOG_FATAL,"\nC Profiles can´t be generated from this profile\n");
     return 0;
   }
   
-  // Until inotify is threadsafe just one profile can be handled
-  if(pProfiles->size() > 1){
-    dbg_print(LOG_FATAL,"\nC Can´ t handle more then one profile, please comment all except of one\n");
-    return 0;
-  }
-
-  /*
-  dbg_print(LOG_DBG,"\nC Start to Watch folder");
-  Inotify inotify;
-  inotify.WatchFolderRecursively(pProfiles->at(0).GetSyncFolder());
-  inotify.GetNextEvent();
-
-  while(1){
-    inotify.GetNextEvent();
-  }
-  */
-
   // Start experimental gui
   return start_gui(argc, argv, pProfiles);
-  //return 0;
   
 }
 /**

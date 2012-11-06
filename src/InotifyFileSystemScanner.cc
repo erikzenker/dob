@@ -37,53 +37,41 @@ void InotifyFileSystemScanner::Setup(){
 }
 
 void InotifyFileSystemScanner::Execute(void* arg){
-  dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Start scanning folder: %s", mScanFolder.c_str());
-  //int events = IN_MODIFY | IN_CREATE | IN_DELETE;
-
   Inotify inotify;
   if(!inotify.WatchFolderRecursively(mScanFolder)){
     dbg_print(LOG_ERR,"\nC Failed to watch recursively errno: %d", inotify.GetLastError());
 
   }
-  /*
-  if ( !inotifytools_initialize()
-       || !inotifytools_watch_recursively_follow_symlinks(mScanFolder.c_str(), events)){ 
 
-    dbg_print(LOG_ERR,"\nC Error errno: %d", inotifytools_error());
-    //return -1;
-  }
-  */
+  dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Start scanning folder: %s", mScanFolder.c_str());
+  FileSystemEvent<int> * fileSystemEvent = inotify.GetNextEvent();
 
-
-  //struct inotify_event * event = inotifytools_next_event( -1 );
-  struct inotify_event * event = inotify.GetNextEvent();
-
-  while(event){
-    //mpEventManager->PushBackEvent(event, mScanFolder);
-    
+  while(fileSystemEvent){
+    mpEventManager->PushBackEvent(fileSystemEvent, mScanFolder);
 
     //Add/delete watches for added/deleted folders or files
-    switch(event->mask){
+    switch(fileSystemEvent->GetMask()){
     case IN_DELETE:
-      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: remove watch file: %s no consequenz (TODO)",event->name);
-      // @todo remove watches
-      break;
     case IN_DELETE | IN_ISDIR:
-      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: remove watch file: %s no consequenz (TODO)", event->name);
       // @todo remove watches
+      dbg_print(LOG_DBG, 
+		"\nC InotifyFileSystemScanner::Execute: remove watch file: %s no consequenz (TODO)",
+		fileSystemEvent->GetFilename().c_str());
       break;
+
     case IN_CREATE:
-      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Add new watch file: %s", event->name);
-      inotify.WatchFolderRecursively(mScanFolder);
-      break;
     case IN_CREATE | IN_ISDIR:
-      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Add new watch file: %s", event->name);
+      // @todo dont rewatch all folders again (needs to much time)
+      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Add new watch file: %s", fileSystemEvent->GetFilename().c_str());
       inotify.WatchFolderRecursively(mScanFolder);
       break;
+
+    default:
+      dbg_print(LOG_ERR, "\nC Unexpected event was triggered %s", fileSystemEvent->GetFilename().c_str());
     }
 
     // Handle next event
-    event = inotify.GetNextEvent();
+    fileSystemEvent = inotify.GetNextEvent();
   }
 
 }

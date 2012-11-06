@@ -5,8 +5,6 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <inotifytools/inotifytools.h>
-#include <inotifytools/inotify.h>
 #include <stdlib.h>
 #include <SyncManager.h>
 #include <EventManager.h>
@@ -24,7 +22,7 @@ using namespace std;
  **/
 class SimpleEventManager : public EventManager{
 private:
-  bool HandleEvent(inotify_event* pEvent, string sourceFolder);
+  bool HandleEvent(FileSystemEvent<int>* pEvent, string sourceFolder);
 public:
   SimpleEventManager(SyncManager * pSyncManager);
  

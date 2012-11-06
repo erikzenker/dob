@@ -5,8 +5,6 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <inotifytools/inotifytools.h>
-#include <inotifytools/inotify.h>
 #include <stdlib.h>
 #include <SyncManager.h>
 #include <EventManager.h>
@@ -31,7 +29,7 @@ class OptimizedEventManager : public EventManager{
  public:
   OptimizedEventManager(SyncManager * pSyncManager);
  private:
-  bool HandleEvent(inotify_event* pEvent, string sourceFolder);
+  bool HandleEvent(FileSystemEvent<int>* pEvent, string sourceFolder);
  
 };
 

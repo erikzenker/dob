@@ -16,7 +16,7 @@ SyncManager* EventManager::GetSyncManager() const{
  *      
  *
  **/
-void EventManager::PushBackEvent(inotify_event* const pNewEvent, const string sourceFolder){
+void EventManager::PushBackEvent(FileSystemEvent<int>* const pNewEvent, const string sourceFolder){
   SetSyncIcon();
   mEventList.push_back(pNewEvent);
   if(HandleEvent(pNewEvent, sourceFolder)){
@@ -35,16 +35,16 @@ void EventManager::PushBackEvent(inotify_event* const pNewEvent, const string so
 
 }
 
-bool EventManager::DispatchEvent(inotify_event* const pEvent, const string sourceFolder){
+bool EventManager::DispatchEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder){
   dbg_print(LOG_DBG, "\nC EventManager::DispatchEvent: Dispatch event");
-  string sync_folder(inotifytools_filename_from_wd(pEvent->wd));
-  string folder(pEvent->name);
-  string file_name("");
+  string syncFolder = pEvent->GetWatchFolder();
+  string folder = pEvent->GetFilename();
+  string filename = "";
 
-  file_name.append(sync_folder).append(folder);
+  filename.append(syncFolder).append(folder);
 
   ifstream dispatch_file_stream;
-  dispatch_file_stream.open(file_name.c_str());
+  dispatch_file_stream.open(filename.c_str());
   if(dispatch_file_stream.good()){
     return !HandleEvent(pEvent, sourceFolder);
     

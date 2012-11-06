@@ -5,11 +5,11 @@
 #include <vector>
 #include <fstream>
 #include <unistd.h>
-#include <inotifytools/inotifytools.h>
-#include <inotifytools/inotify.h>
+#include <sys/inotify.h>
 #include <sigc++/sigc++.h>
 #include <SyncManager.h>
 #include <dbg_print.h>
+#include <FileSystemEvent.h>
 
 using namespace std;
 
@@ -19,18 +19,10 @@ using namespace std;
  *        EventManager.h 
  *        "include/EventManager.h"
  *
- * The EvenManager takes different events (inotify_event)
+ * The EvenManager takes different events (FileSystemEvent)
  * from an FileSystemScanner and handels them (HandleEvent).
  *
- *  struct inotify_event {
- *    int      wd;        Watch descriptor 
- *    uint32_t mask;      Mask of events 
- *    uint32_t cookie;    Unique cookie associating related
- *                        events (for rename(2)) 
- *    uint32_t len;       Size of name field 
- *    char     name[];    Optional null-terminated name 
- *  };
- * 
+
  **/
 typedef sigc::signal<void, bool, int> EventManagerSignal;
 
@@ -38,21 +30,18 @@ class EventManager{
 public:
   EventManager(SyncManager* const pSyncManager);
   SyncManager* GetSyncManager() const;
-  void PushBackEvent(inotify_event* const pNewEvent, string sourceFolder);
+  void PushBackEvent(FileSystemEvent<int>* const pNewEvent, string sourceFolder);
   EventManagerSignal SignalEvent();
 
-  /* Member */
-
-
 protected:
-  bool DispatchEvent(inotify_event* const pEvent, const string sourceFolder);
-  virtual bool HandleEvent(inotify_event* const pEvent, const string sourceFolder) = 0;
+  bool DispatchEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder);
+  virtual bool HandleEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder) = 0;
   void SetPauseIcon() const;
   void SetSyncIcon() const;
   void SetScanIcon() const;
   
   /* Member */ 
-  vector<inotify_event*> mEventList;
+  vector<FileSystemEvent<int>* > mEventList;
   SyncManager* const mpSyncManager;
   EventManagerSignal mEventManagerSignal;
 
