@@ -10,7 +10,7 @@ CommandLineParser::CommandLineParser() :
  * @todo update spirit parser to new version 2.5 (use of qi)
  **/
 bool CommandLineParser::ParseCommandLine(int argc, char *argv[]){
-  dbg_print(LOG_INFO, "\nC Parse commandline");
+  dbg_printc(LOG_INFO, "CommandLineParser", "ParseCommandLine", "Parse commandline");
   rule<phrase_scanner_t> config;
   rule<phrase_scanner_t> debug;
   bool matched = false;

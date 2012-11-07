@@ -21,11 +21,18 @@ void EventManager::PushBackEvent(FileSystemEvent<int>* const pNewEvent, const st
   mEventList.push_back(pNewEvent);
   if(HandleEvent(pNewEvent, sourceFolder)){
     mEventList.pop_back();
-    dbg_print(LOG_DBG, "\nC EventManager::PushBackEvent: Last event was handled");
+    dbg_printc(LOG_DBG, 
+	       "EventManager",
+	       "PushBackEvent",
+	       "Last event was handled");
 
   }
   else{
-    dbg_print(LOG_DBG, "\nC EventManager::PushBackEvent: Last event was not handled, need to be redone! (%d event(s) left for handling)", mEventList.size());
+    dbg_printc(LOG_DBG, 
+	       "EventManager",
+	       "PushBackEvent",
+	       "Last event was not handled, need to be redone! (%d event(s) left for handling)", 
+	       mEventList.size());
     if(!DispatchEvent(pNewEvent, sourceFolder))
       mEventList.pop_back();
 
@@ -36,7 +43,7 @@ void EventManager::PushBackEvent(FileSystemEvent<int>* const pNewEvent, const st
 }
 
 bool EventManager::DispatchEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder){
-  dbg_print(LOG_DBG, "\nC EventManager::DispatchEvent: Dispatch event");
+  dbg_printc(LOG_DBG, "EventManager", "DispatchEvent","Dispatch event");
   string syncFolder = pEvent->GetWatchFolder();
   string folder = pEvent->GetFilename();
   string filename = "";
@@ -49,7 +56,7 @@ bool EventManager::DispatchEvent(FileSystemEvent<int>* const pEvent, const strin
     return !HandleEvent(pEvent, sourceFolder);
     
   }
-  dbg_print(LOG_DBG, "\nC EventManager::DispatchEvent: Tried to dispatch event, but event was tropped because file is not there anymore");
+  dbg_printc(LOG_DBG, "EventManager","DispatchEvent","Tried to dispatch event, but event was tropped because file is not there anymore");
   return false;
 
 }

@@ -15,7 +15,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
   //using qi::char_;
   using ascii::space;
 
-  dbg_print(LOG_INFO, "\nC Parse config file: %s", configFileName.c_str());
+  dbg_printc(LOG_INFO, "ConfigFileParser", "ParseConfigFile", "Parse config file: %s", configFileName.c_str());
   string line;
   ifstream config_file_stream;
   config_file_stream.open(configFileName.c_str());

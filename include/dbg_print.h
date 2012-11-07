@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-
+#include <string>
 
 // Defines
 #define LOG_FATAL    (1) // red
@@ -21,5 +21,7 @@
 
 extern int dbg_print_level;
 void dbg_print(int level, const char* format,...);
+void dbg_printc(int level, std::string className, std::string functionName, const char* format,...);
+//void dbg_print(int level, std::string functionName, const char* format,...);
 
 #endif /* DBG_PRINT_H */

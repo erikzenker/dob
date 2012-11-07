@@ -53,10 +53,11 @@ int main(int argc, char *argv[]){
   
   dbg_print_level = LOG_DBG;
 
+  dbg_print(LOG_INFO, "", "main","Start opendropbox client");
   // Parse commandline and configfile
   if(!commandLineParser.ParseCommandLine(argc, argv)){
-    dbg_print(LOG_INFO, "\nC No commandline parameters found");
-    dbg_print(LOG_INFO, "\nC Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
+    dbg_printc(LOG_ERR,"", "main", "No commandline parameters found");
+    dbg_printc(LOG_ERR,"", "main", "Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
     return 0;
 
   }
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]){
 
   // Make profiles (instanciate necessary sync objects)
   if(!profileFactory.MakeProfiles(pProfiles)){
-    dbg_print(LOG_FATAL,"\nC Profiles can´t be generated from this profile\n");
+    dbg_print(LOG_FATAL, "main", "Profiles can´t be generated from this profile\n");
     return 0;
   }
   
@@ -99,12 +100,5 @@ int start_gui(int argc, char *argv[], vector<Profile>* pProfiles){
 
   Gtk::Main::run(*tray);
   return 0;
-
-  /*
-  Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
-  Gtk::Window window;
-  Glib::RefPtr<Gtk::StatusIcon> m_refStatusIcon = Gtk::StatusIcon::create(Gtk::Stock::HOME);
-  return app->run(window);
-  */
 
 }

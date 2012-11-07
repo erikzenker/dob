@@ -17,12 +17,12 @@ bool Inotify::Initialize(){
     mInotifyFd = inotify_init();
     if(mInotifyFd == -1){
       mError = errno;
-      dbg_print(LOG_ERR, "\nC Couldn´t initialize inotify, Errno: %d", mError);
+      dbg_printc(LOG_ERR, "Inotify", "Initialize", "Couldn´t initialize inotify, Errno: %d", mError);
       return false;
     }
     mIsInitialized = true;
   }
-  dbg_print(LOG_DBG, "\nC Inotify::Initialize: Inotify is initialized now, fd: %d", mInotifyFd);
+  dbg_printc(LOG_DBG, "Inotify", "Initialize", "Inotify is initialized now, fd: %d", mInotifyFd);
   return true;
 
 }
@@ -31,7 +31,7 @@ bool Inotify::CleanUp(){
   assert(mIsInitialized);
   if(!close(mInotifyFd)){
     mError = errno;
-    dbg_print(LOG_ERR, "\nC Can´t close inotify fd(%d), Errno: %d", mInotifyFd, mError);
+    dbg_printc(LOG_ERR,"Inotify","CleanUp", "Can´t close inotify fd(%d), Errno: %d", mInotifyFd, mError);
     return false;
   }
   return true;
@@ -64,7 +64,7 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
       // Check the File/Folder
       if(lstat64(nextFile.c_str(), &my_stat) == -1){
 	mError = errno;
-	dbg_print(LOG_ERR, "\nC Error on fstat %s, %d", nextFile.c_str(), mError);
+	dbg_printc(LOG_ERR, "Inotify", "WatchFolderRecursively", "\nC Error on fstat %s, %d", nextFile.c_str(), mError);
 	if (mError != EACCES){
 	  mError = errno;
 	  closedir(directory);
@@ -105,11 +105,11 @@ bool Inotify::WatchFile(std::string file){
   assert(mIsInitialized);
   mError = 0;
   int wd;
-  dbg_print(LOG_DBG, "\nC Inotify::WatchFile: Add watch of file %s", file.c_str());
+  dbg_printc(LOG_DBG, "Inotify","WatchFile","Add watch of file %s", file.c_str());
   wd = inotify_add_watch(mInotifyFd, file.c_str(), mEventMask);
   if(wd == -1){
     mError = errno;
-    dbg_print(LOG_ERR, "\nC Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
+    dbg_printc(LOG_ERR, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
     return true;
 
   }
@@ -134,7 +134,7 @@ bool Inotify::IsDir(std::string folder){
 
     }
     else {
-      dbg_print(LOG_ERR, "\nC Couldn´t not opendir %s, Errno: %d", folder.c_str(), mError);
+      dbg_printc(LOG_ERR, "Inotify","IsDir", "Couldn´t not opendir %s, Errno: %d", folder.c_str(), mError);
 
     }
 
@@ -157,11 +157,11 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
       if(length == -1){
 	mError = errno;
 	if(mError != EINTR){
-	  dbg_print(LOG_ERR,"\nC Failed to read from inotify fd(%d), Errno %d",mInotifyFd, mError);
+	  dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Failed to read from inotify fd(%d), Errno %d",mInotifyFd, mError);
 	  return NULL;
 
 	}
-	dbg_print(LOG_ERR,"\nC Inotify read EINTR from fd(%d)",mInotifyFd );
+	dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Inotify read EINTR from fd(%d)",mInotifyFd );
 
       }
       sleep(1);
@@ -171,8 +171,8 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
       event = (struct inotify_event *) &buffer[i];
       fileSystemEvent = new FileSystemEvent<int>(event->wd, event->mask, event->name, WdToFilename(event->wd)); 
       mEventQueue.push(fileSystemEvent);
-      dbg_print(LOG_DBG,
-		"\nC Inotify::GetNextEvent: Event from fd(%d) was triggered %s %d %s", 
+      dbg_printc(LOG_DBG, "Inotify", "GetNextEvent",
+		"Event from fd(%d) was triggered %s %d %s", 
 		mInotifyFd,
 		fileSystemEvent->GetFilename().c_str(), 
 		fileSystemEvent->GetMask(),

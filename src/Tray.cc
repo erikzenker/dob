@@ -83,7 +83,7 @@ void Tray::ToggleSync(){
 void Tray::StopToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      dbg_print(LOG_INFO, "\nC Stop sync of profile: [%s]",  profileIter->GetName().c_str());
+      dbg_printc(LOG_INFO, "Tray", "StopToScan", "\nC Stop sync of profile: [%s]",  profileIter->GetName().c_str());
       profileIter->GetFileSystemScanner()->StopToScan();
 
     }
@@ -93,7 +93,7 @@ void Tray::StopToScan(){
 void Tray::StartToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      dbg_print(LOG_INFO, "\nC Start sync with profile: [%s] ", profileIter->GetName().c_str());
+      dbg_printc(LOG_INFO, "Tray", "StartToScan", "Start sync with profile: [\033[32m%s\033[m] ", profileIter->GetName().c_str());
       profileIter->GetSyncManager()->SyncSourceFolder(profileIter->GetFileSystemScanner()->GetScanFolder());
       profileIter->GetFileSystemScanner()->StartToScan();
 

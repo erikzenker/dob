@@ -39,11 +39,11 @@ void InotifyFileSystemScanner::Setup(){
 void InotifyFileSystemScanner::Execute(void* arg){
   Inotify inotify;
   if(!inotify.WatchFolderRecursively(mScanFolder)){
-    dbg_print(LOG_ERR,"\nC Failed to watch recursively errno: %d", inotify.GetLastError());
+    dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", inotify.GetLastError());
 
   }
 
-  dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Start scanning folder: %s", mScanFolder.c_str());
+  dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
   FileSystemEvent<int> * fileSystemEvent = inotify.GetNextEvent();
 
   while(fileSystemEvent){
@@ -54,20 +54,23 @@ void InotifyFileSystemScanner::Execute(void* arg){
     case IN_DELETE:
     case IN_DELETE | IN_ISDIR:
       // @todo remove watches
-      dbg_print(LOG_DBG, 
-		"\nC InotifyFileSystemScanner::Execute: remove watch file: %s no consequenz (TODO)",
+      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute",
+		"Remove watch file: %s no consequenz (TODO)",
 		fileSystemEvent->GetFilename().c_str());
       break;
 
     case IN_CREATE:
     case IN_CREATE | IN_ISDIR:
       // @todo dont rewatch all folders again (needs to much time)
-      dbg_print(LOG_DBG, "\nC InotifyFileSystemScanner::Execute: Add new watch file: %s", fileSystemEvent->GetFilename().c_str());
+      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent->GetFilename().c_str());
       inotify.WatchFolderRecursively(mScanFolder);
       break;
 
     default:
-      dbg_print(LOG_ERR, "\nC Unexpected event was triggered %s", fileSystemEvent->GetFilename().c_str());
+      dbg_printc(LOG_ERR, 
+		 "InotifyFileSystemScanner", 
+		 "Execute",
+		 "Unexpected event was triggered %s", fileSystemEvent->GetFilename().c_str());
     }
 
     // Handle next event

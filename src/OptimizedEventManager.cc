@@ -25,7 +25,7 @@ bool OptimizedEventManager::HandleEvent(FileSystemEvent<int>* pEvent, string sou
     return(mpSyncManager->RemoveFolder(sourceFolder, syncFolder, folder));
     break;
   default:
-    dbg_print(LOG_DBG, "\nC OptimizedEventManager::HandleEvent: No handler for this event implementet: %s",pEvent->GetMaskString().c_str());
+    dbg_printc(LOG_DBG, "OptimizedEventManager", "HandleEvent", "No handler for this event implementet: %s",pEvent->GetMaskString().c_str());
     break;
 
   }
