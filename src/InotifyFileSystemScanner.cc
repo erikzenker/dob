@@ -27,9 +27,7 @@ int InotifyFileSystemScanner::StartToScan(){
 }
 
 int InotifyFileSystemScanner::StopToScan(){
-  Stop();
-  cout << "\nC Stop scanning folders";
-  return 0;
+  return Stop();
 }
 
 void InotifyFileSystemScanner::Setup(){

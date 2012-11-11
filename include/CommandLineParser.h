@@ -18,9 +18,11 @@ class CommandLineParser{
   bool ParseCommandLine(int argc, char *argv[]);
   string GetConfigFileName() const;
   int GetDebugLevel() const;
+  bool GetNoGui() const;
  private:
   string mConfigFileName;
   int mDebugLevel;
+  bool mNoGui;
 };
 
 #endif /* CommandLineParser_H */

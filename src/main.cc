@@ -50,6 +50,7 @@ int main(int argc, char *argv[]){
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
   ProfileFactory profileFactory;
+  bool noGui;
   
   dbg_print_level = LOG_DBG;
 
@@ -61,6 +62,7 @@ int main(int argc, char *argv[]){
     return 0;
 
   }
+  noGui = commandLineParser.GetNoGui();
   dbg_print_level = commandLineParser.GetDebugLevel();
   configFileName = commandLineParser.GetConfigFileName();
   configFileParser.ParseConfigFile(configFileName);
@@ -72,8 +74,20 @@ int main(int argc, char *argv[]){
     return 0;
   }
   
-  // Start experimental gui
-  return start_gui(argc, argv, pProfiles);
+
+  if(noGui){
+    vector<Profile>::iterator profileIter;
+    for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
+      dbg_printc(LOG_INFO, "Main", "main", "Start sync with profile: [\033[32m%s\033[m] ", profileIter->GetName().c_str());
+      profileIter->GetFileSystemScanner()->StartToScan();
+    }
+    while(1);
+  }
+  else{
+    // Start experimental gui
+    return start_gui(argc, argv, pProfiles);
+  }
+  return 0;
   
 }
 /**

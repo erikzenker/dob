@@ -83,7 +83,7 @@ void Tray::ToggleSync(){
 void Tray::StopToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      dbg_printc(LOG_INFO, "Tray", "StopToScan", "\nC Stop sync of profile: [%s]",  profileIter->GetName().c_str());
+      dbg_printc(LOG_INFO, "Tray", "StopToScan", "Stop sync of profile: [%s]",  profileIter->GetName().c_str());
       profileIter->GetFileSystemScanner()->StopToScan();
 
     }

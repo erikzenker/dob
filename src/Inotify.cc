@@ -85,11 +85,6 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
 	}
 
       }
-      // Watch just a File
-      else if(S_ISREG(my_stat.st_mode)){
-	WatchFile(nextFile);
-
-      }
 
     }
     ent = readdir(directory);
@@ -135,6 +130,7 @@ bool Inotify::IsDir(std::string folder){
     }
     else {
       dbg_printc(LOG_ERR, "Inotify","IsDir", "Couldn´t not opendir %s, Errno: %d", folder.c_str(), mError);
+      return false;
 
     }
 
