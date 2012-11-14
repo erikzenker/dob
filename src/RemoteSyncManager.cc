@@ -29,7 +29,7 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
 
   }
   else{
-    dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncSourceFolder: Failed syncronise source and destination folder, because destination folder is not mounted");
+    dbg_printc(LOG_ERR,"RemoteSyncManager","SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
 
   }
   return true;
@@ -47,14 +47,15 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
       .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
       .append(" ");
   
-    dbg_print(LOG_DBG,"\nC RemoteSyncManager::SyncFolder: %s ", cp_query.c_str());
+
     if(system(cp_query.c_str())){
-      dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncFolder: Can't reach destination folder, maybe location is offline");
+      dbg_printc(LOG_ERR, "RemoteSyncManager","SyncFolder","Can't reach destination folder, maybe location is offline");
       return false;
     }
+    dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFolder","%s ", cp_query.c_str());
   }
   else{
-    dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncFolder: Failed syncronise source and destination folder, because destination folder is not mounted");
+    dbg_printc(LOG_ERR, "RemoteSyncManager","SyncFolder","Failed syncronise source and destination folder, because destination folder is not mounted");
 
   }
   return true;
@@ -73,11 +74,11 @@ bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, str
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
     .append(folder);
 
-  dbg_print(LOG_DBG, "\nC RemoteSyncManager:RemoveFolder: %s\n", rm_query.c_str());
   if(system(rm_query.c_str())){
-    dbg_print(LOG_DBG, "\nC RemoteSyncManager:RemoveFolder: Can't reach destination folder, maybe location is offline");
+    dbg_printc(LOG_ERR, "RemoteSyncManager","RemoveFolder","Can't reach destination folder, maybe location is offline");
     return false;
   }
+  dbg_printc(LOG_DBG, "RemoteSyncManager","RemoveFolder","%s", rm_query.c_str());
   return true;
 
 }

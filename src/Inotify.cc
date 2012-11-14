@@ -104,7 +104,7 @@ bool Inotify::WatchFile(std::string file){
   wd = inotify_add_watch(mInotifyFd, file.c_str(), mEventMask);
   if(wd == -1){
     mError = errno;
-    dbg_printc(LOG_ERR, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
+    dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
     return true;
 
   }
@@ -125,16 +125,18 @@ bool Inotify::IsDir(std::string folder){
   if(!directory) {
     mError = errno;
     if(mError == ENOTDIR){
-      return false;
 
     }
     else {
-      dbg_printc(LOG_ERR, "Inotify","IsDir", "Couldn´t not opendir %s, Errno: %d", folder.c_str(), mError);
-      return false;
+      dbg_printc(LOG_WARN, "Inotify","IsDir", "Couldn´t not opendir %s, Errno: %d", folder.c_str(), mError);
+
 
     }
+    closedir(directory);
+    return false;
 
   }
+  closedir(directory);
   return true;
 
 }

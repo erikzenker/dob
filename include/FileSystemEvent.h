@@ -24,6 +24,7 @@ class FileSystemEvent{
   std::string GetFilename();
   T GetId();
   std::string GetWatchFolder();
+  std::string GetFullPath();
 
  private:
   std::string MaskToString(uint32_t events);
@@ -77,6 +78,11 @@ std::string FileSystemEvent<T>::GetWatchFolder(){
 template <class T>
 std::string FileSystemEvent<T>::GetMaskString(){
   return MaskToString(mMask);
+}
+
+template <class T>
+std::string FileSystemEvent<T>::GetFullPath(){
+  return mWatchFolder.append(mFilename);
 }
 
 template <class T>

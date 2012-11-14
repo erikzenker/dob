@@ -51,7 +51,7 @@ void InotifyFileSystemScanner::Execute(void* arg){
     switch(fileSystemEvent->GetMask()){
     case IN_DELETE:
     case IN_DELETE | IN_ISDIR:
-      // @todo remove watches
+      // @todo remove watches recursively
       dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute",
 		"Remove watch file: %s no consequenz (TODO)",
 		fileSystemEvent->GetFilename().c_str());
@@ -59,16 +59,18 @@ void InotifyFileSystemScanner::Execute(void* arg){
 
     case IN_CREATE:
     case IN_CREATE | IN_ISDIR:
-      // @todo dont rewatch all folders again (needs to much time)
       dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent->GetFilename().c_str());
-      inotify.WatchFolderRecursively(mScanFolder);
+      inotify.WatchFolderRecursively(fileSystemEvent->GetFullPath());
       break;
-
+    case IN_MODIFY:
+      // Do nothing
+      break;
+      // @todo also event IN_MOVED_TO, IN_MOVED_FROM should be handled
     default:
       dbg_printc(LOG_ERR, 
 		 "InotifyFileSystemScanner", 
 		 "Execute",
-		 "Unexpected event was triggered %s", fileSystemEvent->GetFilename().c_str());
+		 "Unexpected event was triggered %s %s",fileSystemEvent->GetMaskString().c_str(), fileSystemEvent->GetFilename().c_str());
     }
 
     // Handle next event

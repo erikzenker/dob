@@ -22,7 +22,6 @@ using namespace std;
  * The EvenManager takes different events (FileSystemEvent)
  * from an FileSystemScanner and handels them (HandleEvent).
  *
-
  **/
 typedef sigc::signal<void, bool, int> EventManagerSignal;
 

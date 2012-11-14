@@ -11,10 +11,12 @@
 INSTALL
 =======
 
-1. Install rsync
-   ==> pacman -S rsync (@Arch Linux)
-2. Build inotify
-   ==> make inotify 
+1. Install dependencys
+   * rsync
+   * inotify
+   * boost-libs
+   * gtkmm3
+
 3. Build open_dropbox
    ==> make all
 
@@ -27,10 +29,13 @@ USAGE
 2. Edit the configfile, if it not exist just create one
    ==> create: touch odb.conf
    ==> edit  : syncFolder = /home/<Your username>/OpenDropbox/
+       	       syncType   = backup || syncronize || update 
        	       destFolder = /<syncronization>/<Folder>/
+	       destLocation = remote || local
+	       
 
 3. Start the programm
-   ==> ./odb --config=odb.conf
+   ==> ./odb --config=odb.conf 
 
 4. Enjoy the your syncronization deamon without doing anything
 
