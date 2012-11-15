@@ -9,13 +9,13 @@
  * * Give it some nice name
  * * Replace libinotify with own implementation             --> done : by Inotify.h but not all functions
  * * Write Wrapper for Inotify events for more general use  --> done : FileSystemEvent.h but is kind of ugly
- * * Write some interface for ipc
+ * * Write some nice interface for ipc
  * * Restart scanning after suspend
  * * Documentation for new classes
- * * Commandline installer
+ * * Commandline installer/helper
  * * Scanning of server data
  * * Ask in case of big data
- * * Graphical user interface
+ * * Graphical user interface/wizzard
  * * Versioning of backup data (Git)
  * *
  ***/
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
   // Parse commandline and configfile
   if(!commandLineParser.ParseCommandLine(argc, argv)){
     dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
+    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
     return 0;
 
   }
@@ -79,10 +79,9 @@ int main(int argc, char *argv[]){
 
   // Make profiles (instanciate necessary sync objects)
   if(!profileFactory.MakeProfiles(pProfiles)){
-    dbg_printc(LOG_FATAL, "Main","main", "Profiles can´t be generated from this profile\n");
+    dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this profile, please check it\n");
     return 0;
   }
-  
   // Start sync without gui
   if(noGui){
     vector<Profile>::iterator profileIter;

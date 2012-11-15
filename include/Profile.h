@@ -23,7 +23,7 @@ using namespace std;
  **/
 class Profile {
  public:
-  Profile(){}
+  Profile();
   // Setter
   void SetName(vector<char> name)                 { this->name.assign(name.begin(), name.end());}
   void SetSyncType(vector<char> syncType)         { this->syncType.assign(syncType.begin(), syncType.end());}

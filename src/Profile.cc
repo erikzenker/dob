@@ -1,5 +1,15 @@
 #include "Profile.h"
 
+Profile::Profile() : 
+  name(""),
+  syncType(""),
+  syncFolder(""),
+  destFolder(""),
+  destLocation(""){
+
+}
+
+
 bool Profile::IsValid(){
   if(!syncFolder.compare("") && !destFolder.compare(""))
     return false;
@@ -15,4 +25,5 @@ void Profile::print(){
   cout << "\n";
   
 }
+
 

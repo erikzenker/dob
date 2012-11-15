@@ -9,6 +9,7 @@
 #define PROFILEFACTORY_H
 
 #include <Profile.h>
+#include <iostream>
 #include <dbg_print.h>
 #include <vector>
 /**
@@ -18,8 +19,8 @@
 class ProfileFactory {
  public:
   ProfileFactory();
-  Profile* MakeProfile(Profile* profile);
-  vector<Profile>* MakeProfiles(vector<Profile>* pProfiles);
+  bool MakeProfile(Profile* profile);
+  bool MakeProfiles(vector<Profile>* pProfiles);
 };
 
 #endif /* PROFILEFACTORY_H */
