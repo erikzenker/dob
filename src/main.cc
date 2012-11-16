@@ -59,6 +59,7 @@ int main(int argc, char *argv[]){
   CommandLineParser commandLineParser;
   ProfileFactory profileFactory;
   InterProcessCommunication *ipc = new InterProcessCommunication("/home/erik/projects/open_drop_box/fifo");
+  FileSystemScanner *fileSystemScanner;
   bool noGui;
   
   dbg_print_level = LOG_DBG;
@@ -92,7 +93,7 @@ int main(int argc, char *argv[]){
     }
 
     //@bug cant start scanning directly after sync different profiles
-    FileSystemScanner *fileSystemScanner;
+
     for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
       dbg_printc(LOG_INFO, "Main", "main", "Start scanning with profile: [\033[32m%s\033[m] ", profileIter->GetName().c_str());
       fileSystemScanner = profileIter->GetFileSystemScanner();
@@ -105,7 +106,6 @@ int main(int argc, char *argv[]){
     while(1);
   }
   else{
-    // Start sync with experimental gui
     return start_gui(argc, argv, pProfiles);
   }
   return 0;
@@ -113,14 +113,6 @@ int main(int argc, char *argv[]){
 }
 
 int start_gui(int argc, char *argv[], vector<Profile>* pProfiles){
-  /*
- Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv,"org.gtkmm.examples.base");
-  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file("gui/tray.glade");
-  Gtk::Window * pMainWindow = 0;
-  builder->get_widget("mainWindow", pMainWindow);
-  app->run(*pMainWindow);
-  */
-
   Gtk::Main kit(argc, argv);
   Tray *tray = new Tray(pProfiles);
   

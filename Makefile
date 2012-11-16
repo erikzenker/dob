@@ -55,8 +55,12 @@ inotify:
 
 # find all todos
 todo:
-	grep -n "@todo" include/*
-	grep -n "@todo" src/*
+	grep -n "todo" include/*
+	grep -n "todo" src/*
+
+# find all bugs
+
+
 
 # generate documentation
 doc:
