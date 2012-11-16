@@ -28,17 +28,23 @@ bool InterProcessCommunication::Read(){
     std::string readString(mBuf);
 
     if (readString.find("start") != std::string::npos)
-       mStartSignal.emit();
+       mStartSignal.emit("start_test");
     if (readString.find("stop") != std::string::npos)
-       mStopSignal.emit();
+       mStopSignal.emit("stop_test");
+    if (readString.find("restart") != std::string::npos)
+       mStopSignal.emit("restart_test");
 
   }
 }
 
-StopSignal InterProcessCommunication::GetStopSignal(){
+sigc::signal<bool, std::string> InterProcessCommunication::GetStopSignal(){
   return mStopSignal;
 }
 
-StartSignal InterProcessCommunication::GetStartSignal(){
+sigc::signal<bool, std::string> InterProcessCommunication::GetStartSignal(){
   return mStartSignal;
+}
+
+sigc::signal<bool, std::string> InterProcessCommunication::GetRestartSignal(){
+  return mRestartSignal;
 }

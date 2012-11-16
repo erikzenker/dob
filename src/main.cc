@@ -43,6 +43,7 @@
 #include <ProfileFactory.h>
 #include <Inotify.h>
 #include <InterProcessCommunication.h>
+#include <ProfileManager.h>
 #include <dbg_print.h>
 
 
@@ -58,14 +59,16 @@ int main(int argc, char *argv[]){
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
   ProfileFactory profileFactory;
-  InterProcessCommunication *ipc = new InterProcessCommunication("/home/erik/projects/open_drop_box/fifo");
   FileSystemScanner *fileSystemScanner;
+  InterProcessCommunication ipc("/tmp/fifo");
+  ProfileManager *pProfileManager;
   bool noGui;
   
   dbg_print_level = LOG_DBG;
 
-  dbg_print(LOG_INFO, "", "main","Start opendropbox client");
+  
   // Parse commandline and configfile
+  dbg_print(LOG_INFO, "", "main","Start opendropbox client");
   if(!commandLineParser.ParseCommandLine(argc, argv)){
     dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
     dbg_printc(LOG_ERR,"Main", "main", "Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
@@ -77,12 +80,19 @@ int main(int argc, char *argv[]){
   configFileName = commandLineParser.GetConfigFileName();
   configFileParser.ParseConfigFile(configFileName);
   pProfiles = configFileParser.GetProfiles();
-
   // Make profiles (instanciate necessary sync objects)
   if(!profileFactory.MakeProfiles(pProfiles)){
     dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this profile, please check it\n");
     return 0;
   }
+  // Connect signals
+  pProfileManager = new ProfileManager(pProfiles);
+  ipc.GetStopSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StopProfile));
+  ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
+  ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
+  
+
+
   // Start sync without gui
   if(noGui){
     vector<Profile>::iterator profileIter;
@@ -98,11 +108,9 @@ int main(int argc, char *argv[]){
       dbg_printc(LOG_INFO, "Main", "main", "Start scanning with profile: [\033[32m%s\033[m] ", profileIter->GetName().c_str());
       fileSystemScanner = profileIter->GetFileSystemScanner();
       profileIter->GetFileSystemScanner() ->StartToScan();
-      ipc->GetStopSignal().connect(sigc::mem_fun(*fileSystemScanner, &FileSystemScanner::StopToScan));
-      ipc->GetStartSignal().connect(sigc::mem_fun(*fileSystemScanner, &FileSystemScanner::StartToScan));
 
     }
-    ipc->Read();    
+    ipc.Read();    
     while(1);
   }
   else{

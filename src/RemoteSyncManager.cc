@@ -22,8 +22,7 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
     rsync_query
       .append(sourceFolder)
       .append(" ")
-      .append(mDestFolder)
-      .append(" &");
+      .append(mDestFolder);
     cerr << "\n";
     system(rsync_query.c_str());
 
