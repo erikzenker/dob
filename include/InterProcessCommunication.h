@@ -39,20 +39,23 @@
 typedef sigc::signal<int> StopSignal;
 typedef sigc::signal<int> StartSignal;
 
+
 class InterProcessCommunication {
  public: 
   InterProcessCommunication(std::string pathname);
   ~InterProcessCommunication();
-  StopSignal GetStopSignal();
-  StartSignal GetStartSignal();
+  sigc::signal<bool, std::string> GetStopSignal();
+  sigc::signal<bool, std::string> GetStartSignal();
+  sigc::signal<bool, std::string> GetRestartSignal();
 
   bool Read();
 
  private:
   int mFdFifo;
   char mBuf[100];
-  StopSignal mStopSignal;
-  StartSignal mStartSignal;
+  sigc::signal<bool, std::string> mStopSignal;
+  sigc::signal<bool, std::string> mStartSignal;
+  sigc::signal<bool, std::string> mRestartSignal;
 };
 
 #endif /* InterProcessCommunication_H */
