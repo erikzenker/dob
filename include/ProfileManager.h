@@ -1,3 +1,12 @@
+/**
+ * @file      ProfileManager.h
+ * @author    Erik Zenker
+ * @date      15.11.2012
+ * @copyright Gnu Public License
+ **/
+#ifndef ProfileManager_H
+#define ProfileManager_H
+
 #include <vector>
 #include <string>
 #include <dbg_print.h>
@@ -12,6 +21,9 @@ class ProfileManager {
   bool RestartProfile(std::string profileName);
 
  private:
+  Profile* GetProfileByName(std::string profileName);
   vector<Profile>* mpProfiles;
 
 };
+
+#endif /* ProfileManager_H */

@@ -2,7 +2,7 @@
  * ROADMAP
  * *
  * * Copy mechanism (Rsync)                                  --> done
- * * Mounting of server data                                 --> done : by server installation in vm
+ * * Mounting of server data                                 --> done : by server installation in vm and scripts/
  * * Debug levels                                            --> done : by dbg_print.h 
  * * Also non X userinterface (console only)                 --> done : by InterProcessCommunication interface	
  * * Write destructors for all classes
@@ -80,18 +80,16 @@ int main(int argc, char *argv[]){
   configFileName = commandLineParser.GetConfigFileName();
   configFileParser.ParseConfigFile(configFileName);
   pProfiles = configFileParser.GetProfiles();
-  // Make profiles (instanciate necessary sync objects)
+  // Setup Profiles
   if(!profileFactory.MakeProfiles(pProfiles)){
     dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this profile, please check it\n");
     return 0;
   }
-  // Connect signals
+  // Setup ProfileManager
   pProfileManager = new ProfileManager(pProfiles);
   ipc.GetStopSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StopProfile));
   ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
   ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
-  
-
 
   // Start sync without gui
   if(noGui){

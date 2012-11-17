@@ -22,19 +22,42 @@ InterProcessCommunication::~InterProcessCommunication(){
 }
 
 bool InterProcessCommunication::Read(){
+  namespace qi = boost::spirit::qi;
+  namespace ascii = boost::spirit::ascii;
+  using ascii::space;
+
   while(1){
     read(mFdFifo, &mBuf, sizeof(mBuf));
     dbg_printc(LOG_DBG, "InterProcessCommunication", "Read","%s",mBuf);
     std::string readString(mBuf);
+    std::string profileName = "default";
 
-    if (readString.find("start") != std::string::npos)
-       mStartSignal.emit("start_test");
-    if (readString.find("stop") != std::string::npos)
-       mStopSignal.emit("stop_test");
-    if (readString.find("restart") != std::string::npos)
-       mStopSignal.emit("restart_test");
+    qi::phrase_parse(readString.begin(), readString.end()
+		     ,  
+		     qi::string("stop ") 
+		     >> (*qi::char_("a-zA-Z"))[boost::bind(&InterProcessCommunication::EmitStopSignal, this, _1)]
+		     ,
+		     space);
+
+    qi::phrase_parse(readString.begin(), readString.end()
+		     ,  
+		     qi::string("start ") 
+		     >> (*qi::char_("a-zA-Z"))[boost::bind(&InterProcessCommunication::EmitStartSignal, this, _1)]
+		     ,
+		     space);
+
+
+    qi::phrase_parse(readString.begin(), readString.end()
+		     ,  
+		     qi::string("restart ") 
+		     >> (*qi::char_("a-zA-Z"))[boost::bind(&InterProcessCommunication::EmitRestartSignal, this, _1)]
+		     ,
+		     space);
+
+
 
   }
+  return true;
 }
 
 sigc::signal<bool, std::string> InterProcessCommunication::GetStopSignal(){
@@ -47,4 +70,19 @@ sigc::signal<bool, std::string> InterProcessCommunication::GetStartSignal(){
 
 sigc::signal<bool, std::string> InterProcessCommunication::GetRestartSignal(){
   return mRestartSignal;
+}
+
+void InterProcessCommunication::EmitStopSignal(std::vector<char> profileName){
+  string name(profileName.begin(), profileName.end());
+  mStopSignal.emit(name);
+}
+
+void InterProcessCommunication::EmitStartSignal(std::vector<char> profileName){
+  string name(profileName.begin(), profileName.end());
+  mStartSignal.emit(name);
+}
+
+void InterProcessCommunication::EmitRestartSignal(std::vector<char> profileName){
+  string name(profileName.begin(), profileName.end());
+  mRestartSignal.emit(name);
 }

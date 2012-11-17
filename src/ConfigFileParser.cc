@@ -10,9 +10,6 @@ ConfigFileParser::ConfigFileParser():
 void ConfigFileParser::ParseConfigFile(string configFileName){
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
-  //namespace phoenix = boost::phoenix;
-
-  //using qi::char_;
   using ascii::space;
 
   dbg_printc(LOG_INFO, "ConfigFileParser", "ParseConfigFile", "Parse config file: %s", configFileName.c_str());

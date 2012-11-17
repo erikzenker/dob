@@ -17,6 +17,13 @@
 #include <stdlib.h>
 #include <sigc++/sigc++.h>
 
+// phrase_parse includes
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/bind.hpp>
+
+#include <ProfileManager.h>
 #include <dbg_print.h>
 
 /**
@@ -53,6 +60,9 @@ class InterProcessCommunication {
  private:
   int mFdFifo;
   char mBuf[100];
+  void EmitStopSignal(std::vector<char> profileName);
+  void EmitStartSignal(std::vector<char> profileName);
+  void EmitRestartSignal(std::vector<char> profileName);
   sigc::signal<bool, std::string> mStopSignal;
   sigc::signal<bool, std::string> mStartSignal;
   sigc::signal<bool, std::string> mRestartSignal;
