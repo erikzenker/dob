@@ -5,11 +5,11 @@
  * * Mounting of server data                                 --> done : by server installation in vm and scripts/
  * * Debug levels                                            --> done : by dbg_print.h 
  * * Also non X userinterface (console only)                 --> done : by InterProcessCommunication interface	
+ * * Replace libinotify with own implementation              --> done : by Inotify.h but not all functions
+ * * Write Wrapper for Inotify events for more general use   --> done : FileSystemEvent.h but is kind of ugly
+ * * Write some nice interface for ipc                       --> done : echo start default > /tmp/odb_fifo
  * * Write destructors for all classes
  * * Give it some nice name
- * * Replace libinotify with own implementation             --> done : by Inotify.h but not all functions
- * * Write Wrapper for Inotify events for more general use  --> done : FileSystemEvent.h but is kind of ugly
- * * Write some nice interface for ipc
  * * Restart scanning after suspend
  * * Documentation for new classes
  * * Commandline installer/helper
@@ -66,30 +66,32 @@ int main(int argc, char *argv[]){
   
   dbg_print_level = LOG_DBG;
   
-  // Parse commandline and configfile
+  // Parse commandline
   dbg_print(LOG_INFO, "", "main","Start opendropbox client");
   if(!commandLineParser.ParseCommandLine(argc, argv)){
     dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
     dbg_printc(LOG_ERR,"Main", "main", "Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
     return 0;
-
   }
   noGui = commandLineParser.GetNoGui();
   dbg_print_level = commandLineParser.GetDebugLevel();
+
+  // Parse configfile
   configFileName = commandLineParser.GetConfigFileName();
   configFileParser.ParseConfigFile(configFileName);
   pProfiles = configFileParser.GetProfiles();
+
   // Setup Profiles
   if(!profileFactory.MakeProfiles(pProfiles)){
     dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this profile, please check it\n");
     return 0;
   }
+
   // Setup ProfileManager
   pProfileManager = new ProfileManager(pProfiles);
   ipc.GetStopSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StopProfile));
   ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
   ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
-
  
   if(noGui){
     // Start sync without gui
