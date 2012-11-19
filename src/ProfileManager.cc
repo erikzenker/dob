@@ -12,8 +12,7 @@ ProfileManager::~ProfileManager(){
 bool ProfileManager::StartProfile(std::string profileName){
   Profile * pProfile = GetProfileByName(profileName);
   if(pProfile){
-    dbg_printc(LOG_DBG, "ProfileManager", "StartProfile", "Start profile [%s]", profileName.c_str());
-    pProfile->GetFileSystemScanner()->StartToScan();
+    pProfile->StartProfile();
     return true;
   }
     
@@ -23,21 +22,18 @@ bool ProfileManager::StartProfile(std::string profileName){
 bool ProfileManager::StopProfile(std::string profileName){
   Profile * pProfile = GetProfileByName(profileName);
   if(pProfile){
-    dbg_printc(LOG_DBG, "ProfileManager", "StartProfile", "Start profile [%s]", profileName.c_str());
-    pProfile->GetFileSystemScanner()->StopToScan();
+    pProfile->StopProfile();
     return true;
   }
     
   return false;
-
 }
 
 bool ProfileManager::RestartProfile(std::string profileName){
   Profile * pProfile = GetProfileByName(profileName);
   if(pProfile){
-    dbg_printc(LOG_DBG, "ProfileManager", "StartProfile", "Start profile [%s]", profileName.c_str());
-    pProfile->GetFileSystemScanner()->StopToScan();
-    pProfile->GetFileSystemScanner()->StartToScan();
+    pProfile->StopProfile();
+    pProfile->StartProfile();
     return true;
   }
     

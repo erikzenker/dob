@@ -60,12 +60,11 @@ int main(int argc, char *argv[]){
   CommandLineParser commandLineParser;
   ProfileFactory profileFactory;
   FileSystemScanner *fileSystemScanner;
-  InterProcessCommunication ipc("/tmp/fifo");
+  InterProcessCommunication ipc("/tmp/odb_fifo");
   ProfileManager *pProfileManager;
   bool noGui;
   
   dbg_print_level = LOG_DBG;
-
   
   // Parse commandline and configfile
   dbg_print(LOG_INFO, "", "main","Start opendropbox client");
@@ -91,27 +90,19 @@ int main(int argc, char *argv[]){
   ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
   ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
 
-  // Start sync without gui
+ 
   if(noGui){
+    // Start sync without gui
     vector<Profile>::iterator profileIter;
     for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
-      dbg_printc(LOG_INFO, "Main", "main", "Start sync with profile: [\033[32m%s\033[m] ", profileIter->GetName().c_str());
-      profileIter->GetSyncManager()->SyncSourceFolder(profileIter->GetFileSystemScanner()->GetScanFolder());
-
-    }
-
-    //@bug cant start scanning directly after sync different profiles
-
-    for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
-      dbg_printc(LOG_INFO, "Main", "main", "Start scanning with profile: [\033[32m%s\033[m] ", profileIter->GetName().c_str());
-      fileSystemScanner = profileIter->GetFileSystemScanner();
-      profileIter->GetFileSystemScanner() ->StartToScan();
+      profileIter->StartProfile();
 
     }
     ipc.Read();    
-    while(1);
+
   }
   else{
+    // Start sync with gui
     return start_gui(argc, argv, pProfiles);
   }
   return 0;

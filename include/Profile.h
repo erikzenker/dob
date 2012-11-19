@@ -14,6 +14,7 @@
 #include <RemoteSyncManager.h>
 #include <LocalSyncManager.h>
 #include <OptimizedEventManager.h>
+#include <dbg_print.h>
 
 using namespace std;
 
@@ -47,7 +48,8 @@ class Profile {
   // Auxillary functions
   void print();
   bool IsValid();
-
+  bool StartProfile();
+  bool StopProfile();
  private:
   string name;
   string syncType;

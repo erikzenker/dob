@@ -150,19 +150,20 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
   char buffer[EVENT_BUF_LEN];
 
   if(mEventQueue.empty()){
-    length = read(mInotifyFd, buffer, EVENT_BUF_LEN);
     while(length <= 0){
+    length = read(mInotifyFd, buffer, EVENT_BUF_LEN);
       if(length == -1){
 	mError = errno;
 	if(mError != EINTR){
-	  dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Failed to read from inotify fd(%d), Errno %d",mInotifyFd, mError);
+	  dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Failed to read from inotify fd(%d), Errno %d", mInotifyFd, mError);
 	  return NULL;
 
 	}
-	dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Inotify read EINTR from fd(%d)",mInotifyFd );
+
+	dbg_printc(LOG_WARN, "Inotify", "GetNextEvent", "Can´t read from Inotify fd(%d), Errno: EINTR, try to read again", mInotifyFd );
 
       }
-      sleep(1);
+
     }
 
     while(i < length){

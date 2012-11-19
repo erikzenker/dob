@@ -26,7 +26,7 @@ bool LocalSyncManager::SyncSourceFolder(string sourceFolder){
       .append(mDestFolder);
     cerr << "\n";
     system(rsync_query.c_str());
-  }
+    }
   else{
     dbg_printc(LOG_DBG, "LocalSyncManager", "SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
 
