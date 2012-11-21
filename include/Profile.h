@@ -32,6 +32,7 @@ class Profile {
   void SetSyncFolder(vector<char> syncFolder)     { this->syncFolder.assign(syncFolder.begin(), syncFolder.end());}
   void SetDestFolder(vector<char> destFolder)     { this->destFolder.assign(destFolder.begin(), destFolder.end());}
   void SetDestLocation(vector<char> destLocation) { this->destLocation.assign(destLocation.begin(), destLocation.end());}
+  void SetMountOptions(vector<char> mountOptions) { mMountOptions.assign(mountOptions.begin(), mountOptions.end());}
   void SetDestLocation(string destLocation)       { this->destLocation = destLocation;}
   void SetSyncManager(SyncManager* syncManager)   { mpSyncManager = syncManager;}
   void SetEventManager(EventManager* eventManager){ mpEventManager = eventManager;}
@@ -42,6 +43,7 @@ class Profile {
   string GetSyncFolder()   { return syncFolder;}
   string GetDestFolder()   { return destFolder;}
   string GetDestLocation() { return destLocation;}
+  string GetMountOptions() { return mMountOptions;}
   SyncManager *GetSyncManager() { return mpSyncManager;}
   EventManager *GetEventManager() { return mpEventManager;}
   FileSystemScanner *GetFileSystemScanner() { return mpFileSystemScanner;}
@@ -56,6 +58,7 @@ class Profile {
   string syncFolder;
   string destFolder;
   string destLocation;
+  string mMountOptions;
   SyncManager * mpSyncManager;
   EventManager * mpEventManager;
   FileSystemScanner * mpFileSystemScanner;

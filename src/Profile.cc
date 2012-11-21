@@ -5,7 +5,8 @@ Profile::Profile() :
   syncType(""),
   syncFolder(""),
   destFolder(""),
-  destLocation(""){
+  destLocation(""),
+  mMountOptions(""){
 
 }
 

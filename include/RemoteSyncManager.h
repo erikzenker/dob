@@ -17,14 +17,15 @@ using namespace std;
 class RemoteSyncManager : public SyncManager{
 
  public:
-  RemoteSyncManager(string destFolder, string syncType);
-  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
-  virtual bool SyncFile(string sourceFolder, string syncFolder);
-  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  RemoteSyncManager(string destFolder, string syncType, string mountOptions);
 
  protected:
   virtual bool CheckDestFolder();
   virtual bool MountDestFolder();
+
+ private:
+  string mMountOptions;
+  
 
 };
 

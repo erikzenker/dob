@@ -9,12 +9,13 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   string destFolder = profile->GetDestFolder();
   string syncType   = profile->GetSyncType();
   string destLocation = profile->GetDestLocation();
+  string mountOptions = profile->GetMountOptions();
   EventManager* pEventManager;
   SyncManager* pSyncManager;
   FileSystemScanner* pFileSystemScanner;
   
   if(!destLocation.compare("remote")){
-    pSyncManager = new RemoteSyncManager(destFolder, syncType);
+    pSyncManager = new RemoteSyncManager(destFolder, syncType, mountOptions);
   }
   else if(!destLocation.compare("local")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);

@@ -19,8 +19,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 
   if(config_file_stream.is_open())
   {
-    while(config_file_stream.good())
-    {
+    while(config_file_stream.good()){
       getline (config_file_stream,line);
 
       // Parse profile name
@@ -73,6 +72,16 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	  continue;
 	  
 	}
+      // Parse mount Options
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("mountOptions=ssh:") 
+			  >>     
+			  (*qi::char_)[boost::bind(&ConfigFileParser::SetMountOptions, this, _1)]
+			  ,space))
+	{
+	  continue;
+	  
+	}
 
     }
     config_file_stream.close();
@@ -110,7 +119,13 @@ void ConfigFileParser::SetDestLocation (string destLocation){
 
 }
 
+void ConfigFileParser::SetMountOptions(vector<char> mountOptions){
+  mpProfiles->back().SetMountOptions(mountOptions);
+}
+
 vector<Profile> *ConfigFileParser::GetProfiles(){
   return mpProfiles;
 }
+
+
 

@@ -49,6 +49,7 @@ void InotifyFileSystemScanner::Execute(void* arg){
 
     //Add/delete watches for added/deleted folders or files
     switch(fileSystemEvent->GetMask()){
+    case IN_MOVED_FROM:
     case IN_DELETE:
     case IN_DELETE | IN_ISDIR:
       // @todo remove watches recursively
@@ -57,11 +58,13 @@ void InotifyFileSystemScanner::Execute(void* arg){
 		fileSystemEvent->GetFilename().c_str());
       break;
 
+    case IN_MOVED_TO:
     case IN_CREATE:
     case IN_CREATE | IN_ISDIR:
       dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent->GetFilename().c_str());
       inotify.WatchFolderRecursively(fileSystemEvent->GetFullPath());
       break;
+
     case IN_MODIFY:
       // Do nothing
       break;
