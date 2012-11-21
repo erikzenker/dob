@@ -21,7 +21,8 @@ public:
   virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
  protected: 
-  bool IsDir(string directory);
+  virtual bool CheckDestFolder();
+  virtual bool MountDestFolder();
 
 };
 

@@ -26,12 +26,12 @@ USAGE
 1. Create some folder you want use as syncronization folder
    ==> mkdir /home/<Your username>/OpenDropbox
 
-2. Edit the configfile, if it not exist just create one
+2. Edit the configfile, if it not exists just create one
    ==> create: touch odb.conf
-   ==> edit  : syncFolder = /home/<Your username>/OpenDropbox/
-       	       syncType   = backup || syncronize || update 
-       	       destFolder = /<syncronization>/<Folder>/
-	       destLocation = remote || local
+   ==> edit  : syncFolder=/home/<Your username>/OpenDropbox/
+       	       syncType=backup || syncronize || update 
+       	       destFolder=/<syncronization>/<Folder>/
+	       destLocation=remote || local
 	       
 
 3. Start the programm

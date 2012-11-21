@@ -16,7 +16,7 @@ LocalSyncManager::LocalSyncManager(string destFolder, string syncType):
  *        See more in "man rsync"
  */
 bool LocalSyncManager::SyncSourceFolder(string sourceFolder){
-  if(IsDir(mDestFolder)){
+  if(CheckDestFolder()){
     dbg_printc(LOG_DBG, "LocalSyncManager", "SyncSourceFolder", "Syncronise source and destination folder");
 
     string rsync_query = "rsync -vzruL --delete ";
@@ -36,7 +36,7 @@ bool LocalSyncManager::SyncSourceFolder(string sourceFolder){
 }
 
 bool LocalSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  if(IsDir(mDestFolder)){
+  if(CheckDestFolder()){
     string cp_query = "cp -RLv ";  
     cp_query
       .append(syncFolder)
@@ -83,21 +83,18 @@ bool LocalSyncManager::RemoveFolder(string sourceFolder, string syncFolder, stri
 
 }
 
-/**
- * @todo replace lstat64 by opendir
- **/
-bool LocalSyncManager::IsDir(string directory){
-
+bool LocalSyncManager::CheckDestFolder(){
   static struct stat64 my_stat;
-  
-
-  if ( -1 == lstat64(directory.c_str(), &my_stat ) ) {
+  if ( -1 == lstat64(mDestFolder.c_str(), &my_stat ) ) {
     if (errno == ENOENT) return false;
-    dbg_printc(LOG_WARN, "LocalSyncManager", "IsDir", "\nC Stat failed on %s: %s\n", directory.c_str(), strerror(errno));
+    dbg_printc(LOG_WARN, "LocalSyncManager", "IsDir", "\nC Stat failed on %s: %s\n", mDestFolder.c_str(), strerror(errno));
     return false;
   }
   if(S_ISDIR( my_stat.st_mode ))
     return true;
   return false;
+}
 
+bool LocalSyncManager::MountDestFolder(){
+  return false;
 }

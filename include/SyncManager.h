@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <dirent.h>
+#include <dbg_print.h>
 
 using namespace std;
 
@@ -27,14 +28,17 @@ class SyncManager{
 public:
   SyncManager(string destFolder, string syncType);
   SyncManager();
-  virtual bool SyncSourceFolder(string sourceFolder) =0;
-  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder) =0;
+  virtual bool SyncSourceFolder(string sourceFolder);
+  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
   virtual bool SyncFile(string sourceFolder, string syncFolder) =0;
   virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder) =0;
 
 protected:
+  virtual bool CheckDestFolder() =0;
+  virtual bool MountDestFolder() =0;
   string mDestFolder;
   string mSyncType;
+
 };
 
 #endif /* SyncManager_H */
