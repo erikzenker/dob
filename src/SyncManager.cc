@@ -21,6 +21,13 @@ SyncManager::SyncManager(){
  *            --delete        delete extraneous files from dest dirs
  *        -L, --copy-links    transform symlink into referent file/dir
  *        -K, --keep-dirlinks treat symlinked dir on receiver as dir
+ *        -p, --perms         preserve permissions
+ *        -t, --times         preserve modification times
+ *        -o, --owner         preserve owner (super-user only)
+ *        -g, --group         preserve group
+ *            --devices       preserve device files (super-user only)
+ *            --specials      preserve special files
+ *        -D                  same as --devices --specials
  *        See more in "man rsync"
  */
 bool SyncManager::SyncSourceFolder(string sourceFolder){
@@ -37,8 +44,8 @@ bool SyncManager::SyncSourceFolder(string sourceFolder){
   }
 
   dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncSourceFolder: Syncronise source and destination folder");
-  string rsync_push_query = "rsync -vzruLK ";
-  string rsync_pull_query = "rsync -vzruLK ";
+  string rsync_push_query = "rsync -vzruLKptD ";
+  string rsync_pull_query = "rsync -vzruLKptD ";
   rsync_push_query
     .append(sourceFolder)
     .append(" ")
