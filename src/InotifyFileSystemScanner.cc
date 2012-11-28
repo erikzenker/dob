@@ -68,7 +68,6 @@ void InotifyFileSystemScanner::Execute(void* arg){
     case IN_MODIFY:
       // Do nothing
       break;
-      // @todo also event IN_MOVED_TO, IN_MOVED_FROM should be handled
     default:
       dbg_printc(LOG_ERR, 
 		 "InotifyFileSystemScanner", 

@@ -18,6 +18,9 @@ class RemoteSyncManager : public SyncManager{
 
  public:
   RemoteSyncManager(string destFolder, string syncType, string mountOptions);
+  virtual bool SyncSourceFolder(string sourceFolder);
+  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
  protected:
   virtual bool CheckDestFolder();

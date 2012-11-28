@@ -36,9 +36,9 @@ bool SyncManager::SyncSourceFolder(string sourceFolder){
     }
   }
 
-  dbg_print(LOG_DBG, "\nC RemoteSyncManager::SyncSourceFolder: Syncronise source and destination folder");
-  string rsync_push_query = "rsync -vzruLK ";
-  string rsync_pull_query = "rsync -vzruLK ";
+  dbg_printc(LOG_DBG, "SyncManager", "SyncSourceFolder", "Syncronise source and destination folder");
+  string rsync_push_query = "rsync -vzruLKptD ";
+  string rsync_pull_query = "rsync -vzruLKptD ";
   rsync_push_query
     .append(sourceFolder)
     .append(" ")
