@@ -37,7 +37,7 @@ bool Profile::StartProfile(){
 }
 
 bool Profile::StopProfile(){
-  dbg_printc(LOG_INFO, "Main", "main", "Stop sync with profile: [\033[32m%s\033[m] ", name.c_str());
+  dbg_printc(LOG_INFO, "Main", "main", "Stop scanning with profile: [\033[32m%s\033[m] ", name.c_str());
   mpFileSystemScanner->StopToScan();
   return true;
 }
