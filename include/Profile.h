@@ -31,9 +31,9 @@ class Profile {
   void SetSyncType(string syncType)               { this->syncType = syncType;}
   void SetSyncFolder(vector<char> syncFolder)     { this->syncFolder.assign(syncFolder.begin(), syncFolder.end());}
   void SetDestFolder(vector<char> destFolder)     { this->destFolder.assign(destFolder.begin(), destFolder.end());}
-  void SetDestLocation(vector<char> destLocation) { this->destLocation.assign(destLocation.begin(), destLocation.end());}
-  void SetMountOptions(vector<char> mountOptions) { mMountOptions.assign(mountOptions.begin(), mountOptions.end());}
-  void SetDestLocation(string destLocation)       { this->destLocation = destLocation;}
+  void SetDestType(vector<char> destType)         { mDestType.assign(destType.begin(), destType.end());}
+  void SetDestProtocol(vector<char> destProtocol) { mDestProtocol.assign(destProtocol.begin(), destProtocol.end());}
+  void SetDestType(string destType)               { mDestType = destType;}
   void SetSyncManager(SyncManager* syncManager)   { mpSyncManager = syncManager;}
   void SetEventManager(EventManager* eventManager){ mpEventManager = eventManager;}
   void SetFileSystemScanner(FileSystemScanner* fileSystemScanner) { mpFileSystemScanner = fileSystemScanner;}
@@ -42,8 +42,8 @@ class Profile {
   string GetSyncType()     { return syncType;}
   string GetSyncFolder()   { return syncFolder;}
   string GetDestFolder()   { return destFolder;}
-  string GetDestLocation() { return destLocation;}
-  string GetMountOptions() { return mMountOptions;}
+  string GetDestType()     { return mDestType;}
+  string GetDestProtocol() { return mDestProtocol;}
   SyncManager *GetSyncManager() { return mpSyncManager;}
   EventManager *GetEventManager() { return mpEventManager;}
   FileSystemScanner *GetFileSystemScanner() { return mpFileSystemScanner;}
@@ -57,8 +57,8 @@ class Profile {
   string syncType;
   string syncFolder;
   string destFolder;
-  string destLocation;
-  string mMountOptions;
+  string mDestType;
+  string mDestProtocol;
   SyncManager * mpSyncManager;
   EventManager * mpEventManager;
   FileSystemScanner * mpFileSystemScanner;

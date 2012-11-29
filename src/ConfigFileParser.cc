@@ -65,8 +65,8 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	}
       // Parse destination location
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destLocation=") >> qi::string("local")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
-			  | qi::string("destLocation=") >> qi::string("remote")[boost::bind(&ConfigFileParser::SetDestLocation, this, _1)] 
+			  , qi::string("destType=") >> qi::string("local")[boost::bind(&ConfigFileParser::SetDestType, this, _1)] 
+			  | qi::string("destType=") >> qi::string("remote")[boost::bind(&ConfigFileParser::SetDestType, this, _1)] 
 			  ,space))
 	{
 	  continue;
@@ -74,9 +74,9 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	}
       // Parse mount Options
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("mountOptions=ssh:") 
+			  , qi::string("destProtocol=") 
 			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::SetMountOptions, this, _1)]
+			  (*qi::char_)[boost::bind(&ConfigFileParser::SetDestProtocol, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -114,13 +114,13 @@ void ConfigFileParser::SetDestFolder (vector<char> destFolder){
 
 }
 
-void ConfigFileParser::SetDestLocation (string destLocation){
-  mpProfiles->back().SetDestLocation(destLocation);
+void ConfigFileParser::SetDestType(string destLocation){
+  mpProfiles->back().SetDestType(destLocation);
 
 }
 
-void ConfigFileParser::SetMountOptions(vector<char> mountOptions){
-  mpProfiles->back().SetMountOptions(mountOptions);
+void ConfigFileParser::SetDestProtocol(vector<char> mountOptions){
+  mpProfiles->back().SetDestProtocol(mountOptions);
 }
 
 vector<Profile> *ConfigFileParser::GetProfiles(){

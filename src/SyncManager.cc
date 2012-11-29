@@ -4,7 +4,6 @@
 SyncManager::SyncManager(string destFolder, string syncType) : 
   mDestFolder(destFolder),
   mSyncType(syncType){
-  assert(opendir(destFolder.c_str()));
 
 }
 
@@ -21,6 +20,8 @@ SyncManager::SyncManager(){
  *            --delete        delete extraneous files from dest dirs
  *        -L, --copy-links    transform symlink into referent file/dir
  *        -K, --keep-dirlinks treat symlinked dir on receiver as dir
+ *        -t, --times         preserve modification times
+ *        -p, --perms         preserve permissions
  *        See more in "man rsync"
  */
 bool SyncManager::SyncSourceFolder(string sourceFolder){
@@ -37,19 +38,19 @@ bool SyncManager::SyncSourceFolder(string sourceFolder){
   }
 
   dbg_printc(LOG_DBG, "SyncManager", "SyncSourceFolder", "Syncronise source and destination folder");
-  string rsync_push_query = "rsync -vzruLKptD ";
-  string rsync_pull_query = "rsync -vzruLKptD ";
-  rsync_push_query
+  string push_query = "rsync -vzruLKpt ";
+  string pull_query = "rsync -vzruLKpt ";
+  push_query
     .append(sourceFolder)
     .append(" ")
     .append(mDestFolder);
-  rsync_pull_query
+  pull_query
     .append(mDestFolder)      
     .append(" ")
     .append(sourceFolder);
   cerr << "\n";
-  system(rsync_pull_query.c_str());
-  system(rsync_push_query.c_str());
+  system(pull_query.c_str());
+  system(push_query.c_str());
 
   return true;
 }

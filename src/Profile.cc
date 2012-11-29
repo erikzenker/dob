@@ -5,8 +5,8 @@ Profile::Profile() :
   syncType(""),
   syncFolder(""),
   destFolder(""),
-  destLocation(""),
-  mMountOptions(""){
+  mDestType(""),
+  mDestProtocol(""){
 
 }
 
@@ -22,7 +22,8 @@ void Profile::print(){
   cout << "\nC  syncType=" << syncType;
   cout << "\nC  syncFolder=" << syncFolder;
   cout << "\nC  destFolder=" << destFolder;
-  cout << "\nC  destLocation=" << destLocation;
+  cout << "\nC  destType=" << mDestType;
+  cout << "\nC  destProtocol=" << mDestProtocol;
   cout << "\n";
   
 }

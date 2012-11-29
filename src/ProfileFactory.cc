@@ -8,20 +8,20 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   string scanFolder = profile->GetSyncFolder();
   string destFolder = profile->GetDestFolder();
   string syncType   = profile->GetSyncType();
-  string destLocation = profile->GetDestLocation();
-  string mountOptions = profile->GetMountOptions();
+  string destType   = profile->GetDestType();
+  string destProtocol = profile->GetDestProtocol();
   EventManager* pEventManager;
   SyncManager* pSyncManager;
   FileSystemScanner* pFileSystemScanner;
   
-  if(!destLocation.compare("remote")){
-    pSyncManager = new RemoteSyncManager(destFolder, syncType, mountOptions);
+  if(!destType.compare("remote")){
+    pSyncManager = new RemoteSyncManager(destFolder, syncType, destProtocol);
   }
-  else if(!destLocation.compare("local")){
+  else if(!destType.compare("local")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);
   }
   else{
-    dbg_print(LOG_FATAL,"\nC destLocation %s in configfile is not an option", destLocation.c_str());
+    dbg_print(LOG_FATAL,"\nC destType %s in configfile is not an option", destType.c_str());
     return false;
   }
 

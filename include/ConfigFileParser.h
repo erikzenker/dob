@@ -32,8 +32,8 @@ class ConfigFileParser{
   void SetSyncType(string syncType);
   void SetSyncFolder(vector<char> syncFolder);
   void SetDestFolder(vector<char> destFolder);
-  void SetDestLocation(string destLocation);
-  void SetMountOptions(vector<char> mountPoints);
+  void SetDestType(string destLocation);
+  void SetDestProtocol(vector<char> mountPoints);
   vector<Profile> *mpProfiles;
 };
 
