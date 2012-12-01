@@ -9,6 +9,7 @@
 #define PROFILEFACTORY_H
 
 #include <Profile.h>
+#include <GitSyncManager.h>
 #include <iostream>
 #include <dbg_print.h>
 #include <vector>

@@ -15,7 +15,12 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   FileSystemScanner* pFileSystemScanner;
   
   if(!destType.compare("remote")){
-    pSyncManager = new RemoteSyncManager(destFolder, syncType, destProtocol);
+    if(!destProtocol.compare("ssh")){
+      pSyncManager = new RemoteSyncManager(destFolder, syncType, destProtocol);
+    }
+    else if(!destProtocol.compare("git")){
+      pSyncManager = new GitSyncManager(destFolder, syncType, destProtocol);
+    }
   }
   else if(!destType.compare("local")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);
