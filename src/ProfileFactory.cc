@@ -13,6 +13,8 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   EventManager* pEventManager;
   SyncManager* pSyncManager;
   FileSystemScanner* pFileSystemScanner;
+  std::string ignoredFolder = "";
+  
   
   if(!destType.compare("remote")){
     if(!destProtocol.compare("ssh")){
@@ -20,6 +22,8 @@ bool ProfileFactory::MakeProfile(Profile* profile){
     }
     else if(!destProtocol.compare("git")){
       pSyncManager = new GitSyncManager(destFolder, syncType, destProtocol);
+      ignoredFolder = scanFolder;
+      ignoredFolder.append(".git");
     }
   }
   else if(!destType.compare("local")){
@@ -31,7 +35,7 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   }
 
   pEventManager = new OptimizedEventManager(pSyncManager);
-  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, pEventManager);
+  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolder, pEventManager);
   profile->SetSyncManager(pSyncManager);
   profile->SetEventManager(pEventManager);
   profile->SetFileSystemScanner(pFileSystemScanner);
@@ -40,7 +44,7 @@ bool ProfileFactory::MakeProfile(Profile* profile){
 }
 
 bool ProfileFactory::MakeProfiles(vector<Profile>* pProfiles){
-  for(int i=0; i < pProfiles->size(); ++i){
+  for(int i = 0; i < pProfiles->size(); ++i){
     if(pProfiles->at(i).IsValid()){
       if(!MakeProfile(&(pProfiles->at(i)))){
 	return false;

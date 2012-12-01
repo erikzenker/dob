@@ -31,18 +31,23 @@
  *
  * Watches a folder (scanFolder) for changes. Every change
  * will raise an event of Inotify which will be processed
- * by a Eventmanager (pEventManager). New folders or will 
- * be also added to the watches.
+ * by a Eventmanager (pEventManager). New folders or files will 
+ * also watched in future.
  *
  **/
 class InotifyFileSystemScanner : public FileSystemScanner, public Thread {
 public:
   InotifyFileSystemScanner(const string scanFolder, EventManager* const pEventManager);
+  InotifyFileSystemScanner(const string scanFolder, const string ignoredFolder, EventManager* const pEventManager);
   virtual int StartToScan();
   virtual int StopToScan();
+
  protected:
   virtual void Execute(void* arg);
   virtual void Setup();
+
+ private:
+  std::string mIgnoredFolder;
 
 
 };

@@ -30,6 +30,8 @@
 class Inotify {
  public:
   Inotify();
+  Inotify(std::vector<std::string> ignoredFolders);
+  Inotify(std::string ignoredFolder);
   ~Inotify();
   bool WatchFolderRecursively(std::string watchFolder);
   FileSystemEvent<int>* GetNextEvent();
@@ -42,6 +44,7 @@ class Inotify {
   bool Initialize();
   bool CleanUp();
   std::string EventMaskToString(uint32_t events);
+  bool IsIgnored(std::string file);
 
   // Member
   bool mIsInitialized;
@@ -51,6 +54,7 @@ class Inotify {
   //std::queue<inotify_event*> mEventQueue;
   std::queue<FileSystemEvent<int>* > mEventQueue;
   std::map<int, std::string> mFolderMap;
+  std::vector<string> mIgnoredFolders;
 
 };
 

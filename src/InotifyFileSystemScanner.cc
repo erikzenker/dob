@@ -6,7 +6,14 @@
 #include "InotifyFileSystemScanner.h"
 
 InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, EventManager* const pEventManager) 
-  : FileSystemScanner(scanFolder, pEventManager ){
+  : FileSystemScanner(scanFolder, pEventManager ),
+    mIgnoredFolder(""){
+}
+
+InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, const string ignoredFolder, EventManager* const pEventManager) 
+  : FileSystemScanner(scanFolder, pEventManager ),
+    mIgnoredFolder(ignoredFolder){
+
 }
 
 /**
@@ -35,7 +42,7 @@ void InotifyFileSystemScanner::Setup(){
 }
 
 void InotifyFileSystemScanner::Execute(void* arg){
-  Inotify inotify;
+  Inotify inotify(mIgnoredFolder);
   if(!inotify.WatchFolderRecursively(mScanFolder)){
     dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", inotify.GetLastError());
 

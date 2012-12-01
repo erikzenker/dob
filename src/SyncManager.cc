@@ -35,12 +35,12 @@ SyncManager::SyncManager(){
 bool SyncManager::SyncSourceFolder(string sourceFolder){
   if(!CheckDestFolder()){
     if(!MountDestFolder()){
-      dbg_printc(LOG_ERR,"RemoteSyncManager","SyncSourceFolder", "Failed to mount destination folder, abort syncronisation");
+      dbg_printc(LOG_ERR,"SyncManager","SyncSourceFolder", "Failed to mount destination folder, abort syncronisation");
       return false;
     }
     // Check again just to be shure
     if(!CheckDestFolder()){
-      dbg_printc(LOG_ERR,"RemoteSyncManager","SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
+      dbg_printc(LOG_ERR,"SyncManager","SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
       return false;
     }
   }
@@ -67,12 +67,12 @@ bool SyncManager::SyncSourceFolder(string sourceFolder){
 bool SyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
   if(!CheckDestFolder()){
     if(!MountDestFolder()){
-      dbg_printc(LOG_ERR,"RemoteSyncManager","SyncFolder", "Failed to dispatch destination folder, abort syncronisation");
+      dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed to dispatch destination folder, abort syncronisation");
       return false;
     }
     // Check again just to be shure
     if(!CheckDestFolder()){
-      dbg_printc(LOG_ERR,"RemoteSyncManager","SyncFolder", "Failed syncronise source and destination folder, because destination folder is not reachable or not mounted");
+      dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed syncronise source and destination folder, because destination folder is not reachable or not mounted");
       return false;
     }
   }
@@ -87,10 +87,10 @@ bool SyncManager::SyncFolder(string sourceFolder, string syncFolder, string fold
     .append(" ");
   
   if(system(cp_query.c_str())){
-    dbg_printc(LOG_DBG, "RemoteSyncManager","SyncFolder","Can't reach destination folder, maybe location is offline or file doesn't exist anymore");
+    dbg_printc(LOG_DBG, "SyncManager","SyncFolder","Can't reach destination folder, maybe location is offline or file doesn't exist anymore");
     return false;
   }
-  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFolder","%s ", cp_query.c_str());
+  dbg_printc(LOG_DBG,"SyncManager","SyncFolder","%s ", cp_query.c_str());
 
   return true;
   
@@ -99,12 +99,12 @@ bool SyncManager::SyncFolder(string sourceFolder, string syncFolder, string fold
 bool SyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
   if(!CheckDestFolder()){
     if(!MountDestFolder()){
-      dbg_printc(LOG_ERR,"RemoteSyncManager","RemoveFolder", "Failed to mount destination folder, abort syncronisation");
+      dbg_printc(LOG_ERR,"SyncManager","RemoveFolder", "Failed to mount destination folder, abort syncronisation");
       return false;
     }
     // Check again just to be shure
     if(!CheckDestFolder()){
-      dbg_printc(LOG_ERR,"RemoteSyncManager","RemoveFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
+      dbg_printc(LOG_ERR,"SyncManager","RemoveFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
       return false;
     }
   }
@@ -116,10 +116,10 @@ bool SyncManager::RemoveFolder(string sourceFolder, string syncFolder, string fo
     .append(folder);
 
   if(system(rm_query.c_str())){
-    dbg_printc(LOG_ERR, "RemoteSyncManager","RemoveFolder","Can't reach destination folder, maybe location is offline");
+    dbg_printc(LOG_ERR, "SyncManager","RemoveFolder","Can't reach destination folder, maybe location is offline");
     return false;
   }
-  dbg_printc(LOG_DBG, "RemoteSyncManager","RemoveFolder","%s", rm_query.c_str());
+  dbg_printc(LOG_DBG, "SyncManager","RemoveFolder","%s", rm_query.c_str());
   return true;
 
 }

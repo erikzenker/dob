@@ -7,6 +7,22 @@ Inotify::Inotify() :
   Initialize();
 }
 
+Inotify::Inotify(std::vector<std::string> ignoredFolders) :
+  mError(0),
+  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
+  mIgnoredFolders(ignoredFolders){
+
+  Initialize();
+}
+
+Inotify::Inotify(std::string ignoredFolder) :
+  mError(0),
+  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
+
+  Initialize();
+  mIgnoredFolders.push_back(ignoredFolder);
+}
+
 Inotify::~Inotify(){
   CleanUp();
 }
@@ -61,7 +77,7 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
       nextFile = watchFolder;
       nextFile.append(ent->d_name);
       
-      // Check the File/Folder
+      // Check the File/Folder for acces
       if(lstat64(nextFile.c_str(), &my_stat) == -1){
 	mError = errno;
 	dbg_printc(LOG_ERR, "Inotify", "WatchFolderRecursively", "\nC Error on fstat %s, %d", nextFile.c_str(), mError);
@@ -76,11 +92,13 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
       // Watch a folder recursively
       else if(S_ISDIR(my_stat.st_mode ) || S_ISLNK( my_stat.st_mode )) {
 	nextFile.append("/");
-	bool status = WatchFolderRecursively(nextFile);
-	
-	if (!status){
-	  closedir(directory);
-	  return false;
+	if(!IsIgnored(nextFile)){
+	  bool status = WatchFolderRecursively(nextFile);
+	  if (!status){
+	    closedir(directory);
+	    return false;
+
+	  }
 
 	}
 
@@ -223,4 +241,15 @@ std::string Inotify::EventMaskToString(uint32_t events){
 int Inotify::GetLastError(){
   return mError;
 
+}
+
+bool Inotify::IsIgnored(std::string file){
+  for(int i = 0; i < mIgnoredFolders.size(); ++i){
+    size_t pos = file.find(mIgnoredFolders[i]);
+    if(pos!= string::npos){
+      dbg_printc(LOG_DBG, "Inotify", "IsIgnored","File will be ignored: %s", file.c_str());
+      return true;
+    }
+  }
+  return false;
 }
