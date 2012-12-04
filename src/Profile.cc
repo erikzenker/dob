@@ -29,13 +29,19 @@ void Profile::print(){
 }
 
 bool Profile::StartProfile(){
+  return StartSyncProfile() && StartScanProfile();
+}
+
+bool Profile::StartSyncProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Start sync with profile: [\033[32m%s\033[m] ", name.c_str());
-  mpSyncManager->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
+  return mpSyncManager->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
+}
+
+bool Profile::StartScanProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Start scanning with profile: [\033[32m%s\033[m] ", name.c_str());
   mpFileSystemScanner->StartToScan();
   return true;
 }
-
 bool Profile::StopProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Stop scanning with profile: [\033[32m%s\033[m] ", name.c_str());
   mpFileSystemScanner->StopToScan();

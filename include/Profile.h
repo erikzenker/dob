@@ -52,6 +52,8 @@ class Profile {
   bool IsValid();
   bool StartProfile();
   bool StopProfile();
+  bool StartSyncProfile();
+  bool StartScanProfile();
  private:
   string name;
   string syncType;
