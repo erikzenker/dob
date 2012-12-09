@@ -16,20 +16,21 @@ SyncManager::SyncManager(){
 
 /*
  * @note  Rsync command line parameters
- *        -r, --recursive     recurse into directories
- *        -u, --update        skip files that are newer on the receiver
- *        -z, --compress      compress file data during the transfer
- *        -v, --verbose       increase verbosity
- *            --delete        delete extraneous files from dest dirs
- *        -L, --copy-links    transform symlink into referent file/dir
- *        -K, --keep-dirlinks treat symlinked dir on receiver as dir
- *        -p, --perms         preserve permissions
- *        -t, --times         preserve modification times
- *        -o, --owner         preserve owner (super-user only)
- *        -g, --group         preserve group
- *            --devices       preserve device files (super-user only)
- *            --specials      preserve special files
- *        -D                  same as --devices --specials
+ *        -r, --recursive         recurse into directories
+ *        -u, --update            skip files that are newer on the receiver
+ *        -z, --compress          compress file data during the transfer
+ *        -v, --verbose           increase verbosity
+ *            --delete            delete extraneous files from dest dirs
+ *        -L, --copy-links        transform symlink into referent file/dir
+ *        -K, --keep-dirlinks     treat symlinked dir on receiver as dir
+ *        -p, --perms             preserve permissions
+ *        -t, --times             preserve modification times
+ *        -o, --owner             preserve owner (super-user only)
+ *        -g, --group             preserve group
+ *            --devices           preserve device files (super-user only)
+ *            --specials          preserve special files
+ *        -D                      same as --devices --specials
+ *            --modify-window=NUM compare mod-times with reduced accuracy
  *        See more in "man rsync"
  */
 bool SyncManager::SyncSourceFolder(string sourceFolder){
@@ -47,8 +48,8 @@ bool SyncManager::SyncSourceFolder(string sourceFolder){
 
 
   dbg_printc(LOG_DBG, "SyncManager", "SyncSourceFolder", "Syncronise source and destination folder");
-  string push_query = "rsync -vzruLKpt ";
-  string pull_query = "rsync -vzruLKpt ";
+  string push_query = "rsync -vzruLKpt --modify-window=1 ";
+  string pull_query = "rsync -vzruLKpt --modify-window=1 ";
   push_query
     .append(sourceFolder)
     .append(" ")

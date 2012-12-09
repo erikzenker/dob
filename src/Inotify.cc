@@ -244,9 +244,12 @@ int Inotify::GetLastError(){
 }
 
 bool Inotify::IsIgnored(std::string file){
+  if(!mIgnoredFolders[0].compare(""))
+    return false;
   for(int i = 0; i < mIgnoredFolders.size(); ++i){
     size_t pos = file.find(mIgnoredFolders[i]);
     if(pos!= string::npos){
+      //dbg_printc(LOG_DBG, "Inotify", "IsIgnored","mI: %s", file.c_str());
       dbg_printc(LOG_DBG, "Inotify", "IsIgnored","File will be ignored: %s", file.c_str());
       return true;
     }

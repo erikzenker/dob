@@ -36,6 +36,7 @@ bool ProfileFactory::MakeProfile(Profile* profile){
 
   pEventManager = new OptimizedEventManager(pSyncManager);
   pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolder, pEventManager);
+
   profile->SetSyncManager(pSyncManager);
   profile->SetEventManager(pEventManager);
   profile->SetFileSystemScanner(pFileSystemScanner);

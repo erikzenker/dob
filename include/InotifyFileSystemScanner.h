@@ -20,6 +20,7 @@
 #include <dbg_print.h>
 #include <Inotify.h>
 #include <FileSystemEvent.h>
+#include <Profile.h>
 
 /**
  * @brief Watches a folder for changes with the help of
