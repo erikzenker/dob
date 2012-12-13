@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #include <string>
 #include <cstring>
@@ -32,6 +33,7 @@ class Inotify {
   Inotify();
   Inotify(std::vector<std::string> ignoredFolders);
   Inotify(std::string ignoredFolder);
+  Inotify(std::string ignoredFolder, int eventTimeout);
   ~Inotify();
   bool WatchFolderRecursively(std::string watchFolder);
   FileSystemEvent<int>* GetNextEvent();
@@ -45,6 +47,8 @@ class Inotify {
   bool CleanUp();
   std::string EventMaskToString(uint32_t events);
   bool IsIgnored(std::string file);
+  void ClearEventQueue();
+  bool OnTimeout(time_t eventTime);
 
   // Member
   bool mIsInitialized;
@@ -55,6 +59,8 @@ class Inotify {
   std::queue<FileSystemEvent<int>* > mEventQueue;
   std::map<int, std::string> mFolderMap;
   std::vector<string> mIgnoredFolders;
+  time_t mEventTimeout;
+  time_t mLastEventTime;
 
 };
 

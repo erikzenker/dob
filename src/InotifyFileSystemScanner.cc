@@ -10,9 +10,10 @@ InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, Even
     mIgnoredFolder(""){
 }
 
-InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, const string ignoredFolder, EventManager* const pEventManager) 
+InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, const string ignoredFolder, const int eventTimeout, EventManager* const pEventManager) 
   : FileSystemScanner(scanFolder, pEventManager ),
-    mIgnoredFolder(ignoredFolder){
+    mIgnoredFolder(ignoredFolder),
+    mEventTimeout(eventTimeout){
 
 }
 
@@ -42,14 +43,14 @@ void InotifyFileSystemScanner::Setup(){
 }
 
 void InotifyFileSystemScanner::Execute(void* arg){
-  Inotify inotify(mIgnoredFolder);
-  if(!inotify.WatchFolderRecursively(mScanFolder)){
-    dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", inotify.GetLastError());
+  Inotify * inotify = new Inotify(mIgnoredFolder, mEventTimeout);
+  if(!inotify->WatchFolderRecursively(mScanFolder)){
+    dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", inotify->GetLastError());
 
   }
 
   dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
-  FileSystemEvent<int> * fileSystemEvent = inotify.GetNextEvent();
+  FileSystemEvent<int> * fileSystemEvent = inotify->GetNextEvent();
 
   while(fileSystemEvent){
     mpEventManager->PushBackEvent(fileSystemEvent, mScanFolder);
@@ -69,7 +70,7 @@ void InotifyFileSystemScanner::Execute(void* arg){
     case IN_CREATE:
     case IN_CREATE | IN_ISDIR:
       dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent->GetFilename().c_str());
-      inotify.WatchFolderRecursively(fileSystemEvent->GetFullPath());
+      inotify->WatchFolderRecursively(fileSystemEvent->GetFullPath());
       break;
 
     case IN_MODIFY:
@@ -83,7 +84,7 @@ void InotifyFileSystemScanner::Execute(void* arg){
     }
 
     // Handle next event
-    fileSystemEvent = inotify.GetNextEvent();
+    fileSystemEvent = inotify->GetNextEvent();
   }
 
 }
