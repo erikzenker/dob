@@ -20,13 +20,13 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   if(!destType.compare("remote")){
     if(!destProtocol.compare("ssh")){
       pSyncManager = new RemoteSyncManager(destFolder, syncType, destProtocol);
-      eventTimeout = 2;
+      eventTimeout = 1;
     }
     else if(!destProtocol.compare("git")){
       pSyncManager = new GitSyncManager(destFolder, syncType, destProtocol);
       ignoredFolder = scanFolder;
       ignoredFolder.append(".git");
-      eventTimeout = 2;
+      eventTimeout = 1;
     }
   }
   else if(!destType.compare("local")){

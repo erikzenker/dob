@@ -11,8 +11,8 @@ bool OptimizedEventManager::HandleEvent(FileSystemEvent<int>* pEvent, string sou
   switch(pEvent->GetMask()){
   case IN_MOVED_TO:
   case IN_MODIFY:
-  case IN_CREATE | IN_ISDIR:
   case IN_CREATE:
+  case IN_CREATE | IN_ISDIR:
     return(mpSyncManager->SyncFolder(sourceFolder, syncFolder, folder));
     break;
 

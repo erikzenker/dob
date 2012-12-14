@@ -36,19 +36,20 @@ class Inotify {
   Inotify(std::string ignoredFolder, int eventTimeout);
   ~Inotify();
   bool WatchFolderRecursively(std::string watchFolder);
+  bool WatchFile(std::string file);
   FileSystemEvent<int>* GetNextEvent();
   int GetLastError();
   std::string WdToFilename(int wd);
+  bool RemoveWatch(int wd);
   
  private:
   bool IsDir(std::string folder);
-  bool WatchFile(std::string file);
   bool Initialize();
   bool CleanUp();
-  std::string EventMaskToString(uint32_t events);
   bool IsIgnored(std::string file);
   void ClearEventQueue();
   bool OnTimeout(time_t eventTime);
+  bool CheckEvent(FileSystemEvent<int>* event);
 
   // Member
   bool mIsInitialized;

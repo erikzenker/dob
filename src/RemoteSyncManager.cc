@@ -32,19 +32,19 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
 }
 
 bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  string cp_query = "rsync -vzruLKpt ";  
-  cp_query
+  string rsync_query = "rsync -vzruLKpt ";  
+  rsync_query
     .append(syncFolder)
-    .append(folder)
+    //.append(folder)
     .append(" ")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
   
-  if(system(cp_query.c_str())){
+  if(system(rsync_query.c_str())){
     dbg_printc(LOG_ERR, "RemoteSyncManager","SyncFolder","Can't reach destination folder, maybe location is offline");
     return false;
   }
-  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFolder","%s ", cp_query.c_str());
+  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFolder","%s ", rsync_query.c_str());
 
   return true;
   

@@ -24,7 +24,11 @@ void EventManager::PushBackEvent(FileSystemEvent<int>* const pNewEvent, const st
     dbg_printc(LOG_DBG, 
 	       "EventManager",
 	       "PushBackEvent",
-	       "Last event was handled");
+	       "Last event was handled %s %d %s",
+	       pNewEvent->GetFilename().c_str(), 
+	       pNewEvent->GetMask(),
+	       pNewEvent->GetMaskString().c_str());
+
 
   }
   else{

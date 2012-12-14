@@ -55,15 +55,14 @@ void InotifyFileSystemScanner::Execute(void* arg){
   while(fileSystemEvent){
     mpEventManager->PushBackEvent(fileSystemEvent, mScanFolder);
 
-    //Add/delete watches for added/deleted folders or files
+    // Add or delete watches for added/deleted folders or files
     switch(fileSystemEvent->GetMask()){
     case IN_MOVED_FROM:
     case IN_DELETE:
     case IN_DELETE | IN_ISDIR:
       // @todo remove watches recursively
-      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute",
-		"Remove watch file: %s no consequenz (TODO)",
-		fileSystemEvent->GetFilename().c_str());
+      inotify->RemoveWatch(fileSystemEvent->GetId());
+      inotify->WatchFile(fileSystemEvent->GetFolderPath());
       break;
 
     case IN_MOVED_TO:
