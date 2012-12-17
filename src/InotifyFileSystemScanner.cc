@@ -83,7 +83,13 @@ void InotifyFileSystemScanner::Execute(void* arg){
     }
 
     // Handle next event
-    fileSystemEvent = inotify->GetNextEvent();
-  }
+    fileSystemEvent = NULL;
+    while(!fileSystemEvent){
+      fileSystemEvent = inotify->GetNextEvent();
+    }
 
+  }
+      
 }
+
+

@@ -195,59 +195,72 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
   char buffer[EVENT_BUF_LEN];
   time_t currentEventTime = time(NULL);
   bool eventOccured = false;
+  std::vector<FileSystemEvent<int>* > newEvents;
 
-  // Read Events from fd
-  while(mEventQueue.empty() || OnTimeout(currentEventTime)){
-    ClearEventQueue();
-    length = 0;
-      while(length <= 0 || OnTimeout(currentEventTime)){
-	dbg_printc(LOG_DBG, "Inotify", "GetNextEvent", "Read from inotify fd(%d)", mInotifyFd );
-	length = read(mInotifyFd, buffer, EVENT_BUF_LEN);
-	currentEventTime = time(NULL);
-	if(length == -1){
-	  mError = errno;
-	  if(mError != EINTR){
-	    dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Failed to read from inotify fd(%d), Errno %d", mInotifyFd, mError);
-	    return NULL;
 
-	  }
-	  dbg_printc(LOG_WARN, "Inotify", "GetNextEvent", "Can´t read from Inotify fd(%d), Errno: EINTR, try to read again", mInotifyFd );
+  // Read Events from fd into buffer
+  if(mEventQueue.empty()){
+    while(length <= 0 ){
+      dbg_printc(LOG_DBG, "Inotify", "GetNextEvent", "Read from inotify fd(%d)", mInotifyFd );
+      length = read(mInotifyFd, buffer, EVENT_BUF_LEN);
+      currentEventTime = time(NULL);
+      if(length == -1){
+	mError = errno;
+	if(mError != EINTR){
+	  dbg_printc(LOG_ERR,"Inotify", "GetNextEvent", "Failed to read from inotify fd(%d), Errno %d", mInotifyFd, mError);
+	  return NULL;
 
 	}
+	dbg_printc(LOG_WARN, "Inotify", "GetNextEvent", "Can´t read from Inotify fd(%d), Errno: EINTR, try to read again", mInotifyFd );
 
       }
 
-    i = 0;
-    while(i < length){
-      event = (struct inotify_event *) &buffer[i];
-      fileSystemEvent = new FileSystemEvent<int>(event->wd, event->mask, event->name, WdToFilename(event->wd)); 
-      if(!OnTimeout(currentEventTime) && fileSystemEvent->GetMask() != IN_IGNORED){
-	currentEventTime = time(NULL);
-	mEventQueue.push(fileSystemEvent);
-	dbg_printc(LOG_DBG, "Inotify", "GetNextEvent",
-		   "Event from fd(%d) was triggered %s %d %s queue.length: %d", 
-		   mInotifyFd,
-		   fileSystemEvent->GetFilename().c_str(), 
-		   fileSystemEvent->GetMask(),
-		   fileSystemEvent->GetMaskString().c_str(),
-		   mEventQueue.size());
-
-	if(CheckEvent(fileSystemEvent)){
-	  eventOccured = true; 
-	  break; 
-	}
-
-      }
-      i += EVENT_SIZE + event->len;
-
     }
-    if(eventOccured == true){
-      break;
-    }
+
   }
-  mLastEventTime = currentEventTime;
-  fileSystemEvent = mEventQueue.front();
-  mEventQueue.pop();
+
+  // Read events from buffer into queue
+  currentEventTime = time(NULL);
+  while(i < length){
+    event = (struct inotify_event *) &buffer[i];
+    fileSystemEvent = new FileSystemEvent<int>(event->wd, event->mask, event->name, WdToFilename(event->wd)); 
+    if(CheckEvent(fileSystemEvent) && fileSystemEvent->GetMask() != IN_IGNORED){
+      newEvents.push_back(fileSystemEvent);
+      dbg_printc(LOG_DBG, "Inotify", "GetNextEvent",
+		 "Event from fd(%d) was triggered %s %d %s queue.length: %d", 
+		 mInotifyFd,
+		 fileSystemEvent->GetFilename().c_str(), 
+		 fileSystemEvent->GetMask(),
+		 fileSystemEvent->GetMaskString().c_str(),
+		 newEvents.size());
+    }
+    i += EVENT_SIZE + event->len;
+
+  }
+
+  // Filter events for timeout
+  std::vector<FileSystemEvent<int>* >::iterator eventIter;
+  for(eventIter = newEvents.begin(); eventIter < newEvents.end(); ++eventIter){
+    if(OnTimeout(currentEventTime)){
+      newEvents.erase(eventIter);
+    
+    }
+    else{
+      mLastEventTime = currentEventTime;
+      mEventQueue.push(*eventIter);
+    }
+
+  }
+
+  // Choose next event
+  if(mEventQueue.empty())
+    fileSystemEvent = NULL;
+
+  else{
+    fileSystemEvent = mEventQueue.front();
+    mEventQueue.pop();
+  }
+
   return fileSystemEvent;
 
 }
