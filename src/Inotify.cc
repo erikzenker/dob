@@ -138,7 +138,12 @@ bool Inotify::WatchFile(std::string file){
   wd = inotify_add_watch(mInotifyFd, file.c_str(), mEventMask);
   if(wd == -1){
     mError = errno;
-    dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
+    if(mError == 28){
+      dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, please increase number of watches in /proc/sys/fs/inotify/max_user_watches , Errno: %d", file.c_str(), mError);
+    }
+    else{
+      dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
+    }
     return true;
 
   }

@@ -12,6 +12,8 @@ bool OptimizedEventManager::HandleEvent(FileSystemEvent<int>* pEvent, string sou
   case IN_MOVED_TO:
   case IN_MODIFY:
   case IN_CREATE:
+    return(mpSyncManager->SyncFile(sourceFolder, syncFolder));
+    break;
   case IN_CREATE | IN_ISDIR:
     return(mpSyncManager->SyncFolder(sourceFolder, syncFolder, folder));
     break;

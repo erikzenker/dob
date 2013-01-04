@@ -12,8 +12,8 @@ RemoteSyncManager::RemoteSyncManager(string destFolder, string syncType, string 
  **/
 bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
   dbg_printc(LOG_DBG, "RemoteSyncManager","SyncSourceFolder", "Syncronise source and destination folder");
-  string rsync_push_query = "rsync -vzruLKpt ";
-  string rsync_pull_query = "rsync -vzruLKpt ";
+  string rsync_push_query = "rsync -vruLKpt --progress --inplace ";
+  string rsync_pull_query = "rsync -vruLKpt --progress --inplace ";
   rsync_push_query
     .append(sourceFolder)
     .append(" ")
@@ -24,30 +24,43 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
     .append(sourceFolder);
   cerr << "\n";
   dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync pull string: %s", rsync_pull_query.c_str());
-  dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync push string: %s", rsync_push_query.c_str());
   system(rsync_pull_query.c_str());
+  dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync push string: %s", rsync_push_query.c_str());
   system(rsync_push_query.c_str());
 
   return true;
 }
 
 bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  string rsync_query = "rsync -vzruLKpt ";  
+  string rsync_query = "rsync -vruLKpt --progress --inplace ";  
+  rsync_query
+    .append(syncFolder)
+    .append(folder)
+    .append(" ")
+    .append(mDestFolder)
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
+
+  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFolder","%s ", rsync_query.c_str());  
+  system(rsync_query.c_str());
+
+  return true;
+  
+}
+
+bool RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
+  string rsync_query = "rsync -vruLKpt --progress --inplace ";  
   rsync_query
     .append(syncFolder)
     //.append(folder)
     .append(" ")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
-  
-  if(system(rsync_query.c_str())){
-    dbg_printc(LOG_ERR, "RemoteSyncManager","SyncFolder","Can't reach destination folder, maybe location is offline");
-    return false;
-  }
-  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFolder","%s ", rsync_query.c_str());
+
+  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFile","%s ", rsync_query.c_str());  
+  system(rsync_query.c_str());
 
   return true;
-  
+
 }
 
 /**
@@ -56,23 +69,21 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
  **/
 bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
   
-  string rm_query = "rsync -vzruLKpt --delete ";
+  string rm_query = "rsync -vruLKpt --delete --progress --inplace ";
   rm_query
     .append(syncFolder)
     .append(" ")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
-  if(system(rm_query.c_str())){
-    dbg_printc(LOG_ERR, "RemoteSyncManager","RemoveFolder","Can't reach destination folder, maybe location is offline");
-    return false;
-  }
   dbg_printc(LOG_DBG, "RemoteSyncManager","RemoveFolder","%s", rm_query.c_str());
+  system(rm_query.c_str());
+
   return true;
-  
-  return false;
 
 }
+
+
 
 /**
  * @todo fill with content

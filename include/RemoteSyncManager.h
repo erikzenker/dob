@@ -20,6 +20,7 @@ class RemoteSyncManager : public SyncManager{
   RemoteSyncManager(string destFolder, string syncType, string destProtocol);
   virtual bool SyncSourceFolder(string sourceFolder);
   virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncFile(string sourceFolder, string syncFolder);
   virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
  protected:
