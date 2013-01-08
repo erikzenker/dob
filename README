@@ -36,7 +36,7 @@ USAGE
 	       
 
 3. Start the programm
-   ==> ./odb --config=odb.conf 
+   ==> ./dob --config=dob.conf 
    ==> without experimental gui add: --nogui	
 	
 4. Enjoy the your syncronization deamon without doing anything

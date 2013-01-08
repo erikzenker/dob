@@ -30,11 +30,11 @@ DEPS = $(SRCS:.cc=.d)
 # for building the component libraries
 DEPS += $(LIBSRCS:.cc=.d)
 
-all: odb
+all: dob
 	notify-send "COMPILATION" "finished"	
 
 # build open dropbox
-odb: $(OBJS)
+dob: $(OBJS)
 	$(CPP) -o $@ $(OBJS) $(LIBS) $(LDFLAGS) $(CMD) $(CPPFLAGS) $(ARGS)
 
 # build object file and dependencies files
@@ -46,12 +46,7 @@ clean:
 	rm -f *~ */*~ */*/*~
 	rm -f $(OBJS) $(DEPS) $(LIBOBJS) $(LIBFILES) $(LIBRISSOBJ)
 	rm -f log.txt
-	rm -f odb	
-
-# install inotify
-inotify:
-	cd utils/inotify-tools && ./configure --prefix=/usr
-	cd utils/inotify-tools && make -f Makefile && sudo make install
+	rm -f dob
 
 # find all todos
 todo:
