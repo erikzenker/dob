@@ -1,6 +1,6 @@
 #################################################
 #						# 
-# OPEN DROPBOX					#
+# DOB  						#
 #						#
 # Author:  Erik Zenker				#
 # Contact: erikzenker@hotmail.com		# 
@@ -17,21 +17,22 @@ INSTALL
    * boost-libs
    * gtkmm3
 
-3. Build open_dropbox
-   ==> make all
+3. Build dob
+   ==> make 
 
 USAGE
 =======
 
 1. Create some folder you want use as syncronization folder
-   ==> mkdir /home/<Your username>/OpenDropbox
+   ==> mkdir /home/<Your username>/Backup
 
 2. Edit the configfile, if it not exists just create one
    ==> create: touch odb.conf
-   ==> edit  : syncFolder=/home/<Your username>/OpenDropbox/
-       	       syncType=backup || syncronize || update 
+   ==> edit  : syncFolder=/home/<Your username>/Backup/
+       	       syncType= syncronize 
        	       destFolder=/<syncronization>/<Folder>/
 	       destLocation=remote || local
+	       destProtocol=ssh || git
 	       
 
 3. Start the programm
@@ -45,7 +46,7 @@ TRICKS
 
 * You don't need to copy data into you syncronization folder.
   The easiest way is just creating symlinks into it.
-  ==> cd /home/<Your username>/OpenDropbox
+  ==> cd /home/<Your username>/Backup
   ==> ln -s ../<New Folder> .
 
 
