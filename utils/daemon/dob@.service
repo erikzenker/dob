@@ -1,0 +1,15 @@
+[Unit]
+Description=Dob backup client
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dob --config=%I --nogui
+ExecStop=killall dob
+User=erik
+StandardOutput=tty
+StandardError=tty
+TTYPath=/dev/tty1
+
+
+[Install]
+WantedBy=multi-user.target

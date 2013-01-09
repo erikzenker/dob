@@ -1,15 +1,15 @@
 # Maintainer: Erik Zenker <erikzenker@hotmail.com>
-pkgname=open_dropbox
-pkgver=20121011
+pkgname=dob
+pkgver=20130109
 pkgrel=1
-pkgdesc="OpenDropbox is an Dropbox clone with more controll over your data"
+pkgdesc="An easy to use backup client for local and remote backups"
 arch=('i686' 'x86_64')
-url="https://github.com/ezenker/open_dropbox"
+url="https://github.com/erikzenker/dob"
 license=('GPLv3')
-depends=('rsync' 'sshfs' 'gtkmm3' 'boost-libs')
+depends=('rsync' 'gtkmm3' 'boost-libs')
 makedepends=('git')
-provides=('opendropbox')
-_gitroot=https://github.com/ezenker/$pkgname
+provides=('dob')
+_gitroot=https://github.com/erikzenker/$pkgname
 _gitname=$pkgname
 
 
@@ -31,8 +31,6 @@ build() {
 
     cd $srcdir/$_gitname
 
-    make inotify || return 1
-    sudo -K
     make || return 1
 
 
@@ -40,8 +38,7 @@ build() {
 
 package() {
   cd "$srcdir/$_gitname"
-  install -m755 -d $pkgdir/etc/odb
-  install -Dm755 odb.conf $pkgdir/etc/odb/odb.conf
-  install -Dm755 scripts/mount_client.sh $pkgdir/etc/odb/mount_client.sh
-  install -Dm755 odb $pkgdir/usr/bin/odb
+  install -m755 -d $pkgdir/etc/dob
+  install -Dm755 dob.conf $pkgdir/etc/dob/dob.conf
+  install -Dm755 dob $pkgdir/usr/bin/dob
 }
