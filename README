@@ -1,6 +1,8 @@
 #################################################
-#						# 
-# DOB  						#
+# DOB						#
+#  						#
+# An easy to use backup client for 		#
+# local and remote backups.			#
 #						#
 # Author:  Erik Zenker				#
 # Contact: erikzenker@hotmail.com		# 
@@ -13,11 +15,10 @@ INSTALL
 
 1. Install dependencys
    * rsync
-   * inotify
    * boost-libs
    * gtkmm3
 
-3. Build dob
+2. Build dob
    ==> make 
 
 USAGE
@@ -27,7 +28,7 @@ USAGE
    ==> mkdir /home/<Your username>/Backup
 
 2. Edit the configfile, if it not exists just create one
-   ==> create: touch odb.conf
+   ==> create: touch dob.conf
    ==> edit  : syncFolder=/home/<Your username>/Backup/
        	       syncType= syncronize 
        	       destFolder=/<syncronization>/<Folder>/
