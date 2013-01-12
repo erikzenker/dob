@@ -18,7 +18,6 @@ InterProcessCommunication::InterProcessCommunication(std::string pathname){
 
 InterProcessCommunication::~InterProcessCommunication(){
   close(mFdFifo);
-  free(mBuf);
 }
 
 bool InterProcessCommunication::Read(){

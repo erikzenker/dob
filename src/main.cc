@@ -83,7 +83,12 @@ int main(int argc, char *argv[]){
 
   // Setup Profiles
   if(!profileFactory.MakeProfiles(pProfiles)){
-    dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this profile, please check it\n");
+    dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this config file, please check it\n");
+    return 0;
+  }
+
+  if(pProfiles->size() == 0){
+    dbg_printc(LOG_ERR, "Main","main", "There are no profiles defined in your config file: %s\n", configFileName.c_str());
     return 0;
   }
 
