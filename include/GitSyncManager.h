@@ -27,6 +27,7 @@ class GitSyncManager : public SyncManager{
   virtual bool SyncSourceFolder(string sourceFolder);
   virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
   virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncFile(string sourceFolder, string syncFolder);
 
  protected:
   virtual bool CheckDestFolder();
@@ -34,6 +35,7 @@ class GitSyncManager : public SyncManager{
 
  private:
   string mDestProtocol;
+  bool mGitIsInitialized;
 };
 
 #endif /* GitSyncManager_H */

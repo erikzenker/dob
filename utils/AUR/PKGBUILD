@@ -1,13 +1,13 @@
 # Maintainer: Erik Zenker <erikzenker@hotmail.com>
 pkgname=dob
-pkgver=20130109
+pkgver=20130112
 pkgrel=1
 pkgdesc="An easy to use backup client for local and remote backups"
 arch=('i686' 'x86_64')
 url="https://github.com/erikzenker/dob"
 license=('GPLv3')
 depends=('rsync' 'gtkmm3' 'boost-libs')
-makedepends=('git' 'base-devel')
+makedepends=('git' 'make' 'gcc')
 provides=('dob')
 _gitroot=https://github.com/erikzenker/$pkgname
 _gitname=$pkgname

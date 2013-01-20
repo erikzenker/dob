@@ -2,7 +2,14 @@
 
 GitSyncManager::GitSyncManager(string destFolder, string syncType, string destProtocol):
   SyncManager(destFolder, syncType),
-  mDestProtocol(destProtocol){
+  mDestProtocol(destProtocol),
+  mGitIsInitialized(false){
+
+  string git_init_query = "git init ";
+  git_init_query
+    .append(mDestFolder)
+    .append(" --bare");
+  system(git_init_query.c_str());
 
 }
 
@@ -17,6 +24,16 @@ bool GitSyncManager::SyncSourceFolder(string sourceFolder){
   string git_commit_query = "cd "; 
   string git_pull_query   = "cd "; 
   string git_push_query   = "cd "; 
+  string git_init_query = "git init ";
+
+  git_init_query
+    .append(sourceFolder);
+
+  if(!mGitIsInitialized){
+    system(git_init_query.c_str());
+    dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git init string: %s", git_init_query.c_str());
+    mGitIsInitialized = true;
+  }
 
   git_add_query
     .append(sourceFolder)
@@ -45,6 +62,7 @@ bool GitSyncManager::SyncSourceFolder(string sourceFolder){
   dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git commit string: %s", git_commit_query.c_str());
   dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git pull string: %s", git_pull_query.c_str());
   dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git push string: %s", git_push_query.c_str());
+
   system(git_add_query.c_str());
   system(git_commit_query.c_str());
   system(git_pull_query.c_str());
@@ -54,24 +72,12 @@ bool GitSyncManager::SyncSourceFolder(string sourceFolder){
 }
 
 bool GitSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  /*
-  string cp_query = "rsync -vzruLKpt ";  
-  cp_query
-    .append(syncFolder)
-    .append(folder)
-    .append(" ")
-    .append(mDestFolder)
-    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
-  
-  if(system(cp_query.c_str())){
-    dbg_printc(LOG_ERR, "GitSyncManager","SyncFolder","Can't reach destination folder, maybe location is offline");
-    return false;
-  }
-  dbg_printc(LOG_DBG,"GitSyncManager","SyncFolder","%s ", cp_query.c_str());
-
-  return true;
-  */
   return SyncSourceFolder(sourceFolder);
+  
+}
+
+bool GitSyncManager::SyncFile(string sourceFolder, string syncFolder){
+   return SyncSourceFolder(sourceFolder);
   
 }
 
@@ -80,21 +86,6 @@ bool GitSyncManager::SyncFolder(string sourceFolder, string syncFolder, string f
  *
  **/
 bool GitSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
-  /*
-  string rm_query = "rsync -vzruLKpt --delete ";
-  rm_query
-    .append(syncFolder)
-    .append(" ")
-    .append(mDestFolder)
-    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
-
-  if(system(rm_query.c_str())){
-    dbg_printc(LOG_ERR, "GitSyncManager","RemoveFolder","Can't reach destination folder, maybe location is offline");
-    return false;
-  }
-  dbg_printc(LOG_DBG, "GitSyncManager","RemoveFolder","%s", rm_query.c_str());
-  return true;
-  */
   return SyncSourceFolder(sourceFolder);
 
 }
@@ -104,11 +95,6 @@ bool GitSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string
  *
  **/
 bool GitSyncManager::CheckDestFolder(){
-  /*
-  string mountpoint_query = "mountpoint -q ";
-  mountpoint_query.append(mDestFolder);
-  return !system(mountpoint_query.c_str());
-  */
   return false;
 }
 
@@ -117,20 +103,5 @@ bool GitSyncManager::CheckDestFolder(){
  *
  **/
 bool GitSyncManager::MountDestFolder(){
-  /*
-  if(!mMountOptions.compare(""))
-    return false;
-
-  string mount_query;
-  mount_query
-    .append("sshfs -o ServerAliveInterval=15 ")
-    .append(mMountOptions)
-    .append(" ")
-    .append(mDestFolder);
-  cerr << mount_query << "\n";
-  system(mount_query.c_str());
-
-  return true;
-  */
   return false;
 }
