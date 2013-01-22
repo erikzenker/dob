@@ -109,24 +109,31 @@ bool SyncManager::RemoveFolder(string sourceFolder, string syncFolder, string fo
       return false;
     }
   }
-
-  string rm_query = "rm -Rv ";
+  string rm_query = "rsync -vruLKpt --delete --progress --inplace ";
   rm_query
+    .append(syncFolder)
+    .append(" ")
     .append(mDestFolder)
-    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()))
-    .append(folder);
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
-  if(system(rm_query.c_str())){
-    dbg_printc(LOG_ERR, "SyncManager","RemoveFolder","Can't reach destination folder, maybe location is offline");
-    return false;
-  }
-  dbg_printc(LOG_DBG, "SyncManager","RemoveFolder","%s", rm_query.c_str());
+  dbg_printc(LOG_DBG, "RemoteSyncManager","RemoveFolder","%s", rm_query.c_str());
+  system(rm_query.c_str());
+
   return true;
-
 }
 
 bool SyncManager::SyncFile(string sourceFolder, string syncFolder){
-  return false;
+  string rsync_query = "rsync -vruLKpt --progress --inplace ";  
+  rsync_query
+    .append(syncFolder)
+    .append(" ")
+    .append(mDestFolder)
+    .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
+
+  dbg_printc(LOG_DBG,"RemoteSyncManager","SyncFile","%s ", rsync_query.c_str());  
+  system(rsync_query.c_str());
+
+  return true;
 
 }
 

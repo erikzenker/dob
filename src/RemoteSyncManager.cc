@@ -83,8 +83,6 @@ bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, str
 
 }
 
-
-
 /**
  * @todo fill with content
  *

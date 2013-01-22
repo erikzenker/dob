@@ -8,15 +8,17 @@
  * * Replace libinotify with own implementation              --> done : by Inotify.h but not all functions
  * * Write Wrapper for Inotify events for more general use   --> done : FileSystemEvent.h but is kind of ugly
  * * Write some nice interface for ipc                       --> done : echo start default > /tmp/odb_fifo
+ * * Give it some nice name                                  --> done : dob
+ * * Remove all warnings from compiling
+ * * Rename all methods to small camelcase
+ * * Versioning of backup data (Git/Database)
  * * Write destructors for all classes
- * * Give it some nice name
  * * Restart scanning after suspend
  * * Documentation for new classes
  * * Commandline installer/helper
  * * Scanning of server data
  * * Ask in case of big data
  * * Graphical user interface/wizzard
- * * Versioning of backup data (Git)
  * *
  ***/
 
@@ -59,27 +61,26 @@ int main(int argc, char *argv[]){
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
   ProfileFactory profileFactory;
-  FileSystemScanner *fileSystemScanner;
   InterProcessCommunication ipc("/tmp/odb_fifo");
   ProfileManager *pProfileManager;
-  bool noGui;
+  bool useGui = false;
   
   dbg_print_level = LOG_DBG;
   
   // Parse commandline
-  dbg_print(LOG_INFO, "", "main","Start opendropbox client");
-  if(!commandLineParser.ParseCommandLine(argc, argv)){
+  dbg_print(LOG_INFO, "", "main","Start dob client");
+  if(!commandLineParser.parseCommandLine(argc, argv)){
     dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./odb --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
+    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
     return 0;
   }
-  noGui = commandLineParser.GetNoGui();
-  dbg_print_level = commandLineParser.GetDebugLevel();
+  //useGui = !commandLineParser.getNoGui(); 
+  dbg_print_level = commandLineParser.getDebugLevel();
 
   // Parse configfile
-  configFileName = commandLineParser.GetConfigFileName();
-  configFileParser.ParseConfigFile(configFileName);
-  pProfiles = configFileParser.GetProfiles();
+  configFileName = commandLineParser.getConfigFileName();
+  configFileParser.parseConfigFile(configFileName);
+  pProfiles = configFileParser.getProfiles();
 
   // Setup Profiles
   if(!profileFactory.MakeProfiles(pProfiles)){
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]){
   ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
   ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
  
-  if(noGui){
+  if(!useGui){
     // Start sync without gui
     vector<Profile>::iterator profileIter;
     for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
@@ -112,6 +113,10 @@ int main(int argc, char *argv[]){
     // Start sync with gui
     return start_gui(argc, argv, pProfiles);
   }
+
+  // Cleanup memory
+  free(pProfiles);
+  free(pProfileManager);
   return 0;
   
 }
