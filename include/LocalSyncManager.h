@@ -15,10 +15,10 @@ class LocalSyncManager : public SyncManager {
 
 public:
   LocalSyncManager(string destFolder, string syncType);
-  //virtual bool SyncSourceFolder(string sourceFolder);
-  //virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
-  //virtual bool SyncFile(string sourceFolder, string syncFolder);
-  //virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncSourceFolder(string sourceFolder);
+  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncFile(string sourceFolder, string syncFolder);
+  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
 
  protected: 
   virtual bool CheckDestFolder();

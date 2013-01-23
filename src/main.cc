@@ -48,7 +48,6 @@
 #include <ProfileManager.h>
 #include <dbg_print.h>
 
-
 using namespace std;
 
 int start_gui(int argc, char *argv[], vector<Profile> *pProfiles);

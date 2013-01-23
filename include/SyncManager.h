@@ -28,10 +28,10 @@ class SyncManager{
 public:
   SyncManager(string destFolder, string syncType);
   SyncManager();
-  virtual bool SyncSourceFolder(string sourceFolder);
-  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
-  virtual bool SyncFile(string sourceFolder, string syncFolder);
-  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  virtual bool SyncSourceFolder(string sourceFolder) =0;
+  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder) =0;
+  virtual bool SyncFile(string sourceFolder, string syncFolder) =0;
+  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder) =0;
 
 protected:
   virtual bool CheckDestFolder() =0;
