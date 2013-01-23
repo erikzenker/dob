@@ -3,8 +3,7 @@
  * @author    Erik Zenker
  * @date      28.04.2012
  * @copyright Gnu Public License
- **/
-
+ */
 
 #ifndef FileSystemScanner_H
 #define FileSystemScanner_H
@@ -23,7 +22,7 @@ using namespace std;
  * Watches a folder (scanFolder) for changes and submits the 
  * changes as event to an EventManager (pEventManager).
  *
- **/
+ */
 class FileSystemScanner {
 public:
   FileSystemScanner(const string scanFolder, EventManager* const pEventManager);

@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
     dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
     return 0;
   }
-  //useGui = !commandLineParser.getNoGui(); 
+  useGui = commandLineParser.getUseGui(); 
   dbg_print_level = commandLineParser.getDebugLevel();
 
   // Parse configfile
