@@ -7,10 +7,24 @@ CommandLineParser::CommandLineParser() :
 
 }
 
+CommandLineParser::~CommandLineParser(){
+
+}
+
 /**
+ * @brief Parses parameters from commandline and makes them
+ *        accesable by public getter methods.
+ *
+ * @param int argc    : number of parameters
+ * @param char **argv : arguments as list of strings
+ *
+ * @return true  : if there were some parameters
+ * @return false : if there were no parameters, so there
+ *                 will be print some help output
+ *
  * @todo update spirit parser to new version 2.5 (use of qi)
  **/
-bool CommandLineParser::ParseCommandLine(int argc, char *argv[]){
+bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
   dbg_printc(LOG_INFO, "CommandLineParser", "ParseCommandLine", "Parse commandline");
   rule<phrase_scanner_t> config;
   rule<phrase_scanner_t> debug;
@@ -31,15 +45,15 @@ bool CommandLineParser::ParseCommandLine(int argc, char *argv[]){
 
 }
 
-string CommandLineParser::GetConfigFileName() const{
+string CommandLineParser::getConfigFileName() const{
   return mConfigFileName;
 }
 
-int CommandLineParser::GetDebugLevel() const{
+int CommandLineParser::getDebugLevel() const{
   return mDebugLevel;
 }
 
 
-bool CommandLineParser::GetNoGui() const{
+bool CommandLineParser::getNoGui() const{
   return mNoGui;
 }

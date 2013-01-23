@@ -25,15 +25,16 @@ using namespace std;
 class ConfigFileParser{
  public:
   ConfigFileParser();
-  void ParseConfigFile(string configFileName);
-  vector<Profile>* GetProfiles();
+  ~ConfigFileParser();
+  void parseConfigFile(string configFileName);
+  vector<Profile>* getProfiles();
  private:
-  void CreateProfile(vector<char> name);
-  void SetSyncType(string syncType);
-  void SetSyncFolder(vector<char> syncFolder);
-  void SetDestFolder(vector<char> destFolder);
-  void SetDestType(string destLocation);
-  void SetDestProtocol(vector<char> mountPoints);
+  void createProfile(vector<char> name);
+  void setSyncType(string syncType);
+  void setSyncFolder(vector<char> syncFolder);
+  void setDestFolder(vector<char> destFolder);
+  void setDestType(string destLocation);
+  void setDestProtocol(vector<char> mountPoints);
   vector<Profile> *mpProfiles;
 };
 

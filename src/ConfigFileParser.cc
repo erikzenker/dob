@@ -4,10 +4,14 @@ ConfigFileParser::ConfigFileParser():
 
 }
 
+ConfigFileParser::~ConfigFileParser(){
+  free(mpProfiles);
+}
+
 /**
  * @todo parser should use one grammar
  **/
-void ConfigFileParser::ParseConfigFile(string configFileName){
+void ConfigFileParser::parseConfigFile(string configFileName){
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
   using ascii::space;
@@ -27,7 +31,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
       //      tried to implement "]" but seems not to work
       //      for some reason.
       if(qi::phrase_parse(line.begin(),line.end()
-			  ,"[" >> (*qi::char_("a-zA-Z"))[boost::bind(&ConfigFileParser::CreateProfile, this, _1)]
+			  ,"[" >> (*qi::char_("a-zA-Z"))[boost::bind(&ConfigFileParser::createProfile, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -35,9 +39,9 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	}
       // Parse sync type
       if(qi::phrase_parse(line.begin(), line.end()
-			  ,  qi::string("syncType=") >> qi::string("syncronize")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
-			  || qi::string("syncType=") >> qi::string("backup")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)] 
-			  || qi::string("syncType=") >> qi::string("update")[boost::bind(&ConfigFileParser::SetSyncType, this, _1)]
+			  ,  qi::string("syncType=") >> qi::string("syncronize")[boost::bind(&ConfigFileParser::setSyncType, this, _1)] 
+			  || qi::string("syncType=") >> qi::string("backup")[boost::bind(&ConfigFileParser::setSyncType, this, _1)] 
+			  || qi::string("syncType=") >> qi::string("update")[boost::bind(&ConfigFileParser::setSyncType, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -47,7 +51,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
       if(qi::phrase_parse(line.begin(), line.end()
 			  , qi::string("syncFolder=") 
 			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::SetSyncFolder, this, _1)]
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setSyncFolder, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -57,7 +61,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
       if(qi::phrase_parse(line.begin(), line.end()
 			  , qi::string("destFolder=") 
 			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::SetDestFolder, this, _1)]
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestFolder, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -65,8 +69,8 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
 	}
       // Parse destination location
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destType=") >> qi::string("local")[boost::bind(&ConfigFileParser::SetDestType, this, _1)] 
-			  | qi::string("destType=") >> qi::string("remote")[boost::bind(&ConfigFileParser::SetDestType, this, _1)] 
+			  , qi::string("destType=") >> qi::string("local")[boost::bind(&ConfigFileParser::setDestType, this, _1)] 
+			  | qi::string("destType=") >> qi::string("remote")[boost::bind(&ConfigFileParser::setDestType, this, _1)] 
 			  ,space))
 	{
 	  continue;
@@ -76,7 +80,7 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
       if(qi::phrase_parse(line.begin(), line.end()
 			  , qi::string("destProtocol=") 
 			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::SetDestProtocol, this, _1)]
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestProtocol, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -92,38 +96,38 @@ void ConfigFileParser::ParseConfigFile(string configFileName){
   config_file_stream.close();
 }
 
-void ConfigFileParser::CreateProfile (vector<char> name){
+void ConfigFileParser::createProfile (vector<char> name){
   Profile p;
   p.SetName(name);
   mpProfiles->push_back(p);
 
 }
 
-void ConfigFileParser::SetSyncType (string syncType){
+void ConfigFileParser::setSyncType (string syncType){
   mpProfiles->back().SetSyncType(syncType);
 
 }
 
-void ConfigFileParser::SetSyncFolder (vector<char> syncFolder){
+void ConfigFileParser::setSyncFolder (vector<char> syncFolder){
   mpProfiles->back().SetSyncFolder(syncFolder);
 
 }
 
-void ConfigFileParser::SetDestFolder (vector<char> destFolder){
+void ConfigFileParser::setDestFolder (vector<char> destFolder){
   mpProfiles->back().SetDestFolder(destFolder);
 
 }
 
-void ConfigFileParser::SetDestType(string destLocation){
+void ConfigFileParser::setDestType(string destLocation){
   mpProfiles->back().SetDestType(destLocation);
 
 }
 
-void ConfigFileParser::SetDestProtocol(vector<char> mountOptions){
+void ConfigFileParser::setDestProtocol(vector<char> mountOptions){
   mpProfiles->back().SetDestProtocol(mountOptions);
 }
 
-vector<Profile> *ConfigFileParser::GetProfiles(){
+vector<Profile> *ConfigFileParser::getProfiles(){
   return mpProfiles;
 }
 

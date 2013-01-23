@@ -11,14 +11,18 @@ using namespace BOOST_SPIRIT_CLASSIC_NS;
 /**
  * @brief Parses options from the commandline with help of boost::spirit
  *
+ * Boost:.spirit was choosen, because it is easy to write
+ * new parser rules. So new feature can be added easily.
+ *
  **/
 class CommandLineParser{
  public:
   CommandLineParser();
-  bool ParseCommandLine(int argc, char *argv[]);
-  string GetConfigFileName() const;
-  int GetDebugLevel() const;
-  bool GetNoGui() const;
+  ~CommandLineParser();
+  bool parseCommandLine(int argc, char *argv[]);
+  string getConfigFileName() const;
+  int getDebugLevel() const;
+  bool getNoGui() const;
  private:
   string mConfigFileName;
   int mDebugLevel;

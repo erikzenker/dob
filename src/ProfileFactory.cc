@@ -34,6 +34,7 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   }
   else if(!destType.compare("local")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);
+    eventTimeout = 1;
   }
   else{
     dbg_print(LOG_FATAL,"\nC destType %s in configfile is not an option", destType.c_str());
