@@ -5,6 +5,7 @@ ProfileFactory::ProfileFactory(){
 }
 
 bool ProfileFactory::MakeProfile(Profile* profile){
+  string profileName =  profile->GetName();
   string scanFolder = profile->GetSyncFolder();
   string destFolder = profile->GetDestFolder();
   string syncType   = profile->GetSyncType();
@@ -16,6 +17,8 @@ bool ProfileFactory::MakeProfile(Profile* profile){
   std::string ignoredFolder = "";
   int eventTimeout = 0;
   
+  if(!profileName.compare(""))
+    return false;
   
   if(!destType.compare("remote")){
     if(!destProtocol.compare("ssh")){
