@@ -79,7 +79,7 @@ bool LocalSyncManager::SyncFolder(string sourceFolder, string syncFolder, string
       dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed to dispatch destination folder, abort syncronisation");
       return false;
     }
-    // Check again just to be shure
+    // Check again just to be sure
     if(!CheckDestFolder()){
       dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed syncronise source and destination folder, because destination folder is not reachable or not mounted");
       return false;

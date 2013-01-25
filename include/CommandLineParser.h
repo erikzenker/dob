@@ -10,10 +10,11 @@
 
 #include <string>
 #include <dbg_print.h>
-#include <boost/spirit/include/classic_core.hpp>
-
-using namespace std;
-using namespace BOOST_SPIRIT_CLASSIC_NS;
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/bind.hpp>
+#include <iostream>
 
 /**
  * @brief Parses parameters from the commandline with help 
@@ -35,13 +36,13 @@ class CommandLineParser{
   CommandLineParser();
   ~CommandLineParser();
   bool parseCommandLine(int argc, char *argv[]);
-  string getConfigFileName() const;
-  int getDebugLevel() const;
+  std::string getConfigFileName() const;
+  unsigned getDebugLevel() const;
   bool getUseGui() const;
 
  private:
-  string mConfigFileName;
-  int mDebugLevel;
+  std::string mConfigFileName;
+  unsigned mDebugLevel;
   bool mUseGui;
 };
 

@@ -92,7 +92,7 @@ void ConfigFileParser::parseConfigFile(string configFileName){
 
   }
   else 
-    dbg_printc(LOG_ERR, "ConfigFileParser", "ParseConfigFile", "\nC Unable to open configfile: %s", configFileName.c_str()); 
+    dbg_printc(LOG_ERR, "ConfigFileParser", "ParseConfigFile", "Unable to open configfile: %s", configFileName.c_str()); 
   config_file_stream.close();
 }
 
