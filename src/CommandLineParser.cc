@@ -43,12 +43,11 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
     char const* begin(argv[i]);
     char const* end(begin + strlen(begin));
 
-    matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
+    //matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
     matched = matched || qi::parse(begin, end, debugLevelKey >> debugLevelValue, mDebugLevel);
     mUseGui = qi::parse(begin, end, useGuiKey);
 
   }
-  mDebugLevel != 0 ? mDebugLevel++ : mDebugLevel = 0;
   return matched;
 
 }
