@@ -20,8 +20,9 @@
 class ProfileFactory {
  public:
   ProfileFactory();
-  bool MakeProfile(Profile* profile);
   bool MakeProfiles(vector<Profile>* pProfiles);
+ private:
+  bool MakeProfile(Profile* profile);
 };
 
 #endif /* PROFILEFACTORY_H */

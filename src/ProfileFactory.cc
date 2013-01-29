@@ -4,7 +4,7 @@ ProfileFactory::ProfileFactory(){
 
 }
 
-bool ProfileFactory::MakeProfile(Profile* profile){
+bool ProfileFactory::makeProfile(Profile* profile){
   string profileName =  profile->GetName();
   string scanFolder = profile->GetSyncFolder();
   string destFolder = profile->GetDestFolder();
@@ -51,10 +51,10 @@ bool ProfileFactory::MakeProfile(Profile* profile){
 
 }
 
-bool ProfileFactory::MakeProfiles(vector<Profile>* pProfiles){
+bool ProfileFactory::makeProfiles(vector<Profile>* pProfiles){
   for(int i = 0; i < pProfiles->size(); ++i){
     if(pProfiles->at(i).IsValid()){
-      if(!MakeProfile(&(pProfiles->at(i)))){
+      if(!makeProfile(&(pProfiles->at(i)))){
 	return false;
       }
 
