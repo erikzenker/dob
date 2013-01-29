@@ -26,43 +26,48 @@
 #include <ProfileManager.h>
 #include <dbg_print.h>
 
+typedef sigc::signal<int> StopSignal;
+typedef sigc::signal<int> StartSignal;
+
+
 /**
  * @brief Manages communication between daemon
- *        and client.
+ *        and client. 
+ *
+ * The IPC problem is solved by linux fifo-pipes. This
+ * are simple files where you can easily write on
+ * and read from. By commands like start, stop
+ * or restart you can change the state of profiles.
+ * An easy bash daemon could use this interface to
+ * control the backup client. Signals from sigc++
+ * are used to propagate commands into the 
+ * syncronisation process.
+ *
+ * Commands : * echo start profilename > fifo-file
+ *            * echo stop profilename > fifo-file
+ *            * echo restart profilename > fifo-file
  * 
  * @class InterProcessCommunication
  *        InterProcessCommunication.h
  *        "include/InterProcessCommunication.h"
  *
- * If the programm runs in nogui mode then the
- * user needs a possibility to control functions
- * like stop, start of the syncprocess. This can
- * be handled though ipc. An easy way for ipc on
- * Linux machines are named pipes(fifos). Maybe
- * you could also abstract this class a bit further,
- * but now there is no need for that.
- *
  **/
-typedef sigc::signal<int> StopSignal;
-typedef sigc::signal<int> StartSignal;
-
-
 class InterProcessCommunication {
  public: 
   InterProcessCommunication(std::string pathname);
   ~InterProcessCommunication();
-  sigc::signal<bool, std::string> GetStopSignal();
-  sigc::signal<bool, std::string> GetStartSignal();
-  sigc::signal<bool, std::string> GetRestartSignal();
+  sigc::signal<bool, std::string> getStopSignal();
+  sigc::signal<bool, std::string> getStartSignal();
+  sigc::signal<bool, std::string> getRestartSignal();
 
-  bool Read();
+  bool read();
 
  private:
   int mFdFifo;
   char mBuf[100];
-  void EmitStopSignal(std::vector<char> profileName);
-  void EmitStartSignal(std::vector<char> profileName);
-  void EmitRestartSignal(std::vector<char> profileName);
+  void emitStopSignal(std::vector<char> profileName);
+  void emitStartSignal(std::vector<char> profileName);
+  void emitRestartSignal(std::vector<char> profileName);
   sigc::signal<bool, std::string> mStopSignal;
   sigc::signal<bool, std::string> mStartSignal;
   sigc::signal<bool, std::string> mRestartSignal;

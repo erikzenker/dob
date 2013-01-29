@@ -1,4 +1,4 @@
-/***
+ /***
  * ROADMAP
  * *
  * * Copy mechanism (Rsync)                                  --> done
@@ -41,7 +41,6 @@
 #include <OptimizedEventManager.h>
 #include <ConfigFileParser.h>
 #include <CommandLineParser.h>
-#include <Tray.h>
 #include <ProfileFactory.h>
 #include <Inotify.h>
 #include <InterProcessCommunication.h>
@@ -50,7 +49,6 @@
 
 using namespace std;
 
-int start_gui(int argc, char *argv[], vector<Profile> *pProfiles);
 int dbg_print_level;
 
 int main(int argc, char *argv[]){
@@ -62,15 +60,14 @@ int main(int argc, char *argv[]){
   ProfileFactory profileFactory;
   InterProcessCommunication ipc("/tmp/odb_fifo");
   ProfileManager *pProfileManager;
-  bool useGui = false;
   
   dbg_print_level = LOG_DBG;
   
   // Parse commandline
-  dbg_print(LOG_INFO, "", "main","Start dob client");
+  dbg_printc(LOG_INFO, "", "main","Start dob client");
   if(!commandLineParser.parseCommandLine(argc, argv)){
     dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL] [--usegui]\n");
+    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
     return 0;
   }
   useGui = commandLineParser.getUseGui(); 
@@ -82,7 +79,7 @@ int main(int argc, char *argv[]){
   pProfiles = configFileParser.getProfiles();
 
   // Setup Profiles
-  if(!profileFactory.MakeProfiles(pProfiles)){
+  if(!profileFactory.makeProfiles(pProfiles)){
     dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this config file, please check it\n");
     return 0;
   }
@@ -98,40 +95,20 @@ int main(int argc, char *argv[]){
   ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
   ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
  
-  if(!useGui){
-    // Start sync without gui
-    vector<Profile>::iterator profileIter;
-    for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
-      profileIter->StartProfile();
-
-    }
-    ipc.Read();    
-
+  // Start sync
+  vector<Profile>::iterator profileIter;
+  for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
+    profileIter->StartProfile();
+    
   }
-  else{
-    // Start sync with gui
-    return start_gui(argc, argv, pProfiles);
-  }
+
+  // Read from IPC Interface
+  ipc.Read();    
+
 
   // Cleanup memory
   free(pProfiles);
   free(pProfileManager);
   return 0;
   
-}
-
-int start_gui(int argc, char *argv[], vector<Profile>* pProfiles){
-  Gtk::Main kit(argc, argv);
-  Tray *tray = new Tray(pProfiles);
-  
-  vector<Profile>::iterator profileIter;
-  for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
-      profileIter->GetEventManager()->SignalEvent().connect(sigc::mem_fun(*tray,
-              &Tray::OnEventManagerSignal) );
-
-  }
-
-  Gtk::Main::run(*tray);
-  return 0;
-
 }
