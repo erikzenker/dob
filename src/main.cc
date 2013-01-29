@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
   dbg_print(LOG_INFO, "", "main","Start dob client");
   if(!commandLineParser.parseCommandLine(argc, argv)){
     dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL] [--nogui]\n");
+    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL] [--usegui]\n");
     return 0;
   }
   useGui = commandLineParser.getUseGui(); 

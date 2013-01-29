@@ -27,25 +27,29 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
   using ascii::space;
   bool matched = false;
 
-  // ConfigFileName Rules
+  // ConfigFileName Rule
   qi::rule<char const*>                configFileNameKey   = qi::string("--config=");
   qi::rule<char const*, std::string()> configFileNameValue = (*qi::char_);
 
-  // UseGui Rules
+  // UseGui Rule
   qi::rule<char const*> useGuiKey = qi::string("--usegui");
 
-  // Debug Level Rules
-  qi::rule<char const*>        debugLevelKey   = qi::string("-d=");
-  qi::rule<char const*, unsigned()> debugLevelValue = qi::uint_;
+  // Debug Level Rule (unsigned between 0 and 5)
+  qi::rule<char const*>             debugLevelKey   = qi::string("-d=");
+  qi::rule<char const*, unsigned()> debugLevelValue = qi::int_parser<int, 10, 0, 5>();
   
+  unsigned debugLevel = 0;
   unsigned i;
   for(int i = 1; i < argc; ++i){
     char const* begin(argv[i]);
     char const* end(begin + strlen(begin));
+    matched = false;
 
-    //matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
+    matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
     matched = matched || qi::parse(begin, end, debugLevelKey >> debugLevelValue, mDebugLevel);
     mUseGui = qi::parse(begin, end, useGuiKey);
+    if(!matched) 
+      dbg_printc(LOG_ERR, "CommandLineParser", "parseCommandLine", "Unknown parameter %s", argv[i]); 
 
   }
   return matched;
