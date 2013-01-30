@@ -1,3 +1,10 @@
+/** 
+ * @file      SyncManager.h
+ * @author    Erik Zenker
+ * @date      30.01.2013
+ * @copyright Gnu Public License
+ */
+
 #ifndef SyncManager_H
 #define SyncManager_H
 
@@ -20,22 +27,21 @@ using namespace std;
  * The SyncManager knows a destination folder where
  * it should syncronise data to. It gets a 
  * source folder from which it sould syncronise from
- * by using SyncSourceFolder. Several SyncManager
- * can be implemented by using diffent syncronise
- * tools (cp, rsync etc.)
+ * Several SyncManager can be implemented by using 
+ * diffent syncronise tools (cp, rsync, git etc.)
  **/
 class SyncManager{
 public:
   SyncManager(string destFolder, string syncType);
-  SyncManager();
-  virtual bool SyncSourceFolder(string sourceFolder) =0;
-  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder) =0;
-  virtual bool SyncFile(string sourceFolder, string syncFolder) =0;
-  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder) =0;
+  ~SyncManager();
+  virtual bool syncSourceFolder(string sourceFolder) =0;
+  virtual bool syncFolder(string sourceFolder, string syncFolder, string folder) =0;
+  virtual bool syncFile(string sourceFolder, string syncFolder) =0;
+  virtual bool removeFolder(string sourceFolder, string syncFolder, string folder) =0;
 
 protected:
-  virtual bool CheckDestFolder() =0;
-  virtual bool MountDestFolder() =0;
+  virtual bool checkDestFolder() =0;
+  virtual bool mountDestFolder() =0;
   string mDestFolder;
   string mSyncType;
 

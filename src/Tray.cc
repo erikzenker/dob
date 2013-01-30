@@ -83,7 +83,7 @@ void Tray::ToggleSync(){
 void Tray::StopToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      profileIter->StopProfile();
+      profileIter->stopProfile();
 
     }
 
@@ -92,7 +92,7 @@ void Tray::StopToScan(){
 void Tray::StartToScan(){
     vector<Profile>::iterator profileIter;
     for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
-      profileIter->StartProfile();
+      profileIter->startProfile();
 
     }
 

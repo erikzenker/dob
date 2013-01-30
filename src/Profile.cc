@@ -10,8 +10,14 @@ Profile::Profile() :
 
 }
 
+Profile::~Profile(){
+  // free(mpSyncManager);
+  // free(mpEventManager);
+  // free(mpFileSystemScanner);
+}
 
-bool Profile::IsValid(){
+
+bool Profile::isValid(){
   if(!syncFolder.compare("") && !destFolder.compare(""))
     return false;
   return true;
@@ -28,23 +34,23 @@ void Profile::print(){
   
 }
 
-bool Profile::StartProfile(){
-  return StartSyncProfile() && StartScanProfile();
+bool Profile::startProfile(){
+  return startSyncProfile() && startScanProfile();
 }
 
-bool Profile::StartSyncProfile(){
+bool Profile::startSyncProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Start sync with profile: [\033[32m%s\033[m] ", name.c_str());
-  return mpSyncManager->SyncSourceFolder(mpFileSystemScanner->GetScanFolder());
+  return mpSyncManager->syncSourceFolder(mpFileSystemScanner->getScanFolder());
 }
 
-bool Profile::StartScanProfile(){
+bool Profile::startScanProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Start scanning with profile: [\033[32m%s\033[m] ", name.c_str());
-  mpFileSystemScanner->StartToScan();
+  mpFileSystemScanner->startToScan();
   return true;
 }
-bool Profile::StopProfile(){
+bool Profile::stopProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Stop scanning with profile: [\033[32m%s\033[m] ", name.c_str());
-  mpFileSystemScanner->StopToScan();
+  mpFileSystemScanner->stopToScan();
   return true;
 }
 

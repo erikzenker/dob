@@ -29,7 +29,7 @@ class OptimizedEventManager : public EventManager{
  public:
   OptimizedEventManager(SyncManager * pSyncManager);
  private:
-  bool HandleEvent(FileSystemEvent<int>* pEvent, string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent<int>* pEvent, string sourceFolder);
  
 };
 

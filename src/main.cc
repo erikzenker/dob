@@ -70,7 +70,6 @@ int main(int argc, char *argv[]){
     dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
     return 0;
   }
-  useGui = commandLineParser.getUseGui(); 
   dbg_print_level = commandLineParser.getDebugLevel();
 
   // Parse configfile
@@ -91,19 +90,20 @@ int main(int argc, char *argv[]){
 
   // Setup ProfileManager
   pProfileManager = new ProfileManager(pProfiles);
-  ipc.GetStopSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StopProfile));
-  ipc.GetStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::StartProfile));
-  ipc.GetRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::RestartProfile));
+  ipc.getStopSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::stopProfile));
+  ipc.getStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::startProfile));
+  ipc.getRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::restartProfile));
  
-  // Start sync
+  // Start sync 
+  // @todo ProfileManager should do this task
   vector<Profile>::iterator profileIter;
   for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
-    profileIter->StartProfile();
+    profileIter->startProfile();
     
   }
 
   // Read from IPC Interface
-  ipc.Read();    
+  ipc.readFromPipe();    
 
 
   // Cleanup memory

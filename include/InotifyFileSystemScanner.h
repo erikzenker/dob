@@ -38,17 +38,16 @@
  **/
 class InotifyFileSystemScanner : public FileSystemScanner, public Thread {
 public:
-  InotifyFileSystemScanner(const string scanFolder, EventManager* const pEventManager);
   InotifyFileSystemScanner(const string scanFolder, const string ignoredFolder, const int eventTimeout, EventManager* const pEventManager);
-  virtual int StartToScan();
-  virtual int StopToScan();
+  ~InotifyFileSystemScanner();
+  virtual int startToScan();
+  virtual int stopToScan();
 
  protected:
-  virtual void Execute(void* arg);
-  virtual void Setup();
+  virtual void execute(void* arg);
+  virtual void setup();
 
  private:
-  // Member
   std::string mIgnoredFolder;
   int mEventTimeout;
 

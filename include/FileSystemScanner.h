@@ -22,15 +22,15 @@ using namespace std;
  * Watches a folder (scanFolder) for changes and submits the 
  * changes as event to an EventManager (pEventManager).
  *
- */
+ **/
 class FileSystemScanner {
 public:
   FileSystemScanner(const string scanFolder, EventManager* const pEventManager);
   ~FileSystemScanner();
-  string GetScanFolder() const;
-  EventManager* GetEventManager() const;
-  virtual int StartToScan() = 0;
-  virtual int StopToScan()  = 0;
+  string getScanFolder() const;
+  EventManager* getEventManager() const;
+  virtual int startToScan() = 0;
+  virtual int stopToScan()  = 0;
 
 protected:
   const string mScanFolder;

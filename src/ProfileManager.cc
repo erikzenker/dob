@@ -6,34 +6,34 @@ ProfileManager::ProfileManager(std::vector<Profile>* pProfiles) :
 }
 
 ProfileManager::~ProfileManager(){
-
+  free(mpProfiles);
 }
 
-bool ProfileManager::StartProfile(std::string profileName){
-  Profile * pProfile = GetProfileByName(profileName);
+bool ProfileManager::startProfile(std::string profileName){
+  Profile * pProfile = getProfileByName(profileName);
   if(pProfile){
-    pProfile->StartProfile();
+    pProfile->startProfile();
     return true;
   }
     
   return false;
 }
 
-bool ProfileManager::StopProfile(std::string profileName){
-  Profile * pProfile = GetProfileByName(profileName);
+bool ProfileManager::stopProfile(std::string profileName){
+  Profile * pProfile = getProfileByName(profileName);
   if(pProfile){
-    pProfile->StopProfile();
+    pProfile->stopProfile();
     return true;
   }
     
   return false;
 }
 
-bool ProfileManager::RestartProfile(std::string profileName){
-  Profile * pProfile = GetProfileByName(profileName);
+bool ProfileManager::restartProfile(std::string profileName){
+  Profile * pProfile = getProfileByName(profileName);
   if(pProfile){
-    pProfile->StopProfile();
-    pProfile->StartProfile();
+    pProfile->stopProfile();
+    pProfile->startProfile();
     return true;
   }
     
@@ -41,10 +41,10 @@ bool ProfileManager::RestartProfile(std::string profileName){
 
 }
 
-Profile* ProfileManager::GetProfileByName(std::string profileName){
+Profile* ProfileManager::getProfileByName(std::string profileName){
   int i;
   for(i = 0; i < mpProfiles->size(); ++i){
-    if(!mpProfiles->at(i).GetName().compare(profileName)){
+    if(!mpProfiles->at(i).getName().compare(profileName)){
       return &(mpProfiles->at(i));
     }
   }

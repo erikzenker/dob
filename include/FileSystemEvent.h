@@ -12,23 +12,36 @@
 #include <unistd.h>
 #include <stdint.h>
 
-using namespace std;
 
+/**
+ * @brief Container for events on filesystem.
+ * @class FileSystemEvent
+ *        FileSystemEvent.h
+ *        "include/FileSystemEvent.h"
+ *
+ * The intention for FileSystemEvent was to
+ * create some common interface for different
+ * filesystem scan methods. For example you
+ * could poll your filesystem every 10 seconds
+ * to seek for changes or use inotify which detects 
+ * events by it self.
+ *
+ **/
 template <class T>
 class FileSystemEvent{
  public:
   FileSystemEvent(T id, uint32_t mask, std::string filename, std::string watchFolder);
   ~FileSystemEvent();
-  uint32_t GetMask();
-  std::string GetMaskString();
-  std::string GetFilename();
-  T GetId();
-  std::string GetWatchFolder();
-  std::string GetFullPath();
-  std::string GetFolderPath();
+  uint32_t getMask();
+  std::string getMaskString();
+  std::string getFilename();
+  T getId();
+  std::string getWatchFolder();
+  std::string getFullPath();
+  std::string getFolderPath();
 
  private:
-  std::string MaskToString(uint32_t events);
+  std::string maskToString(uint32_t events);
 
   // Member
   T mId;
@@ -40,7 +53,7 @@ class FileSystemEvent{
 
 template <class T>
 FileSystemEvent<T>::FileSystemEvent(T id, uint32_t mask, std::string filename, std::string watchFolder) :
-mId(id),
+  mId(id),
   mMask(mask),
   mFilename(filename),
   mWatchFolder(watchFolder){
@@ -53,46 +66,46 @@ FileSystemEvent<T>::~FileSystemEvent(){
 }
 
 template <class T>
-uint32_t FileSystemEvent<T>::GetMask(){
+uint32_t FileSystemEvent<T>::getMask(){
   return mMask;
 
 }
 
 template <class T>
-std::string FileSystemEvent<T>::GetFilename(){
+std::string FileSystemEvent<T>::getFilename(){
   return mFilename;
 
 }
 
 template <class T>
-T FileSystemEvent<T>::GetId(){
+T FileSystemEvent<T>::getId(){
   return mId;
 
 }
 
 template <class T>
-std::string FileSystemEvent<T>::GetWatchFolder(){
+std::string FileSystemEvent<T>::getWatchFolder(){
   return mWatchFolder;
 
 }
 
 template <class T>
-std::string FileSystemEvent<T>::GetMaskString(){
-  return MaskToString(mMask);
+std::string FileSystemEvent<T>::getMaskString(){
+  return maskToString(mMask);
 }
 
 template <class T>
-std::string FileSystemEvent<T>::GetFullPath(){
+std::string FileSystemEvent<T>::getFullPath(){
   return mWatchFolder.append(mFilename);
 }
 
 template <class T>
-std::string FileSystemEvent<T>::GetFolderPath(){
+std::string FileSystemEvent<T>::getFolderPath(){
   return mWatchFolder;
 }
 
 template <class T>
-std::string FileSystemEvent<T>::MaskToString(uint32_t events){
+std::string FileSystemEvent<T>::maskToString(uint32_t events){
     std::string eventString = "";
 
   if(IN_ACCESS & events)

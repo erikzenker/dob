@@ -10,7 +10,7 @@ SyncManager::SyncManager(string destFolder, string syncType) :
 
 }
 
-SyncManager::SyncManager(){
+ SyncManager::~SyncManager(){
 
-}
+ }
 

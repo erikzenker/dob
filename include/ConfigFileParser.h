@@ -19,7 +19,11 @@
 using namespace std;
 
 /**
- * @brief Parses key/value pairs of configfile with help of boost::spirit
+ * @brief Parse configfile.
+ *
+ * All information parsed from Configfile will be filled into a profile
+ * object. With the help of this information, the whole profile object
+ * can be generated later by the profileFactory.
  *
  **/
 class ConfigFileParser{
@@ -34,7 +38,7 @@ class ConfigFileParser{
   void setSyncFolder(vector<char> syncFolder);
   void setDestFolder(vector<char> destFolder);
   void setDestType(string destLocation);
-  void setDestProtocol(vector<char> mountPoints);
+  void setDestProtocol(vector<char> destProtocol);
   vector<Profile> *mpProfiles;
 };
 

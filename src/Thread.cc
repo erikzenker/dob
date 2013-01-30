@@ -2,58 +2,66 @@
 
 using namespace std;
 
-Thread::Thread() {}
+Thread::Thread(){
 
-int Thread::Start(void* arg)
+}
+
+Thread::~Thread(){
+  free(mArg);
+}
+
+int Thread::start(void* arg)
 {
-  SetArg(arg);
-  int code = pthread_create( &mThreadId, NULL, Thread::EntryPoint, (void*) this);
+  setArg(arg);
+  int code = pthread_create( &mThreadId, NULL, Thread::entryPoint, (void*) this);
   return code;
     
 }
 
-int Thread::Stop()
+int Thread::stop()
 {
   return pthread_cancel(mThreadId);
 
 }
 
-int Thread::Suspend(){
+int Thread::suspend(){
 
+  return 0;
 }
 
-int Thread::Resume(){
+int Thread::resume(){
 
+  return 0;
 }
 
-void Thread::Run(void* arg)
+void Thread::run(void* arg)
 {
-  Setup();
-  Execute(arg);
+  setup();
+  execute(arg);
 
 }
 
 /*static */
-void * Thread::EntryPoint(void *pthis)
+void * Thread::entryPoint(void *pthis)
 {
   Thread *pt = (Thread*)pthis;
-  pt->Run(pt->GetArg());
+  pt->run(pt->getArg());
 }
 
-void Thread::Setup()
+void Thread::setup()
 {
   // Do any setup here
 }
 
-void Thread::SetArg(void* arg){
+void Thread::setArg(void* arg){
   this->mArg = arg;
 }
 
-void* Thread::GetArg(){
+void* Thread::getArg(){
   return this->mArg;
 }
 
-void Thread::Execute(void* arg)
+void Thread::execute(void* arg)
 {
 
 }

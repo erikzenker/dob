@@ -16,12 +16,12 @@ class ProfileManager {
  public:
   ProfileManager(std::vector<Profile>* pProfiles);
   ~ProfileManager();
-  bool StartProfile(std::string profileName);
-  bool StopProfile(std::string profileName);
-  bool RestartProfile(std::string profileName);
+  bool startProfile(std::string profileName);
+  bool stopProfile(std::string profileName);
+  bool restartProfile(std::string profileName);
 
  private:
-  Profile* GetProfileByName(std::string profileName);
+  Profile* getProfileByName(std::string profileName);
   vector<Profile>* mpProfiles;
 
 };

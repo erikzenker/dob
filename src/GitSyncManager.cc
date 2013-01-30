@@ -1,11 +1,11 @@
 #include "GitSyncManager.h"
 
-GitSyncManager::GitSyncManager(string destFolder, string syncType, string destProtocol):
+GitSyncManager::GitSyncManager(std::string destFolder, std::string syncType, std::string destProtocol):
   SyncManager(destFolder, syncType),
   mDestProtocol(destProtocol),
   mGitIsInitialized(false){
 
-  string git_init_query = "git init ";
+  std::string git_init_query = "git init ";
   git_init_query
     .append(mDestFolder)
     .append(" --bare");
@@ -17,21 +17,21 @@ GitSyncManager::GitSyncManager(string destFolder, string syncType, string destPr
  *  @todo check destFolder, sourcefolder for "\" as last char
  *
  **/
-bool GitSyncManager::SyncSourceFolder(string sourceFolder){
+bool GitSyncManager::syncSourceFolder(std::string sourceFolder){
   dbg_printc(LOG_DBG, "GitSyncManager","SyncSourceFolder", "Syncronise source and destination folder");
 
-  string git_add_query    = "cd ";
-  string git_commit_query = "cd "; 
-  string git_pull_query   = "cd "; 
-  string git_push_query   = "cd "; 
-  string git_init_query = "git init ";
+  std::string git_add_query    = "cd ";
+  std::string git_commit_query = "cd "; 
+  std::string git_pull_query   = "cd "; 
+  std::string git_push_query   = "cd "; 
+  std::string git_init_query = "git init ";
 
   git_init_query
     .append(sourceFolder);
 
   if(!mGitIsInitialized){
     system(git_init_query.c_str());
-    dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git init string: %s", git_init_query.c_str());
+    dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git init std::string: %s", git_init_query.c_str());
     mGitIsInitialized = true;
   }
 
@@ -71,13 +71,13 @@ bool GitSyncManager::SyncSourceFolder(string sourceFolder){
   return true;
 }
 
-bool GitSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  return SyncSourceFolder(sourceFolder);
+bool GitSyncManager::syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
+  return syncSourceFolder(sourceFolder);
   
 }
 
-bool GitSyncManager::SyncFile(string sourceFolder, string syncFolder){
-   return SyncSourceFolder(sourceFolder);
+bool GitSyncManager::syncFile(std::string sourceFolder, std::string syncFolder){
+   return syncSourceFolder(sourceFolder);
   
 }
 
@@ -85,8 +85,8 @@ bool GitSyncManager::SyncFile(string sourceFolder, string syncFolder){
  * @todo there should be a quicker alternative to remove files as rsync
  *
  **/
-bool GitSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
-  return SyncSourceFolder(sourceFolder);
+bool GitSyncManager::removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
+  return syncSourceFolder(sourceFolder);
 
 }
 
@@ -94,7 +94,7 @@ bool GitSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string
  * @todo fill with content
  *
  **/
-bool GitSyncManager::CheckDestFolder(){
+bool GitSyncManager::checkDestFolder(){
   return false;
 }
 
@@ -102,6 +102,6 @@ bool GitSyncManager::CheckDestFolder(){
  * @todo fill with content
  *
  **/
-bool GitSyncManager::MountDestFolder(){
+bool GitSyncManager::mountDestFolder(){
   return false;
 }

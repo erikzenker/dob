@@ -11,16 +11,16 @@
 #include <dbg_print.h>
 #include <FileSystemEvent.h>
 
-using namespace std;
-
 /**
  * @brief Handels events from FileSystemScanner
  * @class EventManager
  *        EventManager.h 
  *        "include/EventManager.h"
  *
- * The EvenManager takes different events (FileSystemEvent)
- * from an FileSystemScanner and handels them (HandleEvent).
+ * The EvenManager takes different events 
+ * [pushBackEvent(FileSystemEvent)] from a 
+ * FileSystemScanner and tries handel them (HandleEvent).
+ * 
  *
  **/
 typedef sigc::signal<void, bool, int> EventManagerSignal;
@@ -28,16 +28,17 @@ typedef sigc::signal<void, bool, int> EventManagerSignal;
 class EventManager{
 public:
   EventManager(SyncManager* const pSyncManager);
-  SyncManager* GetSyncManager() const;
-  void PushBackEvent(FileSystemEvent<int>* const pNewEvent, string sourceFolder);
-  EventManagerSignal SignalEvent();
+  ~EventManager();
+  SyncManager* getSyncManager() const;
+  void pushBackEvent(FileSystemEvent<int>* const pNewEvent, const std::string sourceFolder);
+  EventManagerSignal signalEvent();
 
 protected:
-  bool DispatchEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder);
-  virtual bool HandleEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder) = 0;
-  void SetPauseIcon() const;
-  void SetSyncIcon() const;
-  void SetScanIcon() const;
+  bool dispatchEvent(FileSystemEvent<int>* const pEvent, const std::string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent<int>* const pEvent, const std::string sourceFolder) = 0;
+  void setPauseIcon() const;
+  void setSyncIcon() const;
+  void setScanIcon() const;
   
   /* Member */ 
   vector<FileSystemEvent<int>* > mEventList;

@@ -59,12 +59,12 @@ class InterProcessCommunication {
   sigc::signal<bool, std::string> getStopSignal();
   sigc::signal<bool, std::string> getStartSignal();
   sigc::signal<bool, std::string> getRestartSignal();
-
-  bool read();
+  bool readFromPipe();
 
  private:
   int mFdFifo;
   char mBuf[100];
+  int mError;
   void emitStopSignal(std::vector<char> profileName);
   void emitStartSignal(std::vector<char> profileName);
   void emitRestartSignal(std::vector<char> profileName);

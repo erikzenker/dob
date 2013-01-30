@@ -6,7 +6,8 @@ Inotify::Inotify() :
   mEventTimeout(0),
   mLastEventTime(0),
   mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
-  Initialize();
+
+  initialize();
 }
 
 Inotify::Inotify(std::vector<std::string> ignoredFolders) :
@@ -16,7 +17,7 @@ Inotify::Inotify(std::vector<std::string> ignoredFolders) :
   mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
   mIgnoredFolders(ignoredFolders){
 
-  Initialize();
+  initialize();
 }
 
 Inotify::Inotify(std::string ignoredFolder) :
@@ -25,7 +26,7 @@ Inotify::Inotify(std::string ignoredFolder) :
   mLastEventTime(0),
   mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
 
-  Initialize();
+  initialize();
   mIgnoredFolders.push_back(ignoredFolder);
 }
 
@@ -35,15 +36,19 @@ Inotify::Inotify(std::string ignoredFolder) :
   mLastEventTime(0),
   mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
 
-  Initialize();
+  initialize();
   mIgnoredFolders.push_back(ignoredFolder);
 }
 
 Inotify::~Inotify(){
-  CleanUp();
+  assert(mIsInitialized);
+  if(!close(mInotifyFd)){
+    mError = errno;
+    dbg_printc(LOG_ERR,"Inotify","CleanUp", "Can´t close inotify fd(%d), Errno: %d", mInotifyFd, mError);
+  }
 }
 
-bool Inotify::Initialize(){
+bool Inotify::initialize(){
   // Try to initialise inotify
   if(!mIsInitialized){
     mInotifyFd = inotify_init();
@@ -59,17 +64,7 @@ bool Inotify::Initialize(){
 
 }
 
-bool Inotify::CleanUp(){
-  assert(mIsInitialized);
-  if(!close(mInotifyFd)){
-    mError = errno;
-    dbg_printc(LOG_ERR,"Inotify","CleanUp", "Can´t close inotify fd(%d), Errno: %d", mInotifyFd, mError);
-    return false;
-  }
-  return true;
-}
-
-bool Inotify::WatchFolderRecursively(std::string watchFolder){
+bool Inotify::watchFolderRecursively(std::string watchFolder){
   assert(mIsInitialized);
   // Important : Initialize should be called in advance
   DIR * directory;
@@ -78,8 +73,8 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
   struct stat64 my_stat;
 
   directory = opendir(watchFolder.c_str());
-  if(!IsDir(watchFolder))
-    return WatchFile(watchFolder);
+  if(!isDir(watchFolder))
+    return watchFile(watchFolder);
 
 
   if(watchFolder[watchFolder.size()-1] != '/'){
@@ -108,8 +103,8 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
       // Watch a folder recursively
       else if(S_ISDIR(my_stat.st_mode ) || S_ISLNK( my_stat.st_mode )) {
 	nextFile.append("/");
-	if(!IsIgnored(nextFile)){
-	  bool status = WatchFolderRecursively(nextFile);
+	if(!isIgnored(nextFile)){
+	  bool status = watchFolderRecursively(nextFile);
 	  if (!status){
 	    closedir(directory);
 	    return false;
@@ -126,11 +121,11 @@ bool Inotify::WatchFolderRecursively(std::string watchFolder){
   }
   closedir(directory);
   // Finally add watch to parentfolder
-  return WatchFile(watchFolder);
+  return watchFile(watchFolder);
 }
 
 
-bool Inotify::WatchFile(std::string file){
+bool Inotify::watchFile(std::string file){
   assert(mIsInitialized);
   mError = 0;
   int wd;
@@ -152,24 +147,24 @@ bool Inotify::WatchFile(std::string file){
 
 }
 
-bool Inotify::RemoveWatch(int wd){
+bool Inotify::removeWatch(int wd){
   int error = inotify_rm_watch(mInotifyFd, wd);
   if(errno <= 0){
     dbg_printc(LOG_WARN, "Inotify","RemoveWatch","Failed to remove watch of wd %d, errno: %d", wd, error);
     return false;
   }
-  dbg_printc(LOG_DBG, "Inotify","WatchFile","Removed watch with wd: %d, file: %s", wd, WdToFilename(wd).c_str());
+  dbg_printc(LOG_DBG, "Inotify","WatchFile","Removed watch with wd: %d, file: %s", wd, wdToFilename(wd).c_str());
   mFolderMap.erase(wd);
   return true;
 }
 
-std::string Inotify::WdToFilename(int wd){
+std::string Inotify::wdToFilename(int wd){
   assert(mIsInitialized);
   return mFolderMap[wd];
 
 }
 
-bool Inotify::IsDir(std::string folder){
+bool Inotify::isDir(std::string folder){
   DIR* directory;
   directory = opendir(folder.c_str());
   if(!directory) {
@@ -191,7 +186,7 @@ bool Inotify::IsDir(std::string folder){
 
 }
 
-FileSystemEvent<int>*  Inotify::GetNextEvent(){
+FileSystemEvent<int>*  Inotify::getNextEvent(){
   assert(mIsInitialized);
   inotify_event *event;
   FileSystemEvent<int> *fileSystemEvent;
@@ -228,15 +223,15 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
   currentEventTime = time(NULL);
   while(i < length){
     event = (struct inotify_event *) &buffer[i];
-    fileSystemEvent = new FileSystemEvent<int>(event->wd, event->mask, event->name, WdToFilename(event->wd)); 
-    if(CheckEvent(fileSystemEvent) && fileSystemEvent->GetMask() != IN_IGNORED){
+    fileSystemEvent = new FileSystemEvent<int>(event->wd, event->mask, event->name, wdToFilename(event->wd)); 
+    if(checkEvent(fileSystemEvent) && fileSystemEvent->getMask() != IN_IGNORED){
       newEvents.push_back(fileSystemEvent);
       dbg_printc(LOG_DBG, "Inotify", "GetNextEvent",
 		 "Event from fd(%d) was triggered %s %d %s queue.length: %d", 
 		 mInotifyFd,
-		 fileSystemEvent->GetFilename().c_str(), 
-		 fileSystemEvent->GetMask(),
-		 fileSystemEvent->GetMaskString().c_str(),
+		 fileSystemEvent->getFilename().c_str(), 
+		 fileSystemEvent->getMask(),
+		 fileSystemEvent->getMaskString().c_str(),
 		 newEvents.size());
     }
     i += EVENT_SIZE + event->len;
@@ -246,7 +241,7 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
   // Filter events for timeout
   std::vector<FileSystemEvent<int>* >::iterator eventIter;
   for(eventIter = newEvents.begin(); eventIter < newEvents.end(); ++eventIter){
-    if(OnTimeout(currentEventTime)){
+    if(onTimeout(currentEventTime)){
       newEvents.erase(eventIter);
     
     }
@@ -270,17 +265,17 @@ FileSystemEvent<int>*  Inotify::GetNextEvent(){
 
 }
 
-int Inotify::GetLastError(){
+int Inotify::getLastError(){
   return mError;
 
 }
 
-bool Inotify::IsIgnored(std::string file){
+bool Inotify::isIgnored(std::string file){
   if(!mIgnoredFolders[0].compare(""))
     return false;
   for(int i = 0; i < mIgnoredFolders.size(); ++i){
     size_t pos = file.find(mIgnoredFolders[i]);
-    if(pos!= string::npos){
+    if(pos!= std::string::npos){
       dbg_printc(LOG_DBG, "Inotify", "IsIgnored","File will be ignored: %s", file.c_str());
       return true;
     }
@@ -288,7 +283,7 @@ bool Inotify::IsIgnored(std::string file){
   return false;
 }
 
-void Inotify::ClearEventQueue(){
+void Inotify::clearEventQueue(){
   int eventCount;
   for(eventCount = 0; eventCount < mEventQueue.size(); eventCount++){
     mEventQueue.pop();
@@ -296,16 +291,16 @@ void Inotify::ClearEventQueue(){
 
 }
 
-bool Inotify::OnTimeout(time_t eventTime){
+bool Inotify::onTimeout(time_t eventTime){
   return (mLastEventTime + mEventTimeout) > eventTime;
 
 }
 
-bool Inotify::CheckEvent(FileSystemEvent<int>* event){
+bool Inotify::checkEvent(FileSystemEvent<int>* event){
   // Events seems to have no syncfolder,
   // this can happen if not the full event
   // was read from inotify fd
-  if(!event->GetWatchFolder().compare("")){
+  if(!event->getWatchFolder().compare("")){
     return false;
   }
 

@@ -28,6 +28,18 @@
 #define EVENT_SIZE     (sizeof (inotify_event))
 #define EVENT_BUF_LEN  (MAX_EVENTS * (EVENT_SIZE + 16))
 
+/**
+ * @brief C++ wrapper for linux inotify interface
+ * @class Inotify
+ *        Inotify.h
+ *        "include/Inotify.h"
+ *
+ * folders will be watched by watchFolderRecursively or
+ * files by watchFile. If there are changes inside this
+ * folder or files events will be raised. This events
+ * can be get by getNextEvent.
+ **/
+
 class Inotify {
  public:
   Inotify();
@@ -35,31 +47,29 @@ class Inotify {
   Inotify(std::string ignoredFolder);
   Inotify(std::string ignoredFolder, int eventTimeout);
   ~Inotify();
-  bool WatchFolderRecursively(std::string watchFolder);
-  bool WatchFile(std::string file);
-  FileSystemEvent<int>* GetNextEvent();
-  int GetLastError();
-  std::string WdToFilename(int wd);
-  bool RemoveWatch(int wd);
+  bool watchFolderRecursively(std::string watchFolder);
+  bool watchFile(std::string file);
+  FileSystemEvent<int>* getNextEvent();
+  int getLastError();
+  std::string wdToFilename(int wd);
+  bool removeWatch(int wd);
   
  private:
-  bool IsDir(std::string folder);
-  bool Initialize();
-  bool CleanUp();
-  bool IsIgnored(std::string file);
-  void ClearEventQueue();
-  bool OnTimeout(time_t eventTime);
-  bool CheckEvent(FileSystemEvent<int>* event);
+  bool isDir(std::string folder);
+  bool initialize();
+  bool isIgnored(std::string file);
+  void clearEventQueue();
+  bool onTimeout(time_t eventTime);
+  bool checkEvent(FileSystemEvent<int>* event);
 
   // Member
   bool mIsInitialized;
   int mInotifyFd;
   int mError;
   uint32_t mEventMask;
-  //std::queue<inotify_event*> mEventQueue;
   std::queue<FileSystemEvent<int>* > mEventQueue;
   std::map<int, std::string> mFolderMap;
-  std::vector<string> mIgnoredFolders;
+  std::vector<std::string> mIgnoredFolders;
   time_t mEventTimeout;
   time_t mLastEventTime;
 

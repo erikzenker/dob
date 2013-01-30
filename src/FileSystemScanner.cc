@@ -7,15 +7,15 @@ mpEventManager(pEventManager){
 }
 
 FileSystemScanner::~FileSystemScanner(){
-
+  free(mpEventManager);
 }
 
-string FileSystemScanner::GetScanFolder() const{
+string FileSystemScanner::getScanFolder() const{
   return mScanFolder;
 
 }
 
-EventManager* FileSystemScanner::GetEventManager() const{
+EventManager* FileSystemScanner::getEventManager() const{
   return mpEventManager;
 
 }

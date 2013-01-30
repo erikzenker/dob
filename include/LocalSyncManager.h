@@ -1,3 +1,10 @@
+/** 
+ * @file      LocalSyncManager.h
+ * @author    Erik Zenker
+ * @date      30.01.2013
+ * @copyright Gnu Public License
+ */
+
 #ifndef LocalSyncManager_H
 #define LocalSyncManager_H
 
@@ -10,19 +17,28 @@
 
 #include "SyncManager.h"
 
-
+/**
+ * @brief Syncronization with local data
+ * @class LocalSyncManager
+ *        LocalSyncManager.h
+ *        "include/LocalSyncManager.h"
+ * 
+ * For local syncronization common unix tools
+ * are used (cp, rm)
+ *
+ **/
 class LocalSyncManager : public SyncManager {
 
 public:
-  LocalSyncManager(string destFolder, string syncType);
-  virtual bool SyncSourceFolder(string sourceFolder);
-  virtual bool SyncFolder(string sourceFolder, string syncFolder, string folder);
-  virtual bool SyncFile(string sourceFolder, string syncFolder);
-  virtual bool RemoveFolder(string sourceFolder, string syncFolder, string folder);
+  LocalSyncManager(std::string destFolder, std::string syncType);
+  virtual bool syncSourceFolder(std::string sourceFolder);
+  virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
+  virtual bool syncFile(std::string sourceFolder, std::string syncFolder);
+  virtual bool removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
 
  protected: 
-  virtual bool CheckDestFolder();
-  virtual bool MountDestFolder();
+  virtual bool checkDestFolder();
+  virtual bool mountDestFolder();
 
 };
 

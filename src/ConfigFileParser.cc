@@ -9,7 +9,10 @@ ConfigFileParser::~ConfigFileParser(){
 }
 
 /**
- * @todo parser should use one grammar
+ * @brief Parses key/value pairs from configfile with help of boost::spirit
+ *
+ * @todo  parser should use one grammar and should be prettier
+ * @param location of the configfile
  **/
 void ConfigFileParser::parseConfigFile(string configFileName){
   namespace qi = boost::spirit::qi;
@@ -97,36 +100,55 @@ void ConfigFileParser::parseConfigFile(string configFileName){
 }
 
 void ConfigFileParser::createProfile (vector<char> name){
-  Profile p;
-  p.SetName(name);
-  mpProfiles->push_back(p);
+  Profile profile;
+  profile.setName(name);
+  mpProfiles->push_back(profile);
 
 }
 
 void ConfigFileParser::setSyncType (string syncType){
-  mpProfiles->back().SetSyncType(syncType);
+  if(mpProfiles->size() != 0)
+    mpProfiles->back().setSyncType(syncType);
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setSyncType", "Try to set syncType, but there is no profile"); 
 
 }
 
 void ConfigFileParser::setSyncFolder (vector<char> syncFolder){
-  mpProfiles->back().SetSyncFolder(syncFolder);
+  if(mpProfiles->size() != 0)
+    mpProfiles->back().setSyncFolder(syncFolder);
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setSyncFolder", "Try to set syncFolder, but there is no profile"); 
 
 }
 
 void ConfigFileParser::setDestFolder (vector<char> destFolder){
-  mpProfiles->back().SetDestFolder(destFolder);
+  if(mpProfiles->size() != 0)
+    mpProfiles->back().setDestFolder(destFolder);
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestFolder", "Try to set destFolder, but there is no profile"); 
 
 }
 
 void ConfigFileParser::setDestType(string destLocation){
-  mpProfiles->back().SetDestType(destLocation);
+  if(mpProfiles->size() != 0)
+    mpProfiles->back().setDestType(destLocation);
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestLocation", "Try to set destLocation, but there is no profile"); 
 
 }
 
-void ConfigFileParser::setDestProtocol(vector<char> mountOptions){
-  mpProfiles->back().SetDestProtocol(mountOptions);
+void ConfigFileParser::setDestProtocol(vector<char> destProtocol){
+  if(mpProfiles->size() != 0)
+    mpProfiles->back().setDestProtocol(destProtocol);
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestProtocol", "Try to set destProtocol, but there is no profile"); 
 }
 
+
+/**
+ * @return all parsed profiles
+ **/
 vector<Profile> *ConfigFileParser::getProfiles(){
   return mpProfiles;
 }

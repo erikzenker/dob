@@ -1,19 +1,19 @@
 #include "RemoteSyncManager.h"
 
-RemoteSyncManager::RemoteSyncManager(string destFolder, string syncType, string destProtocol):
+RemoteSyncManager::RemoteSyncManager(std::string destFolder, std::string syncType, std::string destProtocol):
   SyncManager(destFolder, syncType),
   mDestProtocol(destProtocol){
 
 }
 
 /**
- *  @todo check destFolder, sourcefolder for "\" as last char
+ *  @todo sourcefolder for "\" as last char
  *
  **/
-bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
+bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
   dbg_printc(LOG_DBG, "RemoteSyncManager","SyncSourceFolder", "Syncronise source and destination folder");
-  string rsync_push_query = "rsync -vruLKpt --progress --inplace ";
-  string rsync_pull_query = "rsync -vruLKpt --progress --inplace ";
+  std::string rsync_push_query = "rsync -vruLKpt --progress --inplace ";
+  std::string rsync_pull_query = "rsync -vruLKpt --progress --inplace ";
   rsync_push_query
     .append(sourceFolder)
     .append(" ")
@@ -31,8 +31,8 @@ bool RemoteSyncManager::SyncSourceFolder(string sourceFolder){
   return true;
 }
 
-bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, string folder){
-  string rsync_query = "rsync -vruLKpt --progress --inplace ";  
+bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
+  std::string rsync_query = "rsync -vruLKpt --progress --inplace ";  
   rsync_query
     .append(syncFolder)
     .append(folder)
@@ -47,8 +47,8 @@ bool RemoteSyncManager::SyncFolder(string sourceFolder, string syncFolder, strin
   
 }
 
-bool RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
-  string rsync_query = "rsync -vruLKpt --progress --inplace ";  
+bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolder){
+  std::string rsync_query = "rsync -vruLKpt --progress --inplace ";  
   rsync_query
     .append(syncFolder)
     //.append(folder)
@@ -67,9 +67,9 @@ bool RemoteSyncManager::SyncFile(string sourceFolder, string syncFolder){
  * @todo there should be a quicker alternative to remove files as rsync
  *
  **/
-bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, string folder){
+bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
   
-  string rm_query = "rsync -vruLKpt --delete --progress --inplace ";
+  std::string rm_query = "rsync -vruLKpt --delete --progress --inplace ";
   rm_query
     .append(syncFolder)
     .append(" ")
@@ -87,7 +87,7 @@ bool RemoteSyncManager::RemoveFolder(string sourceFolder, string syncFolder, str
  * @todo fill with content
  *
  **/
-bool RemoteSyncManager::CheckDestFolder(){
+bool RemoteSyncManager::checkDestFolder(){
   /*
   string mountpoint_query = "mountpoint -q ";
   mountpoint_query.append(mDestFolder);
@@ -100,7 +100,7 @@ bool RemoteSyncManager::CheckDestFolder(){
  * @todo fill with content
  *
  **/
-bool RemoteSyncManager::MountDestFolder(){
+bool RemoteSyncManager::mountDestFolder(){
   /*
   if(!mMountOptions.compare(""))
     return false;
