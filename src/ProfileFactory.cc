@@ -52,7 +52,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
       eventTimeout = 1;
     }
     else{
-      dbg_print(LOG_FATAL,"\nC Please specifiy destProtocol of destType", destType.c_str());
+      dbg_printc(LOG_FATAL,"ProfileFactory", "makeProfile","Please specifiy destProtocol of destType", destType.c_str());
       return false;
 
     }
@@ -62,7 +62,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     eventTimeout = 1;
   }
   else{
-    dbg_print(LOG_FATAL,"\nC destType %s in configfile is not an option", destType.c_str());
+    dbg_printc(LOG_FATAL,"ProfileFactory","makeProfile","destType %s in configfile is not an option", destType.c_str());
     return false;
   }
 
