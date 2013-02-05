@@ -14,9 +14,11 @@ InterProcessCommunication::InterProcessCommunication(std::string pathname){
 
   }
 
+  memset(&mBuf, 0, BUF_SIZE);
+
 }
 
-
+  
 InterProcessCommunication::~InterProcessCommunication(){
   close(mFdFifo);
 }
@@ -35,11 +37,11 @@ bool InterProcessCommunication::readFromPipe(){
   using ascii::space;
 
   while(1){
-    if(read(mFdFifo, &mBuf, sizeof(mBuf)) != 0){
+    if(read(mFdFifo, &mBuf, sizeof(mBuf)) < 0){
       mError = errno;
       dbg_printc(LOG_ERR, "InterProcessCommunication", "readFromPipe", "Failed to read from fifo pipe(%d), Errno %d",mFdFifo, mError);
     }
-    dbg_printc(LOG_DBG, "InterProcessCommunication", "Read","%s",mBuf);
+    dbg_printc(LOG_DBG, "InterProcessCommunication", "readFromPipe","%s",mBuf);
     std::string readString(mBuf);
     std::string profileName = "default";
 
@@ -66,7 +68,7 @@ bool InterProcessCommunication::readFromPipe(){
 		     space);
 
 
-
+    memset(&mBuf, 0, BUF_SIZE);
   }
   return true;
 }

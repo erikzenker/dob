@@ -25,9 +25,11 @@
 
 #include <ProfileManager.h>
 #include <dbg_print.h>
+#define BUF_SIZE 100
 
 typedef sigc::signal<int> StopSignal;
 typedef sigc::signal<int> StartSignal;
+
 
 
 /**
@@ -63,7 +65,7 @@ class InterProcessCommunication {
 
  private:
   int mFdFifo;
-  char mBuf[100];
+  char mBuf[BUF_SIZE];
   int mError;
   void emitStopSignal(std::vector<char> profileName);
   void emitStartSignal(std::vector<char> profileName);

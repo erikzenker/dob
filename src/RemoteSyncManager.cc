@@ -22,8 +22,8 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
     .append(mDestFolder)      
     .append(" ")
     .append(sourceFolder);
-  cerr << "\n";
   dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync pull string: %s", rsync_pull_query.c_str());
+  cerr << "\n";
   system(rsync_pull_query.c_str());
   dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync push string: %s", rsync_push_query.c_str());
   system(rsync_push_query.c_str());

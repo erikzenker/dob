@@ -30,6 +30,7 @@ bool ProfileManager::stopProfile(std::string profileName){
 }
 
 bool ProfileManager::restartProfile(std::string profileName){
+  dbg_printc(LOG_DBG, "ProfileManager", "restartProfile","Restart Profile : %s", profileName.c_str());
   Profile * pProfile = getProfileByName(profileName);
   if(pProfile){
     pProfile->stopProfile();
