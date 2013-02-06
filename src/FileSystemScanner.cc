@@ -4,6 +4,9 @@ FileSystemScanner::FileSystemScanner(string scanFolder, EventManager* const pEve
 mScanFolder(scanFolder),
 mpEventManager(pEventManager){
   assert(opendir(scanFolder.c_str()));
+  if(mScanFolder[mScanFolder.size()-1] != '/')
+     mScanFolder.append("/");
+
 }
 
 FileSystemScanner::~FileSystemScanner(){

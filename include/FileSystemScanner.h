@@ -11,7 +11,6 @@
 #include <string>
 #include "EventManager.h"
 
-using namespace std;
 
 /**
  * @brief Watches a folder for changes. 
@@ -25,15 +24,15 @@ using namespace std;
  **/
 class FileSystemScanner {
 public:
-  FileSystemScanner(const string scanFolder, EventManager* const pEventManager);
+  FileSystemScanner(const std::string scanFolder, EventManager* const pEventManager);
   ~FileSystemScanner();
-  string getScanFolder() const;
+  std::string getScanFolder() const;
   EventManager* getEventManager() const;
   virtual int startToScan() = 0;
   virtual int stopToScan()  = 0;
 
 protected:
-  const string mScanFolder;
+  std::string mScanFolder;
   EventManager* const mpEventManager;
 
 
