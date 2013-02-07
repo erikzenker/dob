@@ -59,8 +59,8 @@
      `syncType=syncronize`  
      `syncFolder=/home/jondo/important_data/`   
      `destFolder=jondo@githost.com:/gitlocation/`  
-     `destType=remote`
-     `destProtocol=git`  
+     `destType=remote`  
+     `destProtocol=git`   
 
 ## Dependencies ##
  + rsync
