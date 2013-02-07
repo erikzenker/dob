@@ -50,8 +50,8 @@
      `syncType=syncronize`  
      `syncFolder=/home/jondo/important_data/`   
      `destFolder=jondo@myprivatecloud.com:/home/jondo/`  
-     `destType=remote`
-     `destProtocol=ssh`  
+     `destType=remote`  
+     `destProtocol=ssh`   
   
  + Automatically put data into a git repository
   
