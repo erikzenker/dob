@@ -7,9 +7,19 @@
 ## Description ##
  __Dob__ scans folders from several profiles for modifications and performs a backup of changed 
  files immediately.  
- The profiles are defined in a configfile with the following syntax : 
+   
+ + __`--config=file`__
+    + Sets the configfile, where profiles are listed
+ + __`-d=[1-5]`__
+    + 1 print fatal errors
+    + 2 print errors (and 1)
+    + 3 print warnings (and 1 to 2)
+    + 4 print status information (and 1 to 3) is set as default
+    + 5 print debug information (and 1 to 4)
+   
+The profiles are defined in a configfile with the following syntax : 
 
- + __`[Name]`__  
+ + __`[Name]`__
      + Start of a new profile with `Name` as profilename. This means you can setup up more than one profile in one configfile
  + __`syncFolder=folderpath`__  
      + Folder that will be scanned for modifications. This Folder should be mounted.  
