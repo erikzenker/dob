@@ -34,7 +34,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
   EventManager* pEventManager;
   SyncManager* pSyncManager;
   FileSystemScanner* pFileSystemScanner;
-  std::string ignoredFolder = "";
+  std::vector<std::string> ignoredFolders = profile->getIgnoredFolders();
   int eventTimeout = 0;
   
   if(!profileName.compare(""))
@@ -47,8 +47,9 @@ bool ProfileFactory::makeProfile(Profile* profile){
     }
     else if(!destProtocol.compare("git")){
       pSyncManager = new GitSyncManager(destFolder, syncType, destProtocol);
-      ignoredFolder = scanFolder;
-      ignoredFolder.append(".git");
+      std::string ignoredGitFolder = scanFolder;
+      ignoredGitFolder.append(".git");
+      ignoredFolders.push_back(ignoredGitFolder);
       eventTimeout = 1;
     }
     else{
@@ -67,7 +68,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
   }
 
   pEventManager = new OptimizedEventManager(pSyncManager);
-  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolder, eventTimeout, pEventManager);
+  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager);
 
   profile->setSyncManager(pSyncManager);
   profile->setEventManager(pEventManager);

@@ -38,7 +38,7 @@
  **/
 class InotifyFileSystemScanner : public FileSystemScanner, public Thread {
 public:
-  InotifyFileSystemScanner(const string scanFolder, const string ignoredFolder, const int eventTimeout, EventManager* const pEventManager);
+  InotifyFileSystemScanner(const string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager);
   ~InotifyFileSystemScanner();
   virtual int startToScan();
   virtual int stopToScan();
@@ -48,9 +48,7 @@ public:
   virtual void setup();
 
  private:
-  std::string mIgnoredFolder;
-  int mEventTimeout;
-
+  Inotify * mInotify;
 
 };
 

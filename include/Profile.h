@@ -9,6 +9,7 @@
 #define Profile_H
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <InotifyFileSystemScanner.h>
 #include <RemoteSyncManager.h>
@@ -38,6 +39,7 @@ class Profile {
   void setSyncManager(SyncManager* syncManager)   { mpSyncManager = syncManager;}
   void setEventManager(EventManager* eventManager){ mpEventManager = eventManager;}
   void setFileSystemScanner(FileSystemScanner* fileSystemScanner) { mpFileSystemScanner = fileSystemScanner;}
+  void pushIgnoredFolder(string ignoredFolder) { mIgnoredFolders.push_back(ignoredFolder);}
   // Getter
   string getName()         { return name;}
   string getSyncType()     { return syncType;}
@@ -48,6 +50,7 @@ class Profile {
   SyncManager *getSyncManager() { return mpSyncManager;}
   EventManager *getEventManager() { return mpEventManager;}
   FileSystemScanner *getFileSystemScanner() { return mpFileSystemScanner;}
+  std::vector<std::string> getIgnoredFolders() { return mIgnoredFolders;}
   // Auxillary functions
   void print();
   bool isValid();
@@ -62,6 +65,7 @@ class Profile {
   string destFolder;
   string mDestType;
   string mDestProtocol;
+  std::vector<std::string> mIgnoredFolders;
   SyncManager * mpSyncManager;
   EventManager * mpEventManager;
   FileSystemScanner * mpFileSystemScanner;

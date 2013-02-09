@@ -39,13 +39,9 @@
  * folder or files events will be raised. This events
  * can be get by getNextEvent.
  **/
-
 class Inotify {
  public:
-  Inotify();
-  Inotify(std::vector<std::string> ignoredFolders);
-  Inotify(std::string ignoredFolder);
-  Inotify(std::string ignoredFolder, int eventTimeout);
+  Inotify(std::vector<std::string> ignoredFolders, int eventTimeout);
   ~Inotify();
   bool watchFolderRecursively(std::string watchFolder);
   bool watchFile(std::string file);

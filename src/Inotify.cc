@@ -1,43 +1,14 @@
 #include <Inotify.h>
 
-
-Inotify::Inotify() :
-  mError(0),
-  mEventTimeout(0),
-  mLastEventTime(0),
-  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
-
-  initialize();
-}
-
-Inotify::Inotify(std::vector<std::string> ignoredFolders) :
-  mError(0),
-  mEventTimeout(0),
-  mLastEventTime(0),
-  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
-  mIgnoredFolders(ignoredFolders){
-
-  initialize();
-}
-
-Inotify::Inotify(std::string ignoredFolder) :
-  mError(0),
-  mEventTimeout(0),
-  mLastEventTime(0),
-  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
-
-  initialize();
-  mIgnoredFolders.push_back(ignoredFolder);
-}
-
-  Inotify::Inotify(std::string ignoredFolder, int eventTimeout) :
+Inotify::Inotify(std::vector<std::string> ignoredFolders, int eventTimeout) :
   mError(0),
   mEventTimeout(eventTimeout),
   mLastEventTime(0),
-  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
-
+  mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
+  mIgnoredFolders(ignoredFolders){
+  
   initialize();
-  mIgnoredFolders.push_back(ignoredFolder);
+
 }
 
 Inotify::~Inotify(){
@@ -103,16 +74,12 @@ bool Inotify::watchFolderRecursively(std::string watchFolder){
       // Watch a folder recursively
       else if(S_ISDIR(my_stat.st_mode ) || S_ISLNK( my_stat.st_mode )) {
 	nextFile.append("/");
-	if(!isIgnored(nextFile)){
-	  bool status = watchFolderRecursively(nextFile);
-	  if (!status){
-	    closedir(directory);
-	    return false;
-
-	  }
-
+	bool status = watchFolderRecursively(nextFile);
+	if (!status){
+	  closedir(directory);
+	  return false;
 	}
-
+	
       }
 
     }
@@ -129,8 +96,14 @@ bool Inotify::watchFile(std::string file){
   assert(mIsInitialized);
   mError = 0;
   int wd;
-  dbg_printc(LOG_DBG, "Inotify","WatchFile","Add watch of file: %s", file.c_str());
-  wd = inotify_add_watch(mInotifyFd, file.c_str(), mEventMask);
+  if(!isIgnored(file)){
+    dbg_printc(LOG_DBG, "Inotify","WatchFile","Add watch of file: %s", file.c_str());
+    wd = inotify_add_watch(mInotifyFd, file.c_str(), mEventMask);
+  }
+  else{
+    return true;
+  }
+
   if(wd == -1){
     mError = errno;
     if(mError == 28){
@@ -271,8 +244,9 @@ int Inotify::getLastError(){
 }
 
 bool Inotify::isIgnored(std::string file){
-  if(!mIgnoredFolders[0].compare(""))
+  if(mIgnoredFolders.empty()){
     return false;
+  }
   for(int i = 0; i < mIgnoredFolders.size(); ++i){
     size_t pos = file.find(mIgnoredFolders[i]);
     if(pos!= std::string::npos){

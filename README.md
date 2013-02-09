@@ -34,7 +34,7 @@ The profiles are defined in a configfile with the following syntax :
 
 ## Usage ##
  It is possible to set symlinks into the syncFolder. These symlinks will be followd by the  
- scanprocess, thus all modification on this symlinked folder will be recognized.  
+ scanprocess, thus all modifications on this symlinked folder will be recognized.  
 
  With the help of a ssh-server and some storage on it, it is very easy to setup a cloud storage solution     
  for your linux devices (Netbook, Laptop, PC). You just need to install dob on all your devices, setup profiles  
@@ -51,7 +51,7 @@ The profiles are defined in a configfile with the following syntax :
      `[externalhdd]`  
      `syncType=syncronize`  
      `syncFolder=/home/jondo/important_data/`   
-     `destFolder=/media/external_hdd`  
+     `destFolder=/media/external_hdd/`  
      `destType=local`  
   
  + Syncronize data with a remote host via ssh, also possible with multiple users

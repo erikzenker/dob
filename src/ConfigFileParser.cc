@@ -90,6 +90,19 @@ void ConfigFileParser::parseConfigFile(string configFileName){
 	  
 	}
 
+      // Parse ignored files / folders
+      std::vector<std::string> *ignoredFolders = new std::vector<std::string>;
+      if(qi::phrase_parse(line.begin(), line.end()
+      			  , qi::string("ignore=") 
+      			  >>     
+      			  (*qi::char_)[boost::bind(&ConfigFileParser::pushIgnoredFolder, this, _1)]
+      			  ,space))
+      	{
+      	  continue;
+	  
+      	}
+
+
     }
     config_file_stream.close();
 
@@ -145,6 +158,15 @@ void ConfigFileParser::setDestProtocol(vector<char> destProtocol){
     dbg_printc(LOG_WARN, "ConfigFileParser", "setDestProtocol", "Try to set destProtocol, but there is no profile"); 
 }
 
+void ConfigFileParser::pushIgnoredFolder(vector<char> ignoredFolder){
+  if(mpProfiles->size() != 0){
+    std::string toString(ignoredFolder.begin(), ignoredFolder.end());
+    mpProfiles->back().pushIgnoredFolder(toString);
+  }
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "pushIgnoredFolder", "Try to push ignored folder, but there is no profile"); 
+
+}
 
 /**
  * @return all parsed profiles

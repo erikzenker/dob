@@ -39,6 +39,7 @@ class ConfigFileParser{
   void setDestFolder(vector<char> destFolder);
   void setDestType(string destLocation);
   void setDestProtocol(vector<char> destProtocol);
+  void pushIgnoredFolder(vector<char> destProtocol);
   vector<Profile> *mpProfiles;
 };
 
