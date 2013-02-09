@@ -31,6 +31,8 @@ The profiles are defined in a configfile with the following syntax :
      + Set local or remote destination location
  + __`destProtocol=ssh|git`__
      + Set communication protocol in case of remote destination
+ + __`ignore=file`__
+     + This will ignore alle files or folders that fit the regex *file*
 
 ## Usage ##
  It is possible to set symlinks into the syncFolder. These symlinks will be followd by the  
