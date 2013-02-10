@@ -91,7 +91,6 @@ void ConfigFileParser::parseConfigFile(string configFileName){
 	}
 
       // Parse ignored files / folders
-      std::vector<std::string> *ignoredFolders = new std::vector<std::string>;
       if(qi::phrase_parse(line.begin(), line.end()
       			  , qi::string("ignore=") 
       			  >>     
@@ -161,6 +160,7 @@ void ConfigFileParser::setDestProtocol(vector<char> destProtocol){
 void ConfigFileParser::pushIgnoredFolder(vector<char> ignoredFolder){
   if(mpProfiles->size() != 0){
     std::string toString(ignoredFolder.begin(), ignoredFolder.end());
+    //dbg_printc(LOG_DBG, "ConfigFileParser", "pushIgnoredFolder", "%s", toString.c_str());
     mpProfiles->back().pushIgnoredFolder(toString);
   }
   else

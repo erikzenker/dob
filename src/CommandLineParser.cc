@@ -1,8 +1,8 @@
 #include "CommandLineParser.h"
 
 CommandLineParser::CommandLineParser() :
-  mDebugLevel(LOG_INFO),
   mConfigFileName(""),
+  mDebugLevel(LOG_INFO),
   mUseGui(false){
 
 }
@@ -20,7 +20,7 @@ CommandLineParser::~CommandLineParser(){
  * @return        if there were some parameters
  *
  */
-bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
+bool CommandLineParser::parseCommandLine(unsigned argc, char *argv[]){
   dbg_printc(LOG_INFO, "CommandLineParser", "ParseCommandLine", "Parse commandline");
   namespace qi = boost::spirit::qi;  
   namespace ascii = boost::spirit::ascii;
@@ -38,9 +38,7 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]){
   qi::rule<char const*>             debugLevelKey   = qi::string("-d=");
   qi::rule<char const*, unsigned()> debugLevelValue = qi::int_parser<int, 10, 0, 5>();
   
-  unsigned debugLevel = 0;
-  unsigned i;
-  for(int i = 1; i < argc; ++i){
+  for(unsigned i = 1; i < argc; ++i){
     char const* begin(argv[i]);
     char const* end(begin + strlen(begin));
     matched = false;

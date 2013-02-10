@@ -5,7 +5,9 @@ Inotify::Inotify(std::vector<std::string> ignoredFolders, int eventTimeout) :
   mEventTimeout(eventTimeout),
   mLastEventTime(0),
   mEventMask(IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
-  mIgnoredFolders(ignoredFolders){
+  mIgnoredFolders(ignoredFolders),
+  mIsInitialized(false),
+  mInotifyFd(0){
   
   initialize();
 
@@ -167,7 +169,6 @@ FileSystemEvent<int>*  Inotify::getNextEvent(){
   int i = 0;
   char buffer[EVENT_BUF_LEN];
   time_t currentEventTime = time(NULL);
-  bool eventOccured = false;
   std::vector<FileSystemEvent<int>* > newEvents;
 
 
@@ -244,10 +245,22 @@ int Inotify::getLastError(){
 }
 
 bool Inotify::isIgnored(std::string file){
+  //std::regex ignoreRegex;
+
   if(mIgnoredFolders.empty()){
     return false;
   }
-  for(int i = 0; i < mIgnoredFolders.size(); ++i){
+
+  // for(int i = 0; i < mIgnoredFolders.size(); ++i){
+  //   ignoreRegex.assign(mIgnoredFolders[i], std::regex_constants::ECMAScript);
+  //   if(std::regex_match(file, ignoreRegex)){
+  //     dbg_printc(LOG_DBG, "Inotify", "IsIgnored","File will be ignored: %s", file.c_str());
+  //     return true;
+  //   }
+      
+  // }
+
+  for(unsigned i = 0; i < mIgnoredFolders.size(); ++i){
     size_t pos = file.find(mIgnoredFolders[i]);
     if(pos!= std::string::npos){
       dbg_printc(LOG_DBG, "Inotify", "IsIgnored","File will be ignored: %s", file.c_str());
@@ -258,8 +271,7 @@ bool Inotify::isIgnored(std::string file){
 }
 
 void Inotify::clearEventQueue(){
-  int eventCount;
-  for(eventCount = 0; eventCount < mEventQueue.size(); eventCount++){
+  for(unsigned eventCount = 0; eventCount < mEventQueue.size(); eventCount++){
     mEventQueue.pop();
   }
 

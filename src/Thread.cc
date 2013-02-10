@@ -46,6 +46,7 @@ void * Thread::entryPoint(void *pthis)
 {
   Thread *pt = (Thread*)pthis;
   pt->run(pt->getArg());
+  return pt;
 }
 
 void Thread::setup()

@@ -16,10 +16,11 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
-
 #include <string>
 #include <cstring>
 #include <queue>
+#include <regex>
+
 #include <map>
 #include <dbg_print.h>
 #include <FileSystemEvent.h>
@@ -59,15 +60,16 @@ class Inotify {
   bool checkEvent(FileSystemEvent<int>* event);
 
   // Member
-  bool mIsInitialized;
-  int mInotifyFd;
   int mError;
-  uint32_t mEventMask;
-  std::queue<FileSystemEvent<int>* > mEventQueue;
-  std::map<int, std::string> mFolderMap;
-  std::vector<std::string> mIgnoredFolders;
   time_t mEventTimeout;
   time_t mLastEventTime;
+  uint32_t mEventMask;
+  std::vector<std::string> mIgnoredFolders;
+  std::queue<FileSystemEvent<int>* > mEventQueue;
+  std::map<int, std::string> mFolderMap;
+  bool mIsInitialized;
+  int mInotifyFd;
+
 
 };
 

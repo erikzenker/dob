@@ -43,8 +43,7 @@ bool ProfileManager::restartProfile(std::string profileName){
 }
 
 Profile* ProfileManager::getProfileByName(std::string profileName){
-  int i;
-  for(i = 0; i < mpProfiles->size(); ++i){
+  for(unsigned i = 0; i < mpProfiles->size(); ++i){
     if(!mpProfiles->at(i).getName().compare(profileName)){
       return &(mpProfiles->at(i));
     }

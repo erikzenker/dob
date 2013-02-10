@@ -35,7 +35,7 @@ class CommandLineParser{
  public:
   CommandLineParser();
   ~CommandLineParser();
-  bool parseCommandLine(int argc, char *argv[]);
+  bool parseCommandLine(unsigned argc, char *argv[]);
   std::string getConfigFileName() const;
   unsigned getDebugLevel() const;
   bool getUseGui() const;

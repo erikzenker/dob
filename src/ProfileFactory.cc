@@ -88,7 +88,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
  *
  **/
 bool ProfileFactory::makeProfiles(vector<Profile>* pProfiles){
-  for(int i = 0; i < pProfiles->size(); ++i){
+  for(unsigned i = 0; i < pProfiles->size(); ++i){
     if(pProfiles->at(i).isValid()){
       if(!makeProfile(&(pProfiles->at(i)))){
 	return false;

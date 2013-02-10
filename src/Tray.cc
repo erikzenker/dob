@@ -66,7 +66,6 @@ void Tray::on_show(){
 }
 
 void Tray::ToggleSync(){
-  void* no_arg = NULL;
   if(mSyncIsActive){
     StopToScan();
     mSyncIsActive = false;

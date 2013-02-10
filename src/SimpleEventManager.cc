@@ -10,25 +10,26 @@ bool SimpleEventManager::handleEvent(FileSystemEvent<int>* pEvent, string source
   syncFolder.append(pEvent->getFilename());
   switch(pEvent->getMask()){
   case IN_CREATE:
-    mpSyncManager->syncSourceFolder(sourceFolder);
+    return mpSyncManager->syncSourceFolder(sourceFolder);
     break;
   case IN_DELETE:
-    mpSyncManager->syncSourceFolder(sourceFolder);
+    return mpSyncManager->syncSourceFolder(sourceFolder);
     break;
   case IN_MODIFY:
-    mpSyncManager->syncSourceFolder(sourceFolder);
+    return mpSyncManager->syncSourceFolder(sourceFolder);
     break;
   case IN_CREATE | IN_ISDIR:
-    mpSyncManager->syncSourceFolder(sourceFolder);
+    return mpSyncManager->syncSourceFolder(sourceFolder);
     break;
   case IN_DELETE | IN_ISDIR:
-    mpSyncManager->syncSourceFolder(sourceFolder);
+    return mpSyncManager->syncSourceFolder(sourceFolder);
     break;
   default:
     cerr << "\nC SimpleEventManager::HandleEvent: No handler for this event implementet ";
     break;
 
   }
+  return false;
 }
 
 
