@@ -9,16 +9,16 @@ REQUEST_URL=https://api.dropbox.com/1/oauth/request_token
 ACCESS_URL=https://api.dropbox.com/1/oauth/access_token
 
 # Request secret token
-curl --trace-ascii - --header "Authorization: OAuth oauth_version=$VERSION, oauth_signature_method=$METHOD ,oauth_consumer_key=$KEY, oauth_signature=$SECRET" $REQUEST_URL --data "" -o token.txt
-TOKEN=$(cat token.txt | sed 's/oauth_token_secret=[0-9,a-z]*//' | sed 's/&oauth_token=//')
-TOKEN_SECRET=$(cat token.txt | sed 's/oauth_token_secret=//' | sed 's/&oauth_token=[0-9,a-z]*//')
+curl --trace-ascii - --header "Authorization: OAuth oauth_version=$VERSION, oauth_signature_method=$METHOD ,oauth_consumer_key=$KEY, oauth_signature=$SECRET" $REQUEST_URL --data "" -o token.json
+
+TOKEN=$(cat token.json | sed 's/oauth_token_secret=[0-9,a-z]*//' | sed 's/&oauth_token=//')
+TOKEN_SECRET=$(cat token.json | sed 's/oauth_token_secret=//' | sed 's/&oauth_token=[0-9,a-z]*//')
 
 # Authorize token
-#curl "https://www.dropbox.com/1/oauth/authorize?oauth_token=$TOKEN&oauth_callback=http://www.google.de"
-chromium https://www.dropbox.com/1/oauth/authorize?oauth_token=$TOKEN&oauth_callback=http://www.google.de
+$BROWSER https://www.dropbox.com/1/oauth/authorize?oauth_token=$TOKEN&oauth_callback=http://www.google.de
 
 # Wait for authorization
-sleep 10s
+sleep 20s
 
 # Request access token
-curl --trace-ascii - --header "Authorization: OAuth oauth_version=$VERSION, oauth_signature_method=$METHOD ,oauth_consumer_key=$KEY ,oauth_token=$TOKEN , oauth_signature=$SECRET$TOKEN_SECRET" $ACCESS_URL --data "" -o access_token.txt
+curl --trace-ascii - --header "Authorization: OAuth oauth_version=$VERSION, oauth_signature_method=$METHOD ,oauth_consumer_key=$KEY ,oauth_token=$TOKEN , oauth_signature=$SECRET$TOKEN_SECRET" $ACCESS_URL --data "" -o access_token.json
