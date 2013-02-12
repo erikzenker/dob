@@ -1,22 +1,10 @@
  /***
  * ROADMAP
  * *
- * * Copy mechanism (Rsync)                                  --> done
- * * Mounting of server data                                 --> done : by server installation in vm and scripts/
- * * Debug levels                                            --> done : by dbg_print.h 
- * * Also non X userinterface (console only)                 --> done : by InterProcessCommunication interface	
- * * Replace libinotify with own implementation              --> done : by Inotify.h but not all functions
- * * Write Wrapper for Inotify events for more general use   --> done : FileSystemEvent.h but is kind of ugly
- * * Write some nice interface for ipc                       --> done : echo start default > /tmp/odb_fifo
- * * Give it some nice name                                  --> done : dob
- * * Remove all warnings from compiling
- * * Rename all methods to small camelcase
  * * Versioning of backup data (Git/Database)
- * * Write destructors for all classes
  * * Restart scanning after suspend
- * * Documentation for new classes
  * * Commandline installer/helper
- * * Scanning of server data
+ * * Scanning/polling of server data periodically
  * * Ask in case of big data
  * * Graphical user interface/wizzard
  * *
@@ -26,7 +14,6 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
-#include <gtkmm.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
