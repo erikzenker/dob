@@ -40,8 +40,8 @@ public:
   virtual bool removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
 
 protected:
-  virtual bool checkDestFolder();
-  virtual bool mountDestFolder();
+  virtual bool checkDestination();
+  virtual bool setupDestination();
 
 private:
   std::string mDestProtocol;

@@ -87,7 +87,7 @@ bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncF
  * @todo fill with content
  *
  **/
-bool RemoteSyncManager::checkDestFolder(){
+bool RemoteSyncManager::checkDestination(){
   /*
   string mountpoint_query = "mountpoint -q ";
   mountpoint_query.append(mDestFolder);
@@ -100,7 +100,7 @@ bool RemoteSyncManager::checkDestFolder(){
  * @todo fill with content
  *
  **/
-bool RemoteSyncManager::mountDestFolder(){
+bool RemoteSyncManager::setupDestination(){
   /*
   if(!mMountOptions.compare(""))
     return false;
@@ -116,5 +116,5 @@ bool RemoteSyncManager::mountDestFolder(){
 
   return true;
   */
-  return false;
+  return true;
 }

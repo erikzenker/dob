@@ -39,8 +39,8 @@ class GitSyncManager : public SyncManager{
   virtual bool syncFile(std::string sourceFolder, std::string syncFolder);
 
  protected:
-  virtual bool checkDestFolder();
-  virtual bool mountDestFolder();
+  virtual bool checkDestination();
+  virtual bool setupDestination();
 
  private:
   std::string mDestProtocol;

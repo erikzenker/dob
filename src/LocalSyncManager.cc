@@ -5,11 +5,11 @@ LocalSyncManager::LocalSyncManager(std::string destFolder, std::string syncType)
 
 }
 
-bool LocalSyncManager::checkDestFolder(){
+bool LocalSyncManager::checkDestination(){
   static struct stat64 my_stat;
   if ( -1 == lstat64(mDestFolder.c_str(), &my_stat ) ) {
     if (errno == ENOENT) return false;
-    dbg_printc(LOG_WARN, "LocalSyncManager", "IsDir", "\nC Stat failed on %s: %s\n", mDestFolder.c_str(), strerror(errno));
+    dbg_printc(LOG_WARN, "LocalSyncManager", "IsDir", "\nC Stat failed on %s: %d\n", mDestFolder.c_str(), errno);
     return false;
   }
   if(S_ISDIR( my_stat.st_mode ))
@@ -17,8 +17,8 @@ bool LocalSyncManager::checkDestFolder(){
   return false;
 }
 
-bool LocalSyncManager::mountDestFolder(){
-  return false;
+bool LocalSyncManager::setupDestination(){
+  return checkDestination();
 }
 
 
@@ -42,16 +42,9 @@ bool LocalSyncManager::mountDestFolder(){
  *        See more in "man rsync"
  */
 bool LocalSyncManager::syncSourceFolder(std::string sourceFolder){
-  if(!checkDestFolder()){
-    if(!mountDestFolder()){
-      dbg_printc(LOG_ERR,"SyncManager","SyncSourceFolder", "Failed to mount destination folder, abort syncronisation");
-      return false;
-    }
-    // Check again just to be shure
-    if(!checkDestFolder()){
-      dbg_printc(LOG_ERR,"SyncManager","SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
-      return false;
-    }
+  if(!checkDestination()){
+    dbg_printc(LOG_ERR,"SyncManager","SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
+    return false;
   }
 
 
@@ -74,16 +67,9 @@ bool LocalSyncManager::syncSourceFolder(std::string sourceFolder){
 }
 
 bool LocalSyncManager::syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
-  if(!checkDestFolder()){
-    if(!mountDestFolder()){
-      dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed to dispatch destination folder, abort syncronisation");
-      return false;
-    }
-    // Check again just to be sure
-    if(!checkDestFolder()){
-      dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed syncronise source and destination folder, because destination folder is not reachable or not mounted");
-      return false;
-    }
+  if(!checkDestination()){
+    dbg_printc(LOG_ERR,"SyncManager","SyncFolder", "Failed syncronise source and destination folder, because destination folder is not reachable or not mounted");
+    return false;
   }
 
   std::string cp_query = "cp -RLv ";  
@@ -106,17 +92,11 @@ bool LocalSyncManager::syncFolder(std::string sourceFolder, std::string syncFold
 }
 
 bool LocalSyncManager::removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
-  if(!checkDestFolder()){
-    if(!mountDestFolder()){
-      dbg_printc(LOG_ERR,"SyncManager","RemoveFolder", "Failed to mount destination folder, abort syncronisation");
-      return false;
-    }
-    // Check again just to be shure
-    if(!checkDestFolder()){
-      dbg_printc(LOG_ERR,"SyncManager","RemoveFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
-      return false;
-    }
+  if(!checkDestination()){
+    dbg_printc(LOG_ERR,"SyncManager","RemoveFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
+    return false;
   }
+
   std::string rm_query = "rsync -vruLKpt --delete --progress --inplace ";
   rm_query
     .append(syncFolder)

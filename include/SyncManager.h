@@ -8,7 +8,6 @@
 #ifndef SyncManager_H
 #define SyncManager_H
 
-#include <gtkmm.h>
 #include <string>
 #include <iostream>
 #include <stdlib.h>
@@ -24,7 +23,7 @@ using namespace std;
  *        SyncManager.h 
  *        "include/SyncManager.h"
  *
- * The SyncManager knows a destination folder where
+ * The SyncManager knows a destination where
  * it should syncronise data to. It gets a 
  * source folder from which it sould syncronise from
  * Several SyncManager can be implemented by using 
@@ -40,8 +39,8 @@ public:
   virtual bool removeFolder(string sourceFolder, string syncFolder, string folder) =0;
 
 protected:
-  virtual bool checkDestFolder() =0;
-  virtual bool mountDestFolder() =0;
+  virtual bool checkDestination() =0;
+  virtual bool setupDestination() =0;
   string mDestFolder;
   string mSyncType;
 

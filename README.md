@@ -77,7 +77,7 @@ The profiles are defined in a configfile with the following syntax :
 ## Dependencies ##
  + rsync
  + boost-libs
- + gtkmm3
+ + libsigc++
  + Linux Kernel 2.6.13 (inotify)
 
 ## Copyrigth

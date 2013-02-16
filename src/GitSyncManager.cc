@@ -94,7 +94,7 @@ bool GitSyncManager::removeFolder(std::string sourceFolder, std::string syncFold
  * @todo fill with content
  *
  **/
-bool GitSyncManager::checkDestFolder(){
+bool GitSyncManager::checkDestination(){
   return false;
 }
 
@@ -102,6 +102,6 @@ bool GitSyncManager::checkDestFolder(){
  * @todo fill with content
  *
  **/
-bool GitSyncManager::mountDestFolder(){
-  return false;
+bool GitSyncManager::setupDestination(){
+  return true;
 }
