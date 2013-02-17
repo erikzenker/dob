@@ -5,7 +5,7 @@ RemoteSyncManager::RemoteSyncManager(std::string destFolder, std::string syncTyp
   mDestProtocol(destProtocol)
   {
     if(!destPort.compare(""))
-      mDestPort = "22"; // Common ssh port
+      mDestPort = "873"; // default rsync port
     else
       mDestPort = destPort;
 
