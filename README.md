@@ -31,6 +31,8 @@ The profiles are defined in a configfile with the following syntax :
      + Set local or remote destination location
  + __`destProtocol=ssh|git`__
      + Set communication protocol in case of remote destination
+ + __`destPort=port`__
+     + With this key you are able to change the default port for remote backups
  + __`ignore=file`__
      + This will ignore all files or folders that fit the regex \*`file`\*
 

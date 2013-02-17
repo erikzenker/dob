@@ -50,6 +50,7 @@ USAGE
 	       destType=remote || local
 	       destProtocol=ssh || git
 	       ignore=file (is like regex *file*)
+	       destPort=port (default is ssh-port 22)
 	       
 
 3. Start the programm

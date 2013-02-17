@@ -14,13 +14,13 @@ ConfigFileParser::~ConfigFileParser(){
  * @todo  parser should use one grammar and should be prettier
  * @param location of the configfile
  **/
-void ConfigFileParser::parseConfigFile(string configFileName){
+void ConfigFileParser::parseConfigFile(std::string configFileName){
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
   using ascii::space;
 
   dbg_printc(LOG_INFO, "ConfigFileParser", "ParseConfigFile", "Parse config file: %s", configFileName.c_str());
-  string line;
+  std::string line;
   ifstream config_file_stream;
   config_file_stream.open(configFileName.c_str());
 
@@ -100,6 +100,17 @@ void ConfigFileParser::parseConfigFile(string configFileName){
       	  continue;
 	  
       	}
+      // Parse destPort
+      if(qi::phrase_parse(line.begin(), line.end()
+      			  , qi::string("destPort=") 
+      			  >>     
+      			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestPort, this, _1)]
+      			  ,space))
+      	{
+      	  continue;
+	  
+      	}
+
 
 
     }
@@ -118,7 +129,7 @@ void ConfigFileParser::createProfile (vector<char> name){
 
 }
 
-void ConfigFileParser::setSyncType (string syncType){
+void ConfigFileParser::setSyncType (std::string syncType){
   if(mpProfiles->size() != 0)
     mpProfiles->back().setSyncType(syncType);
   else
@@ -142,7 +153,7 @@ void ConfigFileParser::setDestFolder (vector<char> destFolder){
 
 }
 
-void ConfigFileParser::setDestType(string destLocation){
+void ConfigFileParser::setDestType(std::string destLocation){
   if(mpProfiles->size() != 0)
     mpProfiles->back().setDestType(destLocation);
   else
@@ -150,22 +161,32 @@ void ConfigFileParser::setDestType(string destLocation){
 
 }
 
-void ConfigFileParser::setDestProtocol(vector<char> destProtocol){
+void ConfigFileParser::setDestProtocol(std::vector<char> destProtocol){
   if(mpProfiles->size() != 0)
     mpProfiles->back().setDestProtocol(destProtocol);
   else
     dbg_printc(LOG_WARN, "ConfigFileParser", "setDestProtocol", "Try to set destProtocol, but there is no profile"); 
 }
 
-void ConfigFileParser::pushIgnoredFolder(vector<char> ignoredFolder){
+void ConfigFileParser::pushIgnoredFolder(std::vector<char> ignoredFolder){
   if(mpProfiles->size() != 0){
     std::string toString(ignoredFolder.begin(), ignoredFolder.end());
-    //dbg_printc(LOG_DBG, "ConfigFileParser", "pushIgnoredFolder", "%s", toString.c_str());
     mpProfiles->back().pushIgnoredFolder(toString);
   }
   else
     dbg_printc(LOG_WARN, "ConfigFileParser", "pushIgnoredFolder", "Try to push ignored folder, but there is no profile"); 
 
+}
+
+void ConfigFileParser::setDestPort(std::vector<char> port_char){
+  if(mpProfiles->size() != 0){
+    std::string portString(port_char.begin(), port_char.end());
+    dbg_printc(LOG_DBG, "ConfigFileParser", "setDestPort", "destport %s", portString.c_str()); 
+    mpProfiles->back().setDestPort(portString);
+  }
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestPort", "Try to set destination port, but there is no profile"); 
+  
 }
 
 /**

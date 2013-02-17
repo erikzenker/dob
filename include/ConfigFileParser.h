@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <dbg_print.h>
+#include <stdlib.h>
 
 // phrase_parse includes
 #include <boost/spirit/include/qi.hpp>
@@ -30,17 +31,18 @@ class ConfigFileParser{
  public:
   ConfigFileParser();
   ~ConfigFileParser();
-  void parseConfigFile(string configFileName);
+  void parseConfigFile(std::string configFileName);
   vector<Profile>* getProfiles();
  private:
-  void createProfile(vector<char> name);
-  void setSyncType(string syncType);
-  void setSyncFolder(vector<char> syncFolder);
-  void setDestFolder(vector<char> destFolder);
-  void setDestType(string destLocation);
-  void setDestProtocol(vector<char> destProtocol);
-  void pushIgnoredFolder(vector<char> destProtocol);
-  vector<Profile> *mpProfiles;
+  void createProfile(std::vector<char> name);
+  void setSyncType(std::string syncType);
+  void setSyncFolder(std::vector<char> syncFolder);
+  void setDestFolder(std::vector<char> destFolder);
+  void setDestType(std::string destLocation);
+  void setDestProtocol(std::vector<char> destProtocol);
+  void pushIgnoredFolder(std::vector<char> destProtocol);
+  void setDestPort(std::vector<char> port);
+  std::vector<Profile> *mpProfiles;
 };
 
 #endif /* ConfigFileParser_H */

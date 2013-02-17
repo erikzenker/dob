@@ -14,7 +14,7 @@ ProfileFactory::~ProfileFactory(){
  *
  * Depending on the information given by the profile,
  * the right objects will be instanciated to create
- * the wanted profile.
+ * the full profile.
  * If there are some Information missing, for example
  * profileName or destType, the method will return
  * false and won't manipulate the profile object.
@@ -25,12 +25,13 @@ ProfileFactory::~ProfileFactory(){
  *               in the profile information
  **/
 bool ProfileFactory::makeProfile(Profile* profile){
-  string profileName =  profile->getName();
-  string scanFolder = profile->getSyncFolder();
-  string destFolder = profile->getDestFolder();
-  string syncType   = profile->getSyncType();
-  string destType   = profile->getDestType();
-  string destProtocol = profile->getDestProtocol();
+  std::string profileName =  profile->getName();
+  std::string scanFolder = profile->getSyncFolder();
+  std::string destFolder = profile->getDestFolder();
+  std::string syncType   = profile->getSyncType();
+  std::string destType   = profile->getDestType();
+  std::string destProtocol = profile->getDestProtocol();
+  std::string destPort = profile->getDestPort();
   EventManager* pEventManager;
   SyncManager* pSyncManager;
   FileSystemScanner* pFileSystemScanner;
@@ -42,7 +43,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
   
   if(!destType.compare("remote")){
     if(!destProtocol.compare("ssh")){
-      pSyncManager = new RemoteSyncManager(destFolder, syncType, destProtocol);
+      pSyncManager = new RemoteSyncManager(destFolder, syncType, destProtocol, destPort);
       eventTimeout = 1;
     }
     else if(!destProtocol.compare("git")){
@@ -87,7 +88,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
  *               missing in at least one profile 
  *
  **/
-bool ProfileFactory::makeProfiles(vector<Profile>* pProfiles){
+bool ProfileFactory::makeProfiles(std::vector<Profile>* pProfiles){
   for(unsigned i = 0; i < pProfiles->size(); ++i){
     if(pProfiles->at(i).isValid()){
       if(!makeProfile(&(pProfiles->at(i)))){

@@ -10,6 +10,7 @@
 
 #include <string>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
 #include <unistd.h>
@@ -33,7 +34,7 @@
  **/
 class RemoteSyncManager : public SyncManager{
 public:
-  RemoteSyncManager(std::string destFolder, std::string syncType, std::string destProtocol);
+  RemoteSyncManager(std::string destFolder, std::string syncType, std::string destProtocol, std::string destPort);
   virtual bool syncSourceFolder(std::string sourceFolder);
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
   virtual bool syncFile(std::string sourceFolder, std::string syncFolder);
@@ -45,6 +46,7 @@ protected:
 
 private:
   std::string mDestProtocol;
+  std::string mDestPort;
   
 
 };

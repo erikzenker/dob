@@ -32,7 +32,7 @@ class ProfileFactory {
  public:
   ProfileFactory();
   ~ProfileFactory();
-  bool makeProfiles(vector<Profile>* pProfiles);
+  bool makeProfiles(std::vector<Profile>* pProfiles);
  private:
   bool makeProfile(Profile* profile);
 };
