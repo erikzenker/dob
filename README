@@ -18,7 +18,9 @@ INSTALL
 Archlinux:
    * rsync
    * boost-libs
-   * gtkmm3
+   * libsigc++
+   * make
+   * gcc
 
 Fedora 17:
   * libsigc++
@@ -45,13 +47,13 @@ USAGE
    ==> edit  : syncFolder=/home/<Your username>/Backup/
        	       syncType= syncronize 
        	       destFolder=/<syncronization>/<Folder>/
-	       destLocation=remote || local
+	       destType=remote || local
 	       destProtocol=ssh || git
+	       ignore=file (is like regex *file*)
 	       
 
 3. Start the programm
    ==> ./dob --config=dob.conf 
-   ==> without experimental gui add: --nogui	
 	
 4. Enjoy the your syncronization deamon without doing anything
 
