@@ -5,7 +5,6 @@ SimpleEventManager::SimpleEventManager(SyncManager * pSyncManager)
 }
 
 bool SimpleEventManager::handleEvent(FileSystemEvent<int>* pEvent, string sourceFolder){
-  //cerr <<"\nC Event " << inotifytools_event_to_str(pEvent->mask) <<" was triggered";
   string syncFolder = pEvent->getWatchFolder();
   syncFolder.append(pEvent->getFilename());
   switch(pEvent->getMask()){
