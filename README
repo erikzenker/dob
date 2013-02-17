@@ -45,7 +45,7 @@ USAGE
    ==> edit  : syncFolder=/home/<Your username>/Backup/
        	       syncType= syncronize 
        	       destFolder=/<syncronization>/<Folder>/
-	       destLocation=remote || local
+	       destType=remote || local
 	       destProtocol=ssh || git
 	       
 
