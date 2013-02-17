@@ -181,8 +181,7 @@ void ConfigFileParser::pushIgnoredFolder(std::vector<char> ignoredFolder){
 void ConfigFileParser::setDestPort(std::vector<char> port_char){
   if(mpProfiles->size() != 0){
     std::string portString(port_char.begin(), port_char.end());
-    dbg_printc(LOG_DBG, "ConfigFileParser", "setDestPort", "destport %s", portString.c_str()); 
-    mpProfiles->back().setDestPort(portString);
+     mpProfiles->back().setDestPort(portString);
   }
   else
     dbg_printc(LOG_WARN, "ConfigFileParser", "setDestPort", "Try to set destination port, but there is no profile"); 

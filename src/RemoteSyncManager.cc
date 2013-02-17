@@ -17,17 +17,17 @@ RemoteSyncManager::RemoteSyncManager(std::string destFolder, std::string syncTyp
  **/
 bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
   dbg_printc(LOG_DBG, "RemoteSyncManager","SyncSourceFolder", "Syncronise source and destination folder");
-  std::string rsync_push_query = "rsync -vruLKpt --progress --inplace --port=\"";
-  std::string rsync_pull_query = "rsync -vruLKpt --progress --inplace --port=\"";
+  std::string rsync_push_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";
+  std::string rsync_pull_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";
   rsync_push_query
     .append(mDestPort)
-    .append("\" ")
+    .append("\' ")
     .append(sourceFolder)
     .append(" ")
     .append(mDestFolder);
   rsync_pull_query
     .append(mDestPort)
-    .append("\" ")
+    .append("\' ")
     .append(mDestFolder)      
     .append(" ")
     .append(sourceFolder);
@@ -41,10 +41,10 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
 }
 
 bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
-  std::string rsync_query = "rsync -vruLKpt --progress --inplace --port=\"";  
+  std::string rsync_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
   rsync_query
     .append(mDestPort)
-    .append("\" ")
+    .append("\' ")
     .append(syncFolder)
     .append(folder)
     .append(" ")
@@ -59,10 +59,10 @@ bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFol
 }
 
 bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolder){
-  std::string rsync_query = "rsync -vruLKpt --progress --inplace --port=\"";  
+  std::string rsync_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
   rsync_query
     .append(mDestPort)
-    .append("\" ")
+    .append("\' ")
     .append(syncFolder)
     //.append(folder)
     .append(" ")
@@ -82,10 +82,10 @@ bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolde
  **/
 bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
   
-  std::string rm_query = "rsync -vruLKpt --delete --progress --inplace --port=\"";
+  std::string rm_query = "rsync -vruLKpt --delete --progress --inplace --rsh=\'ssh -p";
   rm_query
     .append(mDestPort)
-    .append("\" ")
+    .append("\' ")
     .append(syncFolder)
     .append(" ")
     .append(mDestFolder)
