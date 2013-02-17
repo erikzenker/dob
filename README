@@ -14,9 +14,22 @@ INSTALL
 =======
 
 1. Install dependencys
+
+Archlinux:
    * rsync
    * boost-libs
-   * libsigc++
+   * gtkmm3
+
+Fedora 17:
+  * libsigc++
+  * boost-devel
+  * gtkmm30-devel
+  * inotify-tools-devel
+  * rsync
+  * gcc-c++
+  * make
+
+
 
 2. Build dob
    ==> make 
@@ -29,17 +42,16 @@ USAGE
 
 2. Edit the configfile, if it not exists just create one
    ==> create: touch dob.conf
-   ==> edit  : [ProfileName]
-	       syncFolder=/home/<Your username>/Backup/
+   ==> edit  : syncFolder=/home/<Your username>/Backup/
        	       syncType= syncronize 
        	       destFolder=/<syncronization>/<Folder>/
-	       destType=remote || local
+	       destLocation=remote || local
 	       destProtocol=ssh || git
-	       ignore=ignored_file (equal to regex *ignored_file*)
 	       
 
 3. Start the programm
    ==> ./dob --config=dob.conf 
+   ==> without experimental gui add: --nogui	
 	
 4. Enjoy the your syncronization deamon without doing anything
 
