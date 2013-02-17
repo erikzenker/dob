@@ -14,9 +14,22 @@ INSTALL
 =======
 
 1. Install dependencys
+
+Archlinux:
    * rsync
    * boost-libs
    * gtkmm3
+
+Fedora 17:
+  * libsigc++
+  * boost-devel
+  * gtkmm30-devel
+  * inotify-tools-devel
+  * rsync
+  * gcc-c++
+  * make
+
+
 
 2. Build dob
    ==> make 
