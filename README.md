@@ -27,12 +27,16 @@ The profiles are defined in a configfile with the following syntax :
      + Location backup will be stored. Can be a local or remote location.
  + __`syncType=syncronize`__
      + Direction of syncronisation
- + __`destType=local|remote`__
-     + Set local or remote destination location
- + __`destProtocol=ssh|git`__
+ + __`syncProto=rsync|git`__
      + Set communication protocol in case of remote destination
+ + __`destUser= username`__
+     + SSH username on remote host
+ + __`destHost=hostIP`__
+     + IP of the remote host
  + __`destPort=port`__
-     + With this key you are able to change the default port for remote backups
+     + With this key you are able to change the default port(873) for remote backups
+ + __`sshPort=portNumber`__
+     + custom SSH port, if you don't use the standard (22)
  + __`ignore=file`__
      + This will ignore all files or folders that fit the regex \*`file`\*
 
@@ -50,6 +54,7 @@ The profiles are defined in a configfile with the following syntax :
  your data to several local storage connected to your computer.  
 
 ## Examples ##
+  NOTE: deprecated at the moment, see dob.conf for updated examples
  + Make a local backup to an external harddrive 
    
      `[externalhdd]`  
