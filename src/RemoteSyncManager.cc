@@ -1,15 +1,32 @@
 #include "RemoteSyncManager.h"
 
-RemoteSyncManager::RemoteSyncManager(std::string destFolder, std::string syncType, std::string destProtocol, std::string destPort):
+RemoteSyncManager::RemoteSyncManager( std::string destFolder, 
+				      std::string syncType, 
+				      std::string destUser, 
+				      std::string destHost,
+				      std::string destPort,
+				      std::string sshPort ):
   SyncManager(destFolder, syncType),
-  mDestProtocol(destProtocol)
+  mDestUser( destUser ),
+  mDestHost( destHost ),
+  mSshPort( sshPort )
   {
     if(!destPort.compare(""))
       mDestPort = "873"; // default rsync port
     else
       mDestPort = destPort;
 
+    allOptionsPush =  "rsync -vruLKpt --progress --inplace -e \"ssh -l";
+
+    allOptionsPush
+      .append(mDestUser)
+      .append(" -p")
+      .append(mSshPort)
+      .append("\" ");
+    allOptionsPull = allOptionsPush;
 }
+
+
 
 /**
  *  @todo sourcefolder for "\" as last char
@@ -17,18 +34,28 @@ RemoteSyncManager::RemoteSyncManager(std::string destFolder, std::string syncTyp
  **/
 bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
   dbg_printc(LOG_DBG, "RemoteSyncManager","SyncSourceFolder", "Syncronise source and destination folder");
-  std::string rsync_push_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";
-  std::string rsync_pull_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";
+  std::string rsync_push_query = allOptionsPush;
+  std::string rsync_pull_query = allOptionsPull;
   rsync_push_query
-    .append(mDestPort)
-    .append("\' ")
     .append(sourceFolder)
     .append(" ")
+    .append("rsync://")
+    .append(mDestUser)
+    .append("@")
+    .append(mDestHost)
+    .append(":")
+    .append(mDestPort)
+    .append("/")
     .append(mDestFolder);
   rsync_pull_query
+    .append("rsync://")
+    .append(mDestUser)
+    .append("@")
+    .append(mDestHost)
+    .append(":")
     .append(mDestPort)
-    .append("\' ")
-    .append(mDestFolder)      
+    .append("/")
+    .append(mDestFolder)
     .append(" ")
     .append(sourceFolder);
   dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync pull string: %s", rsync_pull_query.c_str());
@@ -41,13 +68,18 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
 }
 
 bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
-  std::string rsync_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
+  std::string rsync_query = allOptionsPush; 
   rsync_query
-    .append(mDestPort)
-    .append("\' ")
     .append(syncFolder)
     .append(folder)
     .append(" ")
+    .append("rsync://")
+    .append(mDestUser)
+    .append("@")
+    .append(mDestHost)
+    .append(":")
+    .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -59,13 +91,18 @@ bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFol
 }
 
 bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolder){
-  std::string rsync_query = "rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
+  std::string rsync_query = allOptionsPush; //"rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
   rsync_query
-    .append(mDestPort)
-    .append("\' ")
     .append(syncFolder)
     //.append(folder)
     .append(" ")
+    .append("rsync://")
+    .append(mDestUser)
+    .append("@")
+    .append(mDestHost)
+    .append(":")
+    .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -82,12 +119,17 @@ bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolde
  **/
 bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
   
-  std::string rm_query = "rsync -vruLKpt --delete --progress --inplace --rsh=\'ssh -p";
+  std::string rm_query = allOptionsPush; //"rsync -vruLKpt --delete --progress --inplace --rsh=\'ssh -p";
   rm_query
-    .append(mDestPort)
-    .append("\' ")
     .append(syncFolder)
     .append(" ")
+    .append("rsync://")
+    .append(mDestUser)
+    .append("@")
+    .append(mDestHost)
+    .append(":")
+    .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 

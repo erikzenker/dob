@@ -34,7 +34,12 @@
  **/
 class RemoteSyncManager : public SyncManager{
 public:
-  RemoteSyncManager(std::string destFolder, std::string syncType, std::string destProtocol, std::string destPort);
+  RemoteSyncManager(  std::string destFolder, 
+		      std::string syncType, 
+		      std::string destUser, 
+		      std::string destHost, 
+		      std::string destPort, 
+		      std::string sshPort );
   virtual bool syncSourceFolder(std::string sourceFolder);
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
   virtual bool syncFile(std::string sourceFolder, std::string syncFolder);
@@ -45,8 +50,12 @@ protected:
   virtual bool setupDestination();
 
 private:
-  std::string mDestProtocol;
   std::string mDestPort;
+  std::string mDestHost;
+  std::string mDestUser;
+  std::string mSshPort;
+  std::string allOptionsPush;
+  std::string allOptionsPull;
   
 
 };

@@ -60,6 +60,16 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
 	  continue;
 	  
 	}
+      // Parse sync protocol
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("syncProto=") 
+			  >>     
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setSyncProtocol, this, _1)]
+			  ,space))
+	{
+	  continue;
+	  
+	}
       // Parse destination folder
       if(qi::phrase_parse(line.begin(), line.end()
 			  , qi::string("destFolder=") 
@@ -70,20 +80,31 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
 	  continue;
 	  
 	}
-      // Parse destination location
+      // Parse destination host
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destType=") >> qi::string("local")[boost::bind(&ConfigFileParser::setDestType, this, _1)] 
-			  | qi::string("destType=") >> qi::string("remote")[boost::bind(&ConfigFileParser::setDestType, this, _1)] 
+			  , qi::string("destHost=") 
+			  >> 
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestHost, this, _1)] 
 			  ,space))
 	{
 	  continue;
 	  
 	}
-      // Parse mount Options
+      // Parse destination user
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destProtocol=") 
+			  , qi::string("destUser=") 
+			  >> 
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestUser, this, _1)] 
+			  ,space))
+	{
+	  continue;
+	  
+	}
+      // Parse ssh port
+      if(qi::phrase_parse(line.begin(), line.end()
+			  , qi::string("sshPort=") 
 			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestProtocol, this, _1)]
+			  (*qi::char_)[boost::bind(&ConfigFileParser::setSshPort, this, _1)]
 			  ,space))
 	{
 	  continue;
@@ -145,7 +166,15 @@ void ConfigFileParser::setSyncFolder (vector<char> syncFolder){
 
 }
 
-void ConfigFileParser::setDestFolder (vector<char> destFolder){
+void ConfigFileParser::setSyncProtocol(std::vector<char> syncProto){
+  if(mpProfiles->size() != 0)
+    mpProfiles->back().setSyncProtocol(syncProto);
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setSyncProtocol", "Try to set syncProtocol, but there is no profile"); 
+}
+
+
+void ConfigFileParser::setDestFolder( std::vector<char> destFolder){
   if(mpProfiles->size() != 0)
     mpProfiles->back().setDestFolder(destFolder);
   else
@@ -153,19 +182,32 @@ void ConfigFileParser::setDestFolder (vector<char> destFolder){
 
 }
 
-void ConfigFileParser::setDestType(std::string destLocation){
-  if(mpProfiles->size() != 0)
-    mpProfiles->back().setDestType(destLocation);
+void ConfigFileParser::setDestHost(std::vector<char> destHost){
+  if(mpProfiles->size() != 0) {
+    std::string toString( destHost.begin(), destHost.end() );
+    mpProfiles->back().setDestHost(toString);
+  }
   else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestLocation", "Try to set destLocation, but there is no profile"); 
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestHost", "Try to set destHost, but there is no profile"); 
 
 }
-
-void ConfigFileParser::setDestProtocol(std::vector<char> destProtocol){
+/*
+void ConfigFileParser::setDestUser(std::string destUser){
   if(mpProfiles->size() != 0)
-    mpProfiles->back().setDestProtocol(destProtocol);
+    mpProfiles->back().setDestUser(destUser);
   else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestProtocol", "Try to set destProtocol, but there is no profile"); 
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestUser", "Try to set destUser, but there is no profile"); 
+
+}
+*/
+void ConfigFileParser::setDestUser(std::vector<char> destUser){
+  if(mpProfiles->size() != 0){
+    std::string toString( destUser.begin(), destUser.end() );
+    mpProfiles->back().setDestUser(toString);
+  }
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestUser", "Try to set destUser, but there is no profile"); 
+
 }
 
 void ConfigFileParser::pushIgnoredFolder(std::vector<char> ignoredFolder){
@@ -187,6 +229,17 @@ void ConfigFileParser::setDestPort(std::vector<char> port_char){
     dbg_printc(LOG_WARN, "ConfigFileParser", "setDestPort", "Try to set destination port, but there is no profile"); 
   
 }
+
+void ConfigFileParser::setSshPort(std::vector<char> sshPort){
+  if(mpProfiles->size() != 0){
+    std::string portString(sshPort.begin(), sshPort.end());
+     mpProfiles->back().setSshPort(portString);
+  }
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setSshPort", "Try to set SSH port, but there is no profile"); 
+  
+}
+
 
 /**
  * @return all parsed profiles

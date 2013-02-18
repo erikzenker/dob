@@ -29,30 +29,51 @@ class Profile {
   ~Profile();
   // Setter
   void setName(std::vector<char> name)                 { this->name.assign(name.begin(), name.end());}
+  void setName( std::string name )		       { this->name = name; }
+
   void setSyncType(std::vector<char> syncType)         { this->mSyncType.assign(syncType.begin(), syncType.end());}
   void setSyncType(std::string syncType)               { this->mSyncType = syncType;}
+
   void setSyncFolder(std::vector<char> syncFolder)     { this->mSyncFolder.assign(syncFolder.begin(), syncFolder.end());}
+  void setSyncFolder( std::string syncFolder )	       { this->mSyncFolder = syncFolder; }
+
+  void setSyncProtocol(std::vector<char> syncProtocol) { mSyncProto.assign(syncProtocol.begin(), syncProtocol.end());}
+  void setSyncProtocol( std::string syncProtocol )     { mSyncProto = syncProtocol; }
+  
+  void setDestUser(std::vector<char> destUser)         { mDestUser.assign(destUser.begin(), destUser.end());}
+  void setDestUser(std::string destUser)               { mDestUser = destUser;}
+
+  void setDestHost( std::string host )		       { mDestHost = host; }
+
+  void setDestPort(std::string port) {mDestPort = port; }
+  
   void setDestFolder(std::vector<char> destFolder)     { this->mDestFolder.assign(destFolder.begin(), destFolder.end());}
-  void setDestType(std::vector<char> destType)         { mDestType.assign(destType.begin(), destType.end());}
-  void setDestProtocol(std::vector<char> destProtocol) { mDestProtocol.assign(destProtocol.begin(), destProtocol.end());}
-  void setDestType(std::string destType)               { mDestType = destType;}
-  void setSyncManager(SyncManager* syncManager)   { mpSyncManager = syncManager;}
-  void setEventManager(EventManager* eventManager){ mpEventManager = eventManager;}
+  void setDestFolder( std::string destFolder)	       { this->mDestFolder = destFolder; }
+
+  void setSshPort( std::string port )		       { mSshPort = port; }
+
+  void setSyncManager(SyncManager* syncManager)	       { mpSyncManager = syncManager;}
+  void setEventManager(EventManager* eventManager)     { mpEventManager = eventManager;}
   void setFileSystemScanner(FileSystemScanner* fileSystemScanner) { mpFileSystemScanner = fileSystemScanner;}
-  void setDestPort(std::string port) {mDestPort = port;}
-  void pushIgnoredFolder(std::string ignoredFolder) { mIgnoredFolders.push_back(ignoredFolder);}
+
+  void pushIgnoredFolder(std::string ignoredFolder)    { mIgnoredFolders.push_back(ignoredFolder); }
+
   // Getter
   std::string getName()         { return name;}
   std::string getSyncType()     { return mSyncType;}
   std::string getSyncFolder()   { return mSyncFolder;}
-  std::string getDestFolder()   { return mDestFolder;}
-  std::string getDestType()     { return mDestType;}
-  std::string getDestProtocol() { return mDestProtocol;}
+  std::string getSyncProtocol() { return mSyncProto;}
+  std::string getDestUser()	{ return mDestUser; }
+  std::string getDestHost()	{ return mDestHost; }
+  std::string getDestPort()	{ return mDestPort; }
+  std::string getDestFolder()   { return mDestFolder; }
+  std::string getSshPort()	{ return mSshPort; }
+
   SyncManager *getSyncManager() { return mpSyncManager;}
   EventManager *getEventManager() { return mpEventManager;}
   FileSystemScanner *getFileSystemScanner() { return mpFileSystemScanner;}
   std::vector<std::string> getIgnoredFolders() { return mIgnoredFolders;}
-  std::string getDestPort() { return mDestPort;}
+  
   // Auxillary functions
   void print();
   bool isValid();
@@ -60,14 +81,18 @@ class Profile {
   bool stopProfile();
   bool startSyncProfile();
   bool startScanProfile();
+ 
  private:
   std::string name;
   std::string mSyncType;
   std::string mSyncFolder;
-  std::string mDestFolder;
-  std::string mDestType;
-  std::string mDestProtocol;
+  std::string mSyncProto;
+  std::string mDestUser;
+  std::string mDestHost;
   std::string mDestPort;
+  std::string mDestFolder;
+  std::string mSshPort;
+  
   std::vector<std::string> mIgnoredFolders;
   SyncManager * mpSyncManager;
   EventManager * mpEventManager;

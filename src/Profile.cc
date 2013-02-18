@@ -4,10 +4,13 @@ Profile::Profile() :
   name(""),
   mSyncType(""),
   mSyncFolder(""),
+  mSyncProto(""),
+  mDestUser(""),
+  mDestHost(""),
+  mDestPort(""),
   mDestFolder(""),
-  mDestType(""),
-  mDestProtocol(""),
-  mDestPort(""){
+  mSshPort("22"){
+  
 
 }
 
@@ -28,10 +31,12 @@ void Profile::print(){
   cout << "\nC [" << name << "]";
   cout << "\nC  syncType=" << mSyncType;
   cout << "\nC  syncFolder=" << mSyncFolder;
-  cout << "\nC  destFolder=" << mDestFolder;
-  cout << "\nC  destType=" << mDestType;
-  cout << "\nC  destProtocol=" << mDestProtocol;
+  cout << "\nC  syncProto=" << mSyncProto;
+  cout << "\nC  destUser=" << mDestUser;
+  cout << "\nC  destHost=" << mDestHost;
   cout << "\nC  destPort=" << mDestPort;
+  cout << "\nC  destFolder=" << mDestFolder;
+  cout << "\nC	SshPort=" << mSshPort;
   cout << "\n";
   
 }

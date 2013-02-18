@@ -11,6 +11,7 @@
 
 // phrase_parse includes
 #include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_no_skip.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/bind.hpp>
@@ -37,11 +38,13 @@ class ConfigFileParser{
   void createProfile(std::vector<char> name);
   void setSyncType(std::string syncType);
   void setSyncFolder(std::vector<char> syncFolder);
-  void setDestFolder(std::vector<char> destFolder);
-  void setDestType(std::string destLocation);
-  void setDestProtocol(std::vector<char> destProtocol);
-  void pushIgnoredFolder(std::vector<char> destProtocol);
+  void setSyncProtocol( std::vector<char> syncProto );
+  void setDestUser(std::vector<char> destUser);
+  void setDestHost( std::vector<char> destHost);
   void setDestPort(std::vector<char> port);
+  void setDestFolder(std::vector<char> destFolder);
+  void pushIgnoredFolder(std::vector<char> ignoredFolder);
+  void setSshPort(std::vector<char> sshPort);
   std::vector<Profile> *mpProfiles;
 };
 
