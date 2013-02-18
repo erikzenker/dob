@@ -18,7 +18,7 @@ DOXYGEN = doxygen
 LIBS		= -lpthread
 CPPINCLUDES 	= -I./include 
 COMMON_CPPFLAGS = $(CPPINCLUDES)
-CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -g3  -fno-strict-aliasing -g $(shell pkg-config --cflags --libs sigc++-2.0) -std=c++0x
+CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -fno-strict-aliasing $(shell pkg-config --cflags --libs sigc++-2.0) -std=c++0x
 LDFLAGS 	= -L. 
 
 # build variables

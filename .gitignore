@@ -1,5 +1,6 @@
 *.d
 *.o
 *~
+*.swp
 my_dob.conf
 dob
