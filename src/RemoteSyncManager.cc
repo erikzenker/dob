@@ -60,6 +60,7 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
+    .append("/")
     .append(mDestFolder);
 
   rsync_pull_query
@@ -69,6 +70,7 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(" ")
     .append(sourceFolder);
@@ -94,6 +96,7 @@ bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFol
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -116,6 +119,7 @@ bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolde
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -143,6 +147,7 @@ bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncF
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
+    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -158,11 +163,6 @@ bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncF
  *
  **/
 bool RemoteSyncManager::checkDestination(){
-  /*
-  string mountpoint_query = "mountpoint -q ";
-  mountpoint_query.append(mDestFolder);
-  return !system(mountpoint_query.c_str());
-  */
   return false;
 }
 
@@ -171,20 +171,5 @@ bool RemoteSyncManager::checkDestination(){
  *
  **/
 bool RemoteSyncManager::setupDestination(){
-  /*
-  if(!mMountOptions.compare(""))
-    return false;
-
-  string mount_query;
-  mount_query
-    .append("sshfs -o ServerAliveInterval=15 ")
-    .append(mMountOptions)
-    .append(" ")
-    .append(mDestFolder);
-  cerr << mount_query << "\n";
-  system(mount_query.c_str());
-
-  return true;
-  */
   return true;
 }
