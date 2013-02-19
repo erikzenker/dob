@@ -1,5 +1,24 @@
 #include "RemoteSyncManager.h"
 
+/*
+ * @note  Rsync command line parameters
+ *        -r, --recursive         recurse into directories
+ *        -u, --update            skip files that are newer on the receiver
+ *        -z, --compress          compress file data during the transfer
+ *        -v, --verbose           increase verbosity
+ *            --delete            delete extraneous files from dest dirs
+ *        -L, --copy-links        transform symlink into referent file/dir
+ *        -K, --keep-dirlinks     treat symlinked dir on receiver as dir
+ *        -p, --perms             preserve permissions
+ *        -t, --times             preserve modification times
+ *        -o, --owner             preserve owner (super-user only)
+ *        -g, --group             preserve group
+ *            --devices           preserve device files (super-user only)
+ *            --specials          preserve special files
+ *        -D                      same as --devices --specials
+ *            --modify-window=NUM compare mod-times with reduced accuracy
+ *        See more in "man rsync"
+ */
 RemoteSyncManager::RemoteSyncManager( std::string destFolder, 
 				      std::string syncType, 
 				      std::string destUser, 
@@ -16,26 +35,22 @@ RemoteSyncManager::RemoteSyncManager( std::string destFolder,
     else
       mDestPort = destPort;
 
-    allOptionsPush =  "rsync -vruLKpt --progress --inplace -e \"ssh -l";
+    mAllOptionsPush =  "rsync -vruLKpt --progress --inplace -e \"ssh -l";
 
-    allOptionsPush
+    mAllOptionsPush
       .append(mDestUser)
       .append(" -p")
       .append(mSshPort)
       .append("\" ");
-    allOptionsPull = allOptionsPush;
+    mAllOptionsPull = mAllOptionsPush;
 }
 
 
-
-/**
- *  @todo sourcefolder for "\" as last char
- *
- **/
 bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
   dbg_printc(LOG_DBG, "RemoteSyncManager","SyncSourceFolder", "Syncronise source and destination folder");
-  std::string rsync_push_query = allOptionsPush;
-  std::string rsync_pull_query = allOptionsPull;
+  std::string rsync_push_query = mAllOptionsPush;
+  std::string rsync_pull_query = mAllOptionsPull;
+
   rsync_push_query
     .append(sourceFolder)
     .append(" ")
@@ -45,8 +60,8 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
-    .append("/")
     .append(mDestFolder);
+
   rsync_pull_query
     .append("rsync://")
     .append(mDestUser)
@@ -54,10 +69,10 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
-    .append("/")
     .append(mDestFolder)
     .append(" ")
     .append(sourceFolder);
+
   dbg_printc(LOG_DBG, "RemoteSyncManager", "SyncSourceFolder", "Rsync pull string: %s", rsync_pull_query.c_str());
   cerr << "\n";
   system(rsync_pull_query.c_str());
@@ -68,7 +83,7 @@ bool RemoteSyncManager::syncSourceFolder(std::string sourceFolder){
 }
 
 bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
-  std::string rsync_query = allOptionsPush; 
+  std::string rsync_query = mAllOptionsPush; 
   rsync_query
     .append(syncFolder)
     .append(folder)
@@ -79,7 +94,6 @@ bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFol
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
-    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -91,7 +105,7 @@ bool RemoteSyncManager::syncFolder(std::string sourceFolder, std::string syncFol
 }
 
 bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolder){
-  std::string rsync_query = allOptionsPush; //"rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
+  std::string rsync_query = mAllOptionsPush; //"rsync -vruLKpt --progress --inplace --rsh=\'ssh -p";  
   rsync_query
     .append(syncFolder)
     //.append(folder)
@@ -102,7 +116,6 @@ bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolde
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
-    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 
@@ -119,8 +132,9 @@ bool RemoteSyncManager::syncFile(std::string sourceFolder, std::string syncFolde
  **/
 bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder){
   
-  std::string rm_query = allOptionsPush; //"rsync -vruLKpt --delete --progress --inplace --rsh=\'ssh -p";
+  std::string rm_query = mAllOptionsPush; //"rsync -vruLKpt --delete --progress --inplace --rsh=\'ssh -p";
   rm_query
+    .append("--delete ")
     .append(syncFolder)
     .append(" ")
     .append("rsync://")
@@ -129,7 +143,6 @@ bool RemoteSyncManager::removeFolder(std::string sourceFolder, std::string syncF
     .append(mDestHost)
     .append(":")
     .append(mDestPort)
-    .append("/")
     .append(mDestFolder)
     .append(syncFolder.substr(sourceFolder.length(), syncFolder.length()));
 

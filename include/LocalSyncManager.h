@@ -39,6 +39,7 @@ public:
  protected: 
   virtual bool checkDestination();
   virtual bool setupDestination();
+  std::string mRsyncOptions;
 
 };
 

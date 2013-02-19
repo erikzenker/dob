@@ -27,9 +27,8 @@
  *        "include/RemoteSyncManager.h"
  * 
  * The tool rsync is used to syncronize
- * local and remote data. There is no
- * versioning inside, so data could be
- * doubled and appear again.
+ * local and remote data. Rsync should
+ * run in deamon mode on the server.
  *
  **/
 class RemoteSyncManager : public SyncManager{
@@ -51,11 +50,11 @@ protected:
 
 private:
   std::string mDestPort;
-  std::string mDestHost;
   std::string mDestUser;
+  std::string mDestHost;
   std::string mSshPort;
-  std::string allOptionsPush;
-  std::string allOptionsPull;
+  std::string mAllOptionsPush;
+  std::string mAllOptionsPull;
   
 
 };

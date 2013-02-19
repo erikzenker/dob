@@ -13,6 +13,7 @@
 
 #include <Profile.h>
 #include <GitSyncManager.h>
+#include <SshSyncManager.h>
 #include <dbg_print.h>
 
 

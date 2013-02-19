@@ -50,6 +50,10 @@ bool ProfileFactory::makeProfile(Profile* profile){
     pSyncManager = new RemoteSyncManager(destFolder, syncType, destUser, destHost, destPort, sshPort);
     eventTimeout = 1;
   }
+  else if(!syncProtocol.compare("ssh")){
+    pSyncManager = new SshSyncManager(destFolder, syncType, destUser, destHost, destPort);
+    eventTimeout = 1;
+  }
   else if(!syncProtocol.compare("git")){
     pSyncManager = new GitSyncManager(destFolder, syncType, syncProtocol);
     std::string ignoredGitFolder = scanFolder;
@@ -57,13 +61,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     ignoredFolders.push_back(ignoredGitFolder);
     eventTimeout = 1;
   }
-/*  else{
-    dbg_printc(LOG_FATAL,"ProfileFactory", "makeProfile","Please specifiy destProtocol of destType", destType.c_str());
-    return false;
- }
-  }*/
-// TODO if no host given, assume local transfer
-  else if(!destHost.compare("")){
+  else if(!destHost.compare("") && !syncProtocol.compare("")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);
     eventTimeout = 1;
   }
