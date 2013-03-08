@@ -61,6 +61,10 @@ bool ProfileFactory::makeProfile(Profile* profile){
     ignoredFolders.push_back(ignoredGitFolder);
     eventTimeout = 1;
   }
+  else if(!syncProtocol.compare("dropbox")){
+    pSyncManager = new DropboxSyncManager(destFolder, syncType);
+    eventTimeout = 1; 
+  }
   else if(!destHost.compare("") && !syncProtocol.compare("")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);
     eventTimeout = 1;
