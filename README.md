@@ -27,16 +27,18 @@ The profiles are defined in a configfile with the following syntax :
      + Location backup will be stored. Can be a local or remote location.
  + __`syncType=syncronize`__
      + Direction of syncronisation
- + __`syncProto=rsync|git`__
+ + __`syncProto=rsync|git|ssh`__
      + Set communication protocol in case of remote destination
  + __`destUser= username`__
      + SSH username on remote host
  + __`destHost=hostIP`__
-     + IP of the remote host
+     + IP or URL of the remote host
  + __`destPort=port`__
-     + With this key you are able to change the default port(873) for remote backups
+     + With this key you are able to change the default port for remote machine
+     + There exist for each protocol an default port !
  + __`sshPort=portNumber`__
-     + custom SSH port, if you don't use the standard (22)
+     + Custom SSH port, if you don't use the standard (22)
+     + This is just useful in rsync-case, because ssh and rsync listening to differenz ports 
  + __`ignore=file`__
      + This will ignore all files or folders that fit the regex \*`file`\*
 
@@ -54,35 +56,50 @@ The profiles are defined in a configfile with the following syntax :
  your data to several local storage connected to your computer.  
 
 ## Examples ##
-  NOTE: deprecated at the moment, see dob.conf for updated examples
  + Make a local backup to an external harddrive 
    
      `[externalhdd]`  
      `syncType=syncronize`  
      `syncFolder=/home/jondo/important_data/`   
      `destFolder=/media/external_hdd/`  
-     `destType=local`  
   
  + Syncronize data with a remote host via ssh, also possible with multiple users
   
      `[privatecloud]`  
      `syncType=syncronize`  
-     `syncFolder=/home/jondo/important_data/`   
-     `destFolder=jondo@myprivatecloud.com:/home/jondo/`  
-     `destType=remote`  
-     `destProtocol=ssh`   
-  
+     `syncFolder=/home/jondo/important_data/`  
+     `syncProto=ssh`  
+     `destFolder=/home/jondo/`  
+     `destUser=jondo`   
+     `destHost=myprivatecloud.com`   
+     `destPort=22`   
+    
  + Automatically put data into a git repository
   
      `[githost]`  
      `syncType=syncronize`  
      `syncFolder=/home/jondo/important_data/`   
-     `destFolder=jondo@githost.com:/gitlocation/`  
-     `destType=remote`  
-     `destProtocol=git`   
+     `syncProto=git`  
+     `destFolder=/gitlocation/`  
+     `destUser=jondo`   
+     `destHost=githost.com`  
+     `destPort=22`   
+
+ + Use rsync modules on your remote machine
+  
+     `[rsynchost]`  
+     `syncType=syncronize`  
+     `syncFolder=/home/jondo/important_data/`   
+     `syncProto=rsync`  
+     `destFolder=rsyncModuleName`  
+     `destUser=jondo`   
+     `destHost=rsynchost.com`  
+     `destPort=873`  
+     `sshPort=22`  
 
 ## Dependencies ##
  + rsync
+ + git
  + boost-libs
  + libsigc++
  + Linux Kernel 2.6.13 (inotify)
