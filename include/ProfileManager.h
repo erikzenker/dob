@@ -19,6 +19,7 @@ class ProfileManager {
   bool startProfile(std::string profileName);
   bool stopProfile(std::string profileName);
   bool restartProfile(std::string profileName);
+  bool startProfiles();
 
  private:
   Profile* getProfileByName(std::string profileName);

@@ -45,6 +45,9 @@ void InotifyFileSystemScanner::execute(void* arg){
 
   }
 
+  //FileIndex F(mScanFolder);
+  //F.indexRecursively(mScanFolder);
+
   dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
   FileSystemEvent<int> * fileSystemEvent = mInotify->getNextEvent();
 

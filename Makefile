@@ -15,7 +15,8 @@ CPP = g++
 DOXYGEN = doxygen
 
 # compiler flags
-LIBS		= -lpthread
+MONGODBLIBS       = -lmongoclient -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
+LIBS		= -lpthread $(MONGODBLIBS)
 CPPINCLUDES 	= -I./include 
 COMMON_CPPFLAGS = $(CPPINCLUDES)
 CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -fno-strict-aliasing $(shell pkg-config --cflags --libs sigc++-2.0) -std=c++0x

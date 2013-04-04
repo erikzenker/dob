@@ -11,13 +11,13 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
+#include <dirent.h> // DIR, dirent
+#include <sys/stat.h> // lstat64
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
 #include <string>
-#include <cstring>
+#include <cstring> // strcmp
 #include <queue>
 #include <regex>
 
