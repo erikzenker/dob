@@ -23,6 +23,7 @@ InterProcessCommunication::~InterProcessCommunication(){
   close(mFdFifo);
 }
 
+// TODO Check if fifo was created correctly
 /**
  * @brief Starts to read from fifo pipe
  *

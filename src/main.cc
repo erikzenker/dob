@@ -1,3 +1,4 @@
+
  /***
  * ROADMAP
  * *
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]){
   ConfigFileParser configFileParser;
   CommandLineParser commandLineParser;
   ProfileFactory profileFactory;
-  InterProcessCommunication ipc("/tmp/odb_fifo");
+  InterProcessCommunication ipc("/tmp/dob_fifo");
   ProfileManager *pProfileManager;
   
   dbg_print_level = LOG_DBG;
