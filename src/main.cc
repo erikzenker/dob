@@ -83,16 +83,13 @@ int main(int argc, char *argv[]){
   ipc.getRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::restartProfile));
  
   // Start sync 
-  // @todo ProfileManager should do this task
-  vector<Profile>::iterator profileIter;
-  for(profileIter = pProfiles->begin(); profileIter < pProfiles->end(); profileIter++){
-    profileIter->startProfile();
-    
+  if(!pProfileManager->startProfiles()){
+    dbg_printc(LOG_ERR, "Main","main", "Can't start all profiles");
+    return 0;
   }
 
   // Read from IPC Interface
   ipc.readFromPipe();    
-
 
   // Cleanup memory
   free(pProfiles);

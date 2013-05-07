@@ -46,9 +46,10 @@ bool Inotify::watchFolderRecursively(std::string watchFolder){
   struct stat64 my_stat;
 
   directory = opendir(watchFolder.c_str());
-  if(!isDir(watchFolder))
+  if(!isDir(watchFolder)){
+    closedir(directory);
     return watchFile(watchFolder);
-
+  }
 
   if(watchFolder[watchFolder.size()-1] != '/'){
     watchFolder.append("/");
