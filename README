@@ -32,18 +32,6 @@ Fedora 17:
   * make
 
 
-
-Fedora 17:
-  * libsigc++
-  * boost-devel
-  * gtkmm30-devel
-  * inotify-tools-devel
-  * rsync
-  * gcc-c++
-  * make
-
-
-
 2. Build dob
    ==> make 
 

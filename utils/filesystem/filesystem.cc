@@ -9,7 +9,13 @@ void dump(boost::filesystem::path path, int level)
         std::cout << (boost::filesystem::is_symlink(path) ? 'L' : ' ') << ' ';
         for(int i = 0; i < level; ++i)
             std::cout << ' ';
-        std::cout << path.filename() << std::endl;
+	if(boost::filesystem::is_directory(path))
+	  std::cout << path.string() << std::endl;
+	else if(boost::filesystem::is_regular_file(path))
+	  std::cout << path.filename() << std::endl;
+	  
+        //std::cout << path.parent_path().string() << "/" << path.filename().string() << std::endl;
+        //std::cout << path.string() << std::endl;p
     }
     catch(boost::filesystem::filesystem_error& fex)
     {
