@@ -20,7 +20,6 @@
 #include <dbg_print.h>
 #include <Inotify.h>
 #include <FileSystemEvent.h>
-#include <FileIndex.h>
 #include <Profile.h>
 
 /**

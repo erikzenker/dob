@@ -27,7 +27,7 @@ The profiles are defined in a configfile with the following syntax :
      + Location backup will be stored. Can be a local or remote location.
  + __`syncType=syncronize`__
      + Direction of syncronisation
- + __`syncProto=rsync|git|ssh`__
+ + __`syncProtocol=rsync|git|ssh`__
      + Set communication protocol in case of remote destination
  + __`destUser= username`__
      + SSH username on remote host

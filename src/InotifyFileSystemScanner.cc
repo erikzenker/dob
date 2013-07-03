@@ -40,13 +40,13 @@ void InotifyFileSystemScanner::setup(){
  * 
  **/
 void InotifyFileSystemScanner::execute(void* arg){
+  // Create file watches
   if(!mInotify->watchFolderRecursively(mScanFolder)){
     dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", mInotify->getLastError());
 
   }
 
-  //FileIndex F(mScanFolder);
-  //F.indexRecursively(mScanFolder);
+  // Update changed files to server
 
   dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
   FileSystemEvent<int> * fileSystemEvent = mInotify->getNextEvent();

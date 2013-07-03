@@ -37,71 +37,36 @@ bool Inotify::initialize(){
 
 }
 
-bool Inotify::watchFolderRecursively(std::string watchFolder){
-  assert(mIsInitialized);
-  // Important : Initialize should be called in advance
-  DIR * directory;
-  std::string nextFile = "";
-  struct dirent * ent;
-  struct stat64 my_stat;
+bool Inotify::watchFolderRecursively(std::string watchPath){
+  boost::filesystem::path path(watchPath);
+  if(boost::filesystem::is_directory(watchPath)){
+      boost::filesystem::recursive_directory_iterator it(path);
+      boost::filesystem::recursive_directory_iterator end;
+  
+      while(it != end){
 
-  directory = opendir(watchFolder.c_str());
-  if(!isDir(watchFolder)){
-    closedir(directory);
-    return watchFile(watchFolder);
-  }
-
-  if(watchFolder[watchFolder.size()-1] != '/'){
-    watchFolder.append("/");
-  }
-
-  ent = readdir(directory);
-  // Watch each directory within this directory
-  while(ent){
-    if((0 != strcmp(ent->d_name, ".")) && (0 != strcmp(ent->d_name, ".."))){
-      nextFile = watchFolder;
-      nextFile.append(ent->d_name);
-      
-      // Check the File/Folder for acces
-      if(lstat64(nextFile.c_str(), &my_stat) == -1){
-	mError = errno;
-	dbg_printc(LOG_ERR, "Inotify", "WatchFolderRecursively", "\nC Error on fstat %s, %d", nextFile.c_str(), mError);
-	if (mError != EACCES){
-	  mError = errno;
-	  closedir(directory);
-	  return false;
-
+	if(boost::filesystem::is_regular_file(*it)){
+	  watchFile(*it);
+	}
+	if(boost::filesystem::is_directory(*it)){
+	  watchFile(*it);
 	}
 
-      }
-      // Watch a folder recursively
-      else if(S_ISDIR(my_stat.st_mode ) || S_ISLNK( my_stat.st_mode )) {
-	nextFile.append("/");
-	bool status = watchFolderRecursively(nextFile);
-	if (!status){
-	  closedir(directory);
-	  return false;
-	}
-	
+	++it;
+
       }
 
     }
-    ent = readdir(directory);
-    mError = 0;
-  }
-  closedir(directory);
-  // Finally add watch to parentfolder
-  return watchFile(watchFolder);
+  return watchFile(path);
 }
 
-
-bool Inotify::watchFile(std::string file){
+bool Inotify::watchFile(boost::filesystem::path file){
   assert(mIsInitialized);
   mError = 0;
   int wd;
-  if(!isIgnored(file)){
-    dbg_printc(LOG_DBG, "Inotify","WatchFile","Add watch of file: %s", file.c_str());
-    wd = inotify_add_watch(mInotifyFd, file.c_str(), mEventMask);
+  if(!isIgnored(file.string())){
+    dbg_printc(LOG_DBG, "Inotify","WatchFile","Add watch of file: %s", file.string().c_str());
+    wd = inotify_add_watch(mInotifyFd, file.string().c_str(), mEventMask);
   }
   else{
     return true;
@@ -110,15 +75,15 @@ bool Inotify::watchFile(std::string file){
   if(wd == -1){
     mError = errno;
     if(mError == 28){
-      dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, please increase number of watches in /proc/sys/fs/inotify/max_user_watches , Errno: %d", file.c_str(), mError);
+      dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, please increase number of watches in /proc/sys/fs/inotify/max_user_watches , Errno: %d", file.string().c_str(), mError);
     }
     else{
-      dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.c_str(), mError);
+      dbg_printc(LOG_WARN, "Inotify", "WatchFile", "Failed to watch %s, but keep on scanning, Errno: %d", file.string().c_str(), mError);
     }
     return true;
 
   }
-  mFolderMap[wd] =  file;
+  mFolderMap[wd] =  file.string();
   return true;
 
 }
@@ -137,28 +102,6 @@ bool Inotify::removeWatch(int wd){
 std::string Inotify::wdToFilename(int wd){
   assert(mIsInitialized);
   return mFolderMap[wd];
-
-}
-
-bool Inotify::isDir(std::string folder){
-  DIR* directory;
-  directory = opendir(folder.c_str());
-  if(!directory) {
-    mError = errno;
-    if(mError == ENOTDIR){
-
-    }
-    else {
-      dbg_printc(LOG_WARN, "Inotify","IsDir", "Couldn´t not opendir %s, Errno: %d", folder.c_str(), mError);
-
-
-    }
-    closedir(directory);
-    return false;
-
-  }
-  closedir(directory);
-  return true;
 
 }
 

@@ -62,7 +62,7 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
 	}
       // Parse sync protocol
       if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("syncProto=") 
+			  , qi::string("syncProtocol=") 
 			  >>     
 			  (*qi::char_)[boost::bind(&ConfigFileParser::setSyncProtocol, this, _1)]
 			  ,space))

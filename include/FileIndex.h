@@ -7,25 +7,24 @@
 #ifndef FILEINDEX_H
 #define FILEINDEX_H
 
-#include <string>
-#include <dirent.h>   // DIR, dirent
-#include <sys/stat.h> // lstat64
-#include <cstring>    // strcmp
-#include <errno.h>    // errno
+#include <string>     /* string */
+#include <vector>     /* vector */
+#include <errno.h>    /* errno */
 #include <mongo/client/dbclient.h>
+#include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
 #include <dbg_print.h>
 
 
 class FileIndex {
 public :
   FileIndex(std::string rootPath);
+  FileIndex();
   ~FileIndex();
-  bool indexRecursively(std::string path);
-  bool indexFile(std::string path);
+  bool indexRecursively(std::string path, std::vector<std::string>* filesToUpdate);
+  bool indexFile(boost::filesystem::path path, std::vector<std::string>* filesToUpdate);
+  void setRootPath(std::string rootPath);
 
 private :
-  bool isDir(std::string path);
-  uint getFileSize(std::string path);
   mongo::DBClientConnection* dbClientConnection;
   std::string mRootPath;
 

@@ -55,8 +55,12 @@ template <class T>
 FileSystemEvent<T>::FileSystemEvent(T id, uint32_t mask, std::string filename, std::string watchFolder) :
   mId(id),
   mMask(mask),
-  mFilename(filename),
-  mWatchFolder(watchFolder){
+  mFilename(filename){
+  
+  if(watchFolder[watchFolder.size()-1] != '/')
+    watchFolder.append("/");
+  mWatchFolder = watchFolder;
+
 
 }
 

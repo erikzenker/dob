@@ -20,6 +20,7 @@
 #include <cstring> // strcmp
 #include <queue>
 #include <regex>
+#include <boost/filesystem.hpp> // boost::filesystem
 
 #include <map>
 #include <dbg_print.h>
@@ -45,7 +46,7 @@ class Inotify {
   Inotify(std::vector<std::string> ignoredFolders, int eventTimeout);
   ~Inotify();
   bool watchFolderRecursively(std::string watchFolder);
-  bool watchFile(std::string file);
+  bool watchFile(boost::filesystem::path file);
   FileSystemEvent<int>* getNextEvent();
   int getLastError();
   std::string wdToFilename(int wd);

@@ -15,123 +15,69 @@ FileIndex::FileIndex(std::string rootPath):
 
 FileIndex::~FileIndex(){
 
-
 }
 
-bool FileIndex::indexRecursively(std::string path){
-  DIR * directory;
-  int error = 0;
-  std::string nextFile = "";
-  struct dirent * ent;
-  struct stat64 my_stat;
+bool FileIndex::indexRecursively(std::string indexPath, std::vector<std::string>* filesToUpdate){
+  boost::filesystem::path path(indexPath);
+  boost::filesystem::recursive_directory_iterator it(path);
+  boost::filesystem::recursive_directory_iterator end;
+  
+  while(it != end){
 
-  directory = opendir(path.c_str());
-  if(!isDir(path)){
-    closedir(directory);
-    return indexFile(path);
-  }
-
-  if(path[path.size()-1] != '/'){
-    path.append("/");
-  }
-  ent = readdir(directory);
-
-  // Index each directory within this directory
-  while(ent){
-    if((0 != strcmp(ent->d_name, ".")) && (0 != strcmp(ent->d_name, ".."))){
-      nextFile = path;
-      nextFile.append(ent->d_name);
-	
-      // Check the File/Folder for acces
-      if(lstat64(nextFile.c_str(), &my_stat) == -1){
-	error = errno;
-	dbg_printc(LOG_ERR, "FileIndex", "indexRecursively", "C Error on fstat %s, %d", nextFile.c_str(), error);
-	if (error != EACCES){
-	  error = errno;
-	  closedir(directory);
-	  return false;
-
-	}
-
-      }
-      // Watch a folder recursively
-      else if(S_ISDIR(my_stat.st_mode ) || S_ISLNK( my_stat.st_mode )) {
-	nextFile.append("/");
-	bool status = indexRecursively(nextFile);
-	if (!status){
-	  closedir(directory);
-	  return false;
-	}
-	
-      }
-      else{
-	// index all files in this folder
-	indexFile(nextFile);
-      }
-
+    if(boost::filesystem::is_regular_file(*it)){
+      indexFile(*it, filesToUpdate);
     }
-    ent = readdir(directory);
-    error = 0;
+    ++it;
+
   }
-  closedir(directory);
-  return indexFile(path);
+  return indexFile(path, filesToUpdate);
+
 }
 
-bool FileIndex::indexFile(std::string path){
-  dbg_printc(LOG_DBG, "IndexFile", "indexFile", "%s", path.c_str());
-  std::string relativePath = path;
+// TODO Watch permissions for size, lastWriteTime
+bool FileIndex::indexFile(boost::filesystem::path path, std::vector<std::string>* filesToUpdate){
+  dbg_printc(LOG_DBG, "IndexFile", "indexFile", "%s", path.string().c_str());
+  std::string collectionName = "dob.testing";
+  std::string relativePath = path.string();
   relativePath.erase(0, mRootPath.size());
-  bool is_dir = isDir(path);
-  uint size  = getFileSize(path);
+  bool isDir = boost::filesystem::is_directory(path);
+  uint size = (isDir) ? 0 : boost::filesystem::file_size(path);
+  std::time_t lastWriteTime = boost::filesystem::last_write_time(path);
   uint revision = 0;
   std::string root = mRootPath;
   std::string modified = "";
 
-
   // Build database entry
-  mongo::BSONObjBuilder b;
-  b.append("path", relativePath);
-  b.append("is_dir", is_dir);
-  b.append("size", size);
-  b.append("revision", revision);
-  b.append("root", root);
-  b.append("modified", modified);
-  mongo::BSONObj p = b.obj();
+  mongo::BSONObjBuilder builder;
+  builder.append("path", relativePath);
+  builder.append("is_dir", isDir);
+  builder.append("size", size);
+  builder.append("revision", revision);
+  builder.append("root", root);
+  builder.append("modified", modified);
+  builder.append("last_write_time", std::asctime(std::localtime(&lastWriteTime)));
+  mongo::BSONObj dataToWrite = builder.obj();
 
-  // Update database
-  dbClientConnection->update("dob.testing", BSON("path" << relativePath), p, true, false);
-  return true;
-}
-
-bool FileIndex::isDir(std::string path){
-  DIR* directory;
-  directory = opendir(path.c_str());
-  if(!directory) {
-    int error = errno;
-    if(error == ENOTDIR){
-
-    }
-    else {
-      dbg_printc(LOG_WARN, "FileIndex","isDir", "Couldn´t not opendir %s, Errno: %d", path.c_str(), error);
-
-
-    }
-    closedir(directory);
-    return false;
-
+  // Test for existing entry
+  std::auto_ptr<mongo::DBClientCursor> cursor = dbClientConnection->query(collectionName, BSON("path" << relativePath));
+  if(!cursor->more()){
+    // Entry does not exist --> creat new one
+    dbClientConnection->insert(collectionName, dataToWrite);
   }
-  closedir(directory);
+  else{
+    // Entry exist --> possible update
+    mongo::BSONObj dataBaseFile = cursor->next();
+    std::string lastWriteTimeFromDatabase = dataBaseFile.getStringField("last_write_time");
+    if(lastWriteTimeFromDatabase.compare(std::asctime(std::localtime(&lastWriteTime))) != 0){
+      dbClientConnection->update(collectionName, BSON("path" << relativePath), dataToWrite, true, false);
+      filesToUpdate->push_back(mRootPath + relativePath);
+    }
+  }
   return true;
 
 }
 
-uint FileIndex::getFileSize(std::string path){
-  struct stat64 my_stat;
-  if(lstat64(path.c_str(), &my_stat) < 0){
-    int error = errno;
-    dbg_printc(LOG_WARN, "FileIndex","getFileSize", "Can't get FileSize %s, Errno: %d", path.c_str(), error);
-    return 0;
-  }
-  return my_stat.st_size;
+void FileIndex::setRootPath(std::string rootPath){
+  mRootPath = rootPath;
 
 }

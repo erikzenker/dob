@@ -1,4 +1,6 @@
 #include <ProfileFactory.h>
+#include <WebdavSyncManager.h>
+#include <FileEventManager.h>
 
 ProfileFactory::ProfileFactory(){
 
@@ -65,6 +67,10 @@ bool ProfileFactory::makeProfile(Profile* profile){
     pSyncManager = new DropboxSyncManager(destFolder, syncType);
     eventTimeout = 1; 
   }
+  else if(!syncProtocol.compare("webdav")){
+    pSyncManager = new WebdavSyncManager(destFolder, syncType, destUser, destHost, destPort);
+    eventTimeout = 1;
+  }
   else if(!destHost.compare("") && !syncProtocol.compare("")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);
     eventTimeout = 1;
@@ -74,7 +80,13 @@ bool ProfileFactory::makeProfile(Profile* profile){
     return false;
   }
 
-  pEventManager = new OptimizedEventManager(pSyncManager);
+  if(!syncProtocol.compare("webdav")){
+    pEventManager = new FileEventManager(pSyncManager);
+  }
+  else{
+    pEventManager = new OptimizedEventManager(pSyncManager);
+  }
+
   pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager);
 
   profile->setSyncManager(pSyncManager);
