@@ -70,12 +70,11 @@ bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, boost::files
   
   while(it != end){
 
-    hasSymlinkLoop(*it);
-
     if(boost::filesystem::is_symlink(*it)){
-       pushFolderRecursively(rootPath, *it);
-       hasSymlinkLoop(*it);
-     }
+      if(!hasSymlinkLoop(*it)){
+	pushFolderRecursively(rootPath, *it);
+      }
+    }
     // else if(boost::filesystem::is_directory(*it)){
     //   pushFolderRecursively(rootPath, *it);
     // }
@@ -151,11 +150,19 @@ std::string WebdavSyncManager::replaceSubstring(std::string subject, const std::
 bool WebdavSyncManager::hasSymlinkLoop(boost::filesystem::path path){
   struct stat buffer;
   int status;
+  int inode;
   errno = 0;
 
-  status = lstat(path.string().c_str(), &buffer);
-  dbg_printc(LOG_DBG, "WebdavSyncManager","hasSymlinkLoop", "Inode %d %s", buffer.st_ino, path.string().c_str());   
+  if(boost::filesystem::is_symlink(path)){
+    status = lstat(path.string().c_str(), &buffer);
+    inode = buffer.st_ino;
+    auto it = mSymlinks.find(inode);
+    if(!(it == mSymlinks.end())){
+      dbg_printc(LOG_WARN, "WebdavSyncManager","hasSymlinkLoop", "Found loop in filesystem Inode %d %s", buffer.st_ino, path.string().c_str());   
+      return true;
 
+    }
+  }
   return false;;
 
 }

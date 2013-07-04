@@ -19,6 +19,7 @@
 #include <FileIndex.h>
 #include <dbg_print.h>
 #include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
+#include <map> /* map */
 
 /**
  * @brief Syncronization with remote host.
@@ -58,7 +59,7 @@ private:
   std::string mDestHost;
   std::string mDestFolder;
   FileIndex*  mFileIndex;
-  std::vector<std::string> mSymlinks;
+  std::map<unsigned, std::string> mSymlinks;
 
 };
 

@@ -76,7 +76,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     eventTimeout = 1;
   }
   else{
-    dbg_printc(LOG_FATAL,"ProfileFactory","makeProfile","syncProto %s in configfile is not an option", syncProtocol.c_str());
+    dbg_printc(LOG_FATAL,"ProfileFactory","makeProfile","syncProtocol %s in configfile is not an option", syncProtocol.c_str());
     return false;
   }
 
