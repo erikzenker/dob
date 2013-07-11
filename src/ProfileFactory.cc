@@ -69,7 +69,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
   }
   else if(!syncProtocol.compare("webdav")){
     pSyncManager = new WebdavSyncManager(destFolder, syncType, destUser, destHost, destPort);
-    eventTimeout = 1;
+    eventTimeout = 0;
   }
   else if(!destHost.compare("") && !syncProtocol.compare("")){
     pSyncManager = new LocalSyncManager(destFolder, syncType);

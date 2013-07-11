@@ -161,6 +161,7 @@ FileSystemEvent<int>*  Inotify::getNextEvent(){
   for(eventIter = newEvents.begin(); eventIter < newEvents.end(); ++eventIter){
     if(onTimeout(currentEventTime)){
       newEvents.erase(eventIter);
+      dbg_printc(LOG_DBG, "Inotify", "GetNextEvent"," Erase Event");
     
     }
     else{

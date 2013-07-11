@@ -1,4 +1,5 @@
 #include <FileEventManager.h>
+#include <unistd.h>
 
 FileEventManager::FileEventManager(SyncManager * pSyncManager)
   : EventManager(pSyncManager){
@@ -8,6 +9,7 @@ bool FileEventManager::handleEvent(FileSystemEvent<int>* pEvent, string sourceFo
   std::string syncFolder = pEvent->getWatchFolder();
   std::string folder = pEvent->getFilename();
 
+
   switch(pEvent->getMask()){
   case IN_MOVED_TO:
   case IN_MODIFY:
@@ -15,6 +17,8 @@ bool FileEventManager::handleEvent(FileSystemEvent<int>* pEvent, string sourceFo
     return(mpSyncManager->syncFile(sourceFolder, syncFolder + folder));
     break;
   case IN_CREATE | IN_ISDIR:
+    // Delay gives os time to cp data into folder
+    usleep(1000000); 
     return(mpSyncManager->syncFolder(sourceFolder, syncFolder, folder));
     break;
 

@@ -48,10 +48,8 @@ private:
   bool pushFile(std::string rootPath, boost::filesystem::path fullPath);
   bool createFolder(std::string rootPath, boost::filesystem::path fullPath);
   bool removeFolder(std::string rootPath, boost::filesystem::path fullPath);
-  bool removeFolderRecursively(std::string rootPath, boost::filesystem::path fullPath);
   bool pushFolderRecursively(std::string rootPath, boost::filesystem::path fullPath);
   std::string replaceSubstring(std::string subject, const std::string& search,const std::string& replace);
-  bool followSymlink(boost::filesystem::path path);
   bool hasSymlinkLoop(boost::filesystem::path path);
 
   std::string mDestPort;

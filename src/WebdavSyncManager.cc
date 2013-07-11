@@ -62,35 +62,28 @@ bool WebdavSyncManager::setupDestination(){
 }
 
 bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, boost::filesystem::path fullPath){
-  dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolderRecursively", rootPath.c_str());
+  dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolderRecursively", fullPath.c_str());
   boost::filesystem::recursive_directory_iterator it(fullPath);
   boost::filesystem::recursive_directory_iterator end;
 
   createFolder(rootPath, fullPath);
-  
-  while(it != end){
 
-    if(boost::filesystem::is_symlink(*it)){
-      if(!hasSymlinkLoop(*it)){
-	pushFolderRecursively(rootPath, *it);
-      }
+  while(it != end){
+    //dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolderRecursively", "Check");
+    if(boost::filesystem::is_directory(*it) && !hasSymlinkLoop(*it)){
+      pushFolderRecursively(rootPath, *it);
     }
-    // else if(boost::filesystem::is_directory(*it)){
-    //   pushFolderRecursively(rootPath, *it);
-    // }
-    // else if(boost::filesystem::is_regular_file(*it)){
-    //   pushFile(rootPath, *it);
-    // }
-     ++it;
+    else if(boost::filesystem::is_regular_file(*it)){
+      pushFile(rootPath, *it);
+    }
+    ++it;
 
   }
-
 
   return true;
 }
 
 // @todo errorhandling
-// @todo What happens when filename is awkward ? spaces etc.
 bool WebdavSyncManager::pushFile(std::string rootPath, boost::filesystem::path fullPath){
   std::string fullPathUrl = replaceSubstring(fullPath.string(), " ", "%20");
   std::string curlQuery = "curl -T \'" + fullPath.string() + "\' " + mDestHost + mDestFolder + fullPathUrl.substr(rootPath.length(), fullPathUrl.length());
@@ -119,23 +112,24 @@ bool WebdavSyncManager::createFolder(std::string rootPath, boost::filesystem::pa
 
 bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::path fullPath){
   std::string fullPathUrl = replaceSubstring(fullPath.string(), " ", "%20");
+  if(fullPathUrl.at(fullPathUrl.size() - 1) != '/'){
+    fullPathUrl.append("/");
+  }
   std::string curlQuery;
+  try{
   curlQuery
     .append("curl -X DELETE ")
     .append(mDestHost)
     .append(mDestFolder)
     .append(fullPathUrl.substr(rootPath.length(), fullPathUrl.length()));
-
+  }
+  catch(int e){
+    dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "Exception %d", e);   
+  }
   dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", curlQuery.c_str());   
   system(curlQuery.c_str());
   return true;
 
-}
-
-bool WebdavSyncManager::removeFolderRecursively(std::string rootPath, boost::filesystem::path fullPath){
-
-
-  return true;
 }
 
 std::string WebdavSyncManager::replaceSubstring(std::string subject, const std::string& search, const std::string& replace) {
@@ -155,21 +149,22 @@ bool WebdavSyncManager::hasSymlinkLoop(boost::filesystem::path path){
 
   if(boost::filesystem::is_symlink(path)){
     status = lstat(path.string().c_str(), &buffer);
-    inode = buffer.st_ino;
-    auto it = mSymlinks.find(inode);
-    if(!(it == mSymlinks.end())){
-      dbg_printc(LOG_WARN, "WebdavSyncManager","hasSymlinkLoop", "Found loop in filesystem Inode %d %s", buffer.st_ino, path.string().c_str());   
-      return true;
+    if(!status){
+      inode = buffer.st_ino;
+      auto it = mSymlinks.find(inode);
+      if(it == mSymlinks.end()){
+	mSymlinks[inode] = path.string();
+      }
+      else{
+	dbg_printc(LOG_WARN, "WebdavSyncManager","hasSymlinkLoop", "Found loop in filesystem Inode %d %s folder wont be followed further", buffer.st_ino, path.string().c_str());   
+	return true;
 
+      }
+    }
+    else{
+      dbg_printc(LOG_WARN, "WebdavSyncManager","hasSymlinkLoop", "Error on lstat %s ernno %d", path.string().c_str(), errno);   
     }
   }
   return false;;
-
-}
-
-bool WebdavSyncManager::followSymlink(boost::filesystem::path path){
-  if(boost::filesystem::is_symlink(path))
-    return !hasSymlinkLoop(path);
-  return true;
 
 }
