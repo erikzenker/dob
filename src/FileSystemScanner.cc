@@ -1,6 +1,6 @@
 #include "FileSystemScanner.h"
 
-FileSystemScanner::FileSystemScanner(string scanFolder, EventManager* const pEventManager):
+FileSystemScanner::FileSystemScanner(std::string scanFolder, EventManager* const pEventManager):
 mScanFolder(scanFolder),
 mpEventManager(pEventManager){
   assert(opendir(scanFolder.c_str()));
@@ -13,7 +13,7 @@ FileSystemScanner::~FileSystemScanner(){
   free(mpEventManager);
 }
 
-string FileSystemScanner::getScanFolder() const{
+std::string FileSystemScanner::getScanFolder() const{
   return mScanFolder;
 
 }

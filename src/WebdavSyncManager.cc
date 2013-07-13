@@ -1,6 +1,7 @@
-#include "WebdavSyncManager.h"
+#include <WebdavSyncManager.h>
+#include <WebdavClient.h>
+#include <WebdavPath.h>
 #include <algorithm>
-
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
 				    std::string syncType, 
@@ -11,13 +12,14 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
   mDestPort(destPort),
   mDestUser(destUser),
   mDestHost(destHost),
-  mDestFolder(destFolder)
+  mDestFolder(destFolder),
+  mWebdavClient(destHost, destUser, "")
   {
-    mFileIndex = new FileIndex("");
 
 }
 
 bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
+  //return pullFolderRecursively(mDestFolder, mDestFolder);
   return pushFolderRecursively(rootPath, boost::filesystem::path(rootPath));
 }
 
@@ -66,7 +68,7 @@ bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, boost::files
   boost::filesystem::recursive_directory_iterator it(fullPath);
   boost::filesystem::recursive_directory_iterator end;
 
-  createFolder(rootPath, fullPath);
+  pushFolder(rootPath, fullPath);
 
   while(it != end){
     //dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolderRecursively", "Check");
@@ -83,54 +85,40 @@ bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, boost::files
   return true;
 }
 
-// @todo errorhandling
 bool WebdavSyncManager::pushFile(std::string rootPath, boost::filesystem::path fullPath){
-  std::string fullPathUrl = replaceSubstring(fullPath.string(), " ", "%20");
-  std::string curlQuery = "curl -T \'" + fullPath.string() + "\' " + mDestHost + mDestFolder + fullPathUrl.substr(rootPath.length(), fullPathUrl.length());
-
-  dbg_printc(LOG_DBG, "WebdavSyncManager","pushFile", "%s", curlQuery.c_str());   
-  system(curlQuery.c_str());
-
-  return true;
+  std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
+  std::string localSource = fullPath.string();
+  dbg_printc(LOG_DBG, "WebdavSyncManager","pushFile", "Push file %s to %s", localSource.c_str(), uri.c_str());   
+  return mWebdavClient.put(uri, localSource);
 }
 
-// @todo Error handling
-bool WebdavSyncManager::createFolder(std::string rootPath, boost::filesystem::path fullPath){
-  std::string fullPathUrl = replaceSubstring(fullPath.string(), " ", "%20");
-  std::string curlQuery;
-  curlQuery
-    .append("curl -X MKCOL ")
-    .append(mDestHost)
-    .append(mDestFolder)
-    .append(fullPathUrl.substr(rootPath.length(), fullPathUrl.length()));
-
-  dbg_printc(LOG_DBG, "WebdavSyncManager","createFolder", "%s", curlQuery.c_str());   
-  system(curlQuery.c_str());
-
-  return true;
+bool WebdavSyncManager::pushFolder(std::string rootPath, boost::filesystem::path fullPath){
+  std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
+  dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolder", "%s", uri.c_str());   
+  return mWebdavClient.mkdir(uri);
 }
 
 bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::path fullPath){
-  std::string fullPathUrl = replaceSubstring(fullPath.string(), " ", "%20");
-  if(fullPathUrl.at(fullPathUrl.size() - 1) != '/'){
-    fullPathUrl.append("/");
-  }
-  std::string curlQuery;
-  try{
-  curlQuery
-    .append("curl -X DELETE ")
-    .append(mDestHost)
-    .append(mDestFolder)
-    .append(fullPathUrl.substr(rootPath.length(), fullPathUrl.length()));
-  }
-  catch(int e){
-    dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "Exception %d", e);   
-  }
-  dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", curlQuery.c_str());   
-  system(curlQuery.c_str());
-  return true;
-
+  std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
+  dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", uri.c_str());   
+  return mWebdavClient.del(uri);
 }
+
+ bool WebdavSyncManager::pullFolderRecursively(std::string rootPath, std::string fullPath){
+   //WebdavClient webdavClient(mDestHost, mDestUser, ""); // "http://" must be replaced or tolerated
+   dbg_printc(LOG_DBG, "WebdavSyncManager", "pullFolderRecursively", "%s", fullPath.c_str());
+   WebdavClient webdavClient("erikspi.mooo.com", mDestUser, "");
+   std::vector<WebdavPath> paths = webdavClient.ls(fullPath);
+   for(unsigned i = 0; i < paths.size(); ++i){
+     if(paths[i].isDirectory()){
+       // Create local Path
+       pullFolderRecursively(rootPath, paths[i].getPath());
+     }
+   }
+
+   return true;
+ }
+
 
 std::string WebdavSyncManager::replaceSubstring(std::string subject, const std::string& search, const std::string& replace) {
     size_t pos = 0;

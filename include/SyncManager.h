@@ -15,8 +15,6 @@
 #include <dirent.h>
 #include <dbg_print.h>
 
-using namespace std;
-
 /**
  * @brief Syncronises a source with destination
  * @class SyncManager
@@ -31,18 +29,18 @@ using namespace std;
  **/
 class SyncManager{
 public:
-  SyncManager(string destFolder, string syncType);
+  SyncManager(std::string destFolder, std::string syncType);
   ~SyncManager();
-  virtual bool syncSourceFolder(string sourceFolder) =0;
-  virtual bool syncFolder(string sourceFolder, string syncFolder, string folder) =0;
-  virtual bool syncFile(string sourceFolder, string syncFolder) =0;
-  virtual bool removeFolder(string sourceFolder, string syncFolder, string folder) =0;
+  virtual bool syncSourceFolder(std::string sourceFolder) =0;
+  virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder) =0;
+  virtual bool syncFile(std::string sourceFolder, std::string syncFolder) =0;
+  virtual bool removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder) =0;
 
 protected:
   virtual bool checkDestination() =0;
   virtual bool setupDestination() =0;
-  string mDestFolder;
-  string mSyncType;
+  std::string mDestFolder;
+  std::string mSyncType;
 
 };
 

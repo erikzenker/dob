@@ -60,7 +60,7 @@ bool LocalSyncManager::syncSourceFolder(std::string sourceFolder){
     .append(mDestFolder)      
     .append(" ")
     .append(sourceFolder);
-  cerr << "\n";
+  std::cerr << "\n";
   system(pull_query.c_str());
   system(push_query.c_str());
 

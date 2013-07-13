@@ -27,7 +27,7 @@ SyncManager* EventManager::getSyncManager() const{
  * @param sourceFolder The scanned folder
  *
  **/
-void EventManager::pushBackEvent(FileSystemEvent<int>* const pNewEvent, const string sourceFolder){
+void EventManager::pushBackEvent(FileSystemEvent<int>* const pNewEvent, const std::string sourceFolder){
   //SetSyncIcon();
   mEventList.push_back(pNewEvent);
   if(handleEvent(pNewEvent, sourceFolder)){
@@ -64,15 +64,15 @@ void EventManager::pushBackEvent(FileSystemEvent<int>* const pNewEvent, const st
  * rejected.
  *
  **/
-bool EventManager::dispatchEvent(FileSystemEvent<int>* const pEvent, const string sourceFolder){
+bool EventManager::dispatchEvent(FileSystemEvent<int>* const pEvent, const std::string sourceFolder){
   dbg_printc(LOG_DBG, "EventManager", "DispatchEvent","Dispatch event");
-  string syncFolder = pEvent->getWatchFolder();
-  string folder = pEvent->getFilename();
-  string filename = "";
+  std::string syncFolder = pEvent->getWatchFolder();
+  std::string folder = pEvent->getFilename();
+  std::string filename = "";
 
   filename.append(syncFolder).append(folder);
 
-  ifstream dispatch_file_stream;
+  std::ifstream dispatch_file_stream;
   dispatch_file_stream.open(filename.c_str());
   if(dispatch_file_stream.good()){
     return !handleEvent(pEvent, sourceFolder);

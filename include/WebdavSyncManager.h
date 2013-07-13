@@ -15,11 +15,12 @@
 #include <errno.h>
 #include <sys/stat.h> /* lstat */
 #include <stdlib.h>
-#include <SyncManager.h>
-#include <FileIndex.h>
-#include <dbg_print.h>
 #include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
 #include <map> /* map */
+
+#include <SyncManager.h>
+#include <dbg_print.h>
+#include <WebdavClient.h>
 
 /**
  * @brief Syncronization with remote host.
@@ -27,11 +28,8 @@
  *        WebdavSyncManager.h
  *        "include/WebdavSyncManager.h"
  * 
- * The tool rsync is used to syncronize
- * local and remote data. Rsync should
- * run in deamon mode on the server.
- *
  **/
+
 class WebdavSyncManager : public SyncManager{
 public:
   WebdavSyncManager(std::string destFolder, std::string syncType,  std::string destUser, std::string destHost, std::string destPort);
@@ -46,9 +44,10 @@ protected:
 
 private:
   bool pushFile(std::string rootPath, boost::filesystem::path fullPath);
-  bool createFolder(std::string rootPath, boost::filesystem::path fullPath);
+  bool pushFolder(std::string rootPath, boost::filesystem::path fullPath);
   bool removeFolder(std::string rootPath, boost::filesystem::path fullPath);
   bool pushFolderRecursively(std::string rootPath, boost::filesystem::path fullPath);
+  bool pullFolderRecursively(std::string rootPath, std::string fullPath);
   std::string replaceSubstring(std::string subject, const std::string& search,const std::string& replace);
   bool hasSymlinkLoop(boost::filesystem::path path);
 
@@ -56,8 +55,8 @@ private:
   std::string mDestUser;
   std::string mDestHost;
   std::string mDestFolder;
-  FileIndex*  mFileIndex;
   std::map<unsigned, std::string> mSymlinks;
+  WebdavClient mWebdavClient;
 
 };
 

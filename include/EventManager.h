@@ -41,7 +41,7 @@ protected:
   void setScanIcon() const;
   
   /* Member */ 
-  vector<FileSystemEvent<int>* > mEventList;
+  std::vector<FileSystemEvent<int>* > mEventList;
   SyncManager* const mpSyncManager;
   EventManagerSignal mEventManagerSignal;
 

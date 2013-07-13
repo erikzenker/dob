@@ -57,7 +57,7 @@ bool GitSyncManager::syncSourceFolder(std::string sourceFolder){
     .append("git push ")
     .append(mDestFolder);
 
-  cerr << "\n";
+  std::cerr << "\n";
   dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git add string: %s", git_add_query.c_str());
   dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git commit string: %s", git_commit_query.c_str());
   dbg_printc(LOG_DBG, "GitSyncManager", "SyncSourceFolder", "git pull string: %s", git_pull_query.c_str());
