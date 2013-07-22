@@ -19,8 +19,7 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
 }
 
 bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
-  //return pullFolderRecursively(mDestFolder, mDestFolder);
-  return pushFolderRecursively(rootPath, boost::filesystem::path(rootPath));
+  return pushFolderRecursively(rootPath, boost::filesystem::path(rootPath)) && pullFolderRecursively(rootPath, mDestFolder);
 }
 
 
@@ -104,20 +103,26 @@ bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::pa
   return mWebdavClient.del(uri);
 }
 
- bool WebdavSyncManager::pullFolderRecursively(std::string rootPath, std::string fullPath){
-   //WebdavClient webdavClient(mDestHost, mDestUser, ""); // "http://" must be replaced or tolerated
-   dbg_printc(LOG_DBG, "WebdavSyncManager", "pullFolderRecursively", "%s", fullPath.c_str());
-   WebdavClient webdavClient("erikspi.mooo.com", mDestUser, "");
-   std::vector<WebdavPath> paths = webdavClient.ls(fullPath);
-   for(unsigned i = 0; i < paths.size(); ++i){
-     if(paths[i].isDirectory()){
-       // Create local Path
-       pullFolderRecursively(rootPath, paths[i].getPath());
-     }
-   }
+bool WebdavSyncManager::pullFolderRecursively(std::string rootPath, std::string fullPath){
+  dbg_printc(LOG_DBG, "WebdavSyncManager", "pullFolderRecursively", "%s", fullPath.c_str());
+  WebdavClient webdavClient("erikspi.mooo.com", mDestUser, "");
+  std::vector<WebdavPath> paths = webdavClient.ls(fullPath);
+  for(unsigned i = 0; i < paths.size(); ++i){
+    std::string localDestination = rootPath + paths[i].getPath().substr(mDestFolder.length(), paths[i].getPath().length());
+    std::string mkdirQuery = "mkdir -p " + localDestination;
+    if(paths[i].isDirectory()){
+      system(mkdirQuery.c_str());
+      pullFolderRecursively(rootPath, paths[i].getPath());
 
-   return true;
- }
+    }
+    else if(paths[i].isFile()){
+      mWebdavClient.get(paths[i].getPath(), localDestination);
+
+    }
+  }
+
+  return true;
+}
 
 
 std::string WebdavSyncManager::replaceSubstring(std::string subject, const std::string& search, const std::string& replace) {

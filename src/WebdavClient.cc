@@ -10,7 +10,7 @@
 #include <neon/ne_uri.h> /* uri */
 #include <dbg_print.h>
 
-
+// @TODO replace or tolerate "http://" in url string
 WebdavClient::WebdavClient(std::string url, std::string user, std::string pass){
   ne_sock_init();
   mSession = ne_session_create("http", url.c_str(), 80);
