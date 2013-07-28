@@ -18,9 +18,13 @@ INSTALL
 Archlinux:
    * rsync
    * boost-libs
+   * boost
+   * pkg-config
    * libsigc++
    * make
    * gcc
+   * mongodb
+
 
 Fedora 17:
   * libsigc++

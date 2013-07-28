@@ -46,7 +46,7 @@ private:
   bool pushFile(std::string rootPath, boost::filesystem::path fullPath);
   bool pushFolder(std::string rootPath, boost::filesystem::path fullPath);
   bool removeFolder(std::string rootPath, boost::filesystem::path fullPath);
-  bool pushFolderRecursively(std::string rootPath, boost::filesystem::path fullPath);
+  bool pushFolderRecursively(std::string rootPath, std::string fullPath, bool checkExistance);
   bool pullFolderRecursively(std::string rootPath, std::string fullPath);
   std::string replaceSubstring(std::string subject, const std::string& search,const std::string& replace);
   bool hasSymlinkLoop(boost::filesystem::path path);

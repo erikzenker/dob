@@ -22,16 +22,46 @@ WebdavClient::~WebdavClient(){
   ne_sock_exit();
 }
 
+/**
+ * @brief Checks for existance of file/diretory at
+ *        given uri. This can be used to reduce transfer 
+ *        bandwidth, so no data need to be transfered 
+ *        which allready exists.
+ *
+ * @param uri of file/directory on webdav-server
+ *
+ * @return true if file/directory exists
+ *         false if file/directory not exists
+ *
+ **/
+bool WebdavClient::exists(std::string uri){
+  dbg_printc(LOG_DBG, "WebdavClient", "exists", "Test directory/file for existance: %s", uri.c_str());
+  const int depth = NE_DEPTH_ZERO; /* NE_DEPTH_ZERO, NE_DEPTH_ONE, NE_DEPTH_INFINITE */
+  std::vector<WebdavPath> * props = new std::vector<WebdavPath>;
+   int res = ne_simple_propfind(mSession, uri.c_str(), depth, NULL, getProps, props);
+   if(res!=NE_OK){ 
+     std::string error = ne_get_error(mSession);
+     if(error.find("404")!= std::string::npos)
+       return false;
+     return true;
+
+   } 
+   props->erase(props->begin());
+   return true;
+
+}
+
 std::vector<WebdavPath> WebdavClient::ls(std::string uri){
-  dbg_printc(LOG_DBG, "WebdavClient", "ls", "List directoryh: %s", uri.c_str());
+  dbg_printc(LOG_DBG, "WebdavClient", "ls", "List directory: %s", uri.c_str());
   const int depth = NE_DEPTH_ONE; /* NE_DEPTH_ZERO, NE_DEPTH_ONE, NE_DEPTH_INFINITE */
   std::vector<WebdavPath> * props = new std::vector<WebdavPath>;
-  int res = ne_simple_propfind(mSession, uri.c_str(), depth, NULL, getProps, props);
-  if(res!=NE_OK){ 
-    dbg_printc(LOG_WARN,"WebdavClient", "ls","Propfind-request failed: %s", ne_get_error(mSession)); 
-  } 
-  props->erase(props->begin());
-  return *props;
+   int res = ne_simple_propfind(mSession, uri.c_str(), depth, NULL, getProps, props);
+   if(res!=NE_OK){ 
+     dbg_printc(LOG_WARN,"WebdavClient", "ls","Propfind-request failed: %s", ne_get_error(mSession)); 
+     return *props;
+   } 
+   props->erase(props->begin());
+   return *props;
 }
 
 void WebdavClient::getProps(void *userdata, const ne_uri *uri, const ne_prop_result_set *set){
