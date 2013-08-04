@@ -27,7 +27,7 @@ The profiles are defined in a configfile with the following syntax :
      + Location backup will be stored. Can be a local or remote location.
  + __`syncType=syncronize`__
      + Direction of syncronisation
- + __`syncProtocol=rsync|git|ssh`__
+ + __`syncProtocol=rsync|git|ssh|webdav`__
      + Set communication protocol in case of remote destination
  + __`destUser= username`__
      + SSH username on remote host
@@ -96,6 +96,16 @@ The profiles are defined in a configfile with the following syntax :
      `destHost=rsynchost.com`  
      `destPort=873`  
      `sshPort=22`  
+
+ + Use http server with webdav support (apache etc.)
+  
+     `[webdavhost]`  
+     `syncType=syncronize`  
+     `syncFolder=/home/jondo/important_data/`   
+     `syncProto=webdav`  
+     `destFolder=/webdav_folder/`  
+     `destUser=jondo`   
+     `destHost=rsynchost.com`  
 
 ## Dependencies ##
  + rsync

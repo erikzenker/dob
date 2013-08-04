@@ -1,7 +1,7 @@
 #include <WebdavSyncManager.h>
 #include <WebdavClient.h>
 #include <WebdavPath.h>
-#include <Tree.h>
+//#include <Tree.h>
 //#include <algorithm>
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
