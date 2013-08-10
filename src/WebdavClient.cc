@@ -18,7 +18,6 @@ WebdavClient::WebdavClient(std::string url, std::string user, std::string pw){
   ne_sock_init();
   mSession = ne_session_create("http", url.c_str(), 80);
   std::vector<std::string> *login = new std::vector<std::string>();
-
   login->push_back(user);
   login->push_back(pw);
   ne_set_server_auth(mSession, WebdavClient::defineAuth, login);
