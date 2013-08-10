@@ -24,6 +24,7 @@ Archlinux:
    * make
    * gcc
    * mongodb
+   * neon
 
 
 Fedora 17:

@@ -1,25 +1,45 @@
 #include <string>
-#include <exception> /* exception */
 #include <unistd.h> /* open, close */
 #include <stdlib.h>
 #include <fcntl.h> /* open, close */
+#include <cstring> /* strncpy */
+#include <iostream> /* std::cout */
 
 #include <WebdavClient.h>
 #include <WebdavPath.h>
 #include <neon/ne_props.h> /* ne_simple_propfind, ne_prop_result_set */
 #include <neon/ne_uri.h> /* uri */
 #include <dbg_print.h>
+#include <neon/ne_auth.h> /* ne_set_server_auth, ne_ssl_trust_default_ca */
+
 
 // @TODO replace or tolerate "http://" in url string
-WebdavClient::WebdavClient(std::string url, std::string user, std::string pass){
+WebdavClient::WebdavClient(std::string url, std::string user, std::string pw){
   ne_sock_init();
   mSession = ne_session_create("http", url.c_str(), 80);
+  std::vector<std::string> *login = new std::vector<std::string>();
+
+  login->push_back(user);
+  login->push_back(pw);
+  ne_set_server_auth(mSession, WebdavClient::defineAuth, login);
+  // Is mentioned in neon webdac example
+  // but runs in seg fault. Works also
+  // without this function.
+  // ne_ssl_trust_default_ca(mSession);
 
 }
 
 WebdavClient::~WebdavClient(){
+  ne_forget_auth(mSession);
   ne_session_destroy(mSession);
   ne_sock_exit();
+}
+
+int WebdavClient::defineAuth(void *userdata, const char *realm, int attempts, char *username, char *password) { 
+  std::vector<std::string> *login = (std::vector<std::string>*) userdata;
+  strncpy(username, login->at(0).c_str(), NE_ABUFSIZ); 
+  strncpy(password, login->at(1).c_str(), NE_ABUFSIZ); 
+  return attempts; 
 }
 
 /**

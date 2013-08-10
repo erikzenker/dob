@@ -20,7 +20,9 @@ class WebdavClient {
   bool mkdir(std::string uri);
   bool del(std::string uri);
 
+
  private:
+  static int defineAuth(void *userdata, const char *realm, int attempts, char *usernmae, char *password);
   static void getProps(void *userdata, const ne_uri *uri, const ne_prop_result_set *set);
   std::string mUrl;
   std::string mUser;

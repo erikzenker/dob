@@ -14,7 +14,7 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
   mDestUser(destUser),
   mDestHost(destHost),
   mDestFolder(destFolder),
-  mWebdavClient(destHost, destUser, "")
+  mWebdavClient(destHost, destUser, "gutti123")
   {
 
 }

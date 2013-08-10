@@ -3,7 +3,7 @@ Description=Dob backup client
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/dob --config=%I --nogui
+ExecStart=/usr/bin/dob --config=%I
 ExecStop=killall dob
 User=erik
 StandardOutput=tty
