@@ -132,6 +132,18 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
 	  
       	}
 
+      // Parse destPort
+      if(qi::phrase_parse(line.begin(), line.end()
+      			  , qi::string("destPass=") 
+      			  >>     
+      			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestPass, this, _1)]
+      			  ,space))
+      	{
+      	  continue;
+	  
+      	}
+
+
 
 
     }
@@ -237,6 +249,16 @@ void ConfigFileParser::setSshPort(std::vector<char> sshPort){
   }
   else
     dbg_printc(LOG_WARN, "ConfigFileParser", "setSshPort", "Try to set SSH port, but there is no profile"); 
+  
+}
+
+void ConfigFileParser::setDestPass(std::vector<char> sshPort){
+  if(mpProfiles->size() != 0){
+    std::string passString(sshPort.begin(), sshPort.end());
+     mpProfiles->back().setDestPass(passString);
+  }
+  else
+    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestPass", "Try to set destination password, but there is no profile"); 
   
 }
 

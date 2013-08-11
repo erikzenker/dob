@@ -47,8 +47,9 @@ class Profile {
 
   void setDestPort(std::string port) {mDestPort = port; }
   
-  void setDestFolder(std::vector<char> destFolder)     { this->mDestFolder.assign(destFolder.begin(), destFolder.end());}
-  void setDestFolder( std::string destFolder)	       { this->mDestFolder = destFolder; }
+  void setDestFolder(std::vector<char> destFolder)     { mDestFolder.assign(destFolder.begin(), destFolder.end());}
+  void setDestFolder( std::string destFolder)	       { mDestFolder = destFolder; }
+  void setDestPass(std::string destPass)               { mDestPass = destPass;}
 
   void setSshPort( std::string port )		       { mSshPort = port; }
 
@@ -67,6 +68,7 @@ class Profile {
   std::string getDestHost()	{ return mDestHost; }
   std::string getDestPort()	{ return mDestPort; }
   std::string getDestFolder()   { return mDestFolder; }
+  std::string getDestPass()     { return mDestPass; }
   std::string getSshPort()	{ return mSshPort; }
 
   SyncManager *getSyncManager() { return mpSyncManager;}
@@ -91,6 +93,7 @@ class Profile {
   std::string mDestHost;
   std::string mDestPort;
   std::string mDestFolder;
+  std::string mDestPass;
   std::string mSshPort;
   
   std::vector<std::string> mIgnoredFolders;

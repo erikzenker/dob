@@ -60,8 +60,11 @@ void InotifyFileSystemScanner::execute(void* arg){
     case IN_DELETE:
     case IN_DELETE | IN_ISDIR:
       // @todo remove watches recursively
-      mInotify->removeWatch(fileSystemEvent->getId());
-      mInotify->watchFile(fileSystemEvent->getFolderPath());
+      // @bug removing watches also removes information
+      //      about the location of a watch
+      // @todo think about this situation
+      //mInotify->watchFile(fileSystemEvent->getFolderPath());
+      //mInotify->removeWatch(fileSystemEvent->getId());
       break;
 
     case IN_MOVED_TO:

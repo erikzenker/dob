@@ -43,6 +43,7 @@ class ConfigFileParser{
   void setDestHost( std::vector<char> destHost);
   void setDestPort(std::vector<char> port);
   void setDestFolder(std::vector<char> destFolder);
+  void setDestPass(std::vector<char> sshPort);
   void pushIgnoredFolder(std::vector<char> ignoredFolder);
   void setSshPort(std::vector<char> sshPort);
   std::vector<Profile> *mpProfiles;

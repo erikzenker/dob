@@ -5,16 +5,14 @@
 //#include <algorithm>
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
-				    std::string syncType, 
-				    std::string destUser, 
-				    std::string destHost,
-				    std::string destPort) :
+				      std::string syncType, 
+				      std::string destUser, 
+				      std::string destHost,
+				      std::string destPort,
+				      std::string destPass) :
   SyncManager(destFolder, syncType),
-  mDestPort(destPort),
-  mDestUser(destUser),
-  mDestHost(destHost),
   mDestFolder(destFolder),
-  mWebdavClient(destHost, destUser, "gutti123")
+  mWebdavClient(destHost, destPort, destUser, destPass)
   {
 
 }
@@ -41,10 +39,6 @@ bool WebdavSyncManager::syncFile(std::string rootPath, std::string fullPath){
   return false;
 }
 
-/**
- * 
- *
- **/
 bool WebdavSyncManager::removeFolder(std::string rootPath, std::string syncFolder, std::string folder){
   return removeFolder(rootPath, boost::filesystem::path(syncFolder + folder));
 }
@@ -65,9 +59,11 @@ bool WebdavSyncManager::setupDestination(){
   return true;
 }
 
+// @todo Sync also symlinks on startup
 bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, std::string fullPath, bool checkExistance){
   dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolderRecursively", fullPath.c_str());
-  boost::filesystem::recursive_directory_iterator it(fullPath);
+  // symlink_option::recurse tells the directory_iterator to follow symlinks
+  boost::filesystem::recursive_directory_iterator it(fullPath, boost::filesystem::symlink_option::recurse);
   boost::filesystem::recursive_directory_iterator end;
 
   pushFolder(rootPath, boost::filesystem::path(fullPath));
@@ -83,7 +79,11 @@ bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, std::string 
     if(!uriExists){
       if(boost::filesystem::is_directory(*it) && !hasSymlinkLoop(*it)){
 	pushFolder(rootPath, *it);
-	
+     
+      }
+      else if(boost::filesystem::is_symlink(*it)){
+	pushFolder(rootPath, *it);
+
       }
       else if(boost::filesystem::is_regular_file(*it)){
 	pushFile(rootPath, *it);
@@ -112,6 +112,7 @@ bool WebdavSyncManager::pushFolder(std::string rootPath, boost::filesystem::path
 }
 
 bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::path fullPath){
+
   std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
   dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", uri.c_str());   
   return mWebdavClient.del(uri);

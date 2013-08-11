@@ -10,7 +10,7 @@
 
 class WebdavClient {
  public:
-  WebdavClient(std::string url, std::string user, std::string pass);
+  WebdavClient(std::string url, std::string port, std::string user, std::string pass);
   ~WebdavClient();
 
   std::vector<WebdavPath> ls(std::string uri);

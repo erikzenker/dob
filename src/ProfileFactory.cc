@@ -36,7 +36,9 @@ bool ProfileFactory::makeProfile(Profile* profile){
   std::string destHost	 = profile->getDestHost();
   std::string destPort	 = profile->getDestPort();
   std::string destFolder = profile->getDestFolder();
+  std::string destPass   = profile->getDestPass();
   std::string sshPort    = profile->getSshPort();
+
 
   EventManager* pEventManager;
   SyncManager* pSyncManager;
@@ -68,7 +70,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     eventTimeout = 1; 
   }
   else if(!syncProtocol.compare("webdav")){
-    pSyncManager = new WebdavSyncManager(destFolder, syncType, destUser, destHost, destPort);
+    pSyncManager = new WebdavSyncManager(destFolder, syncType, destUser, destHost, destPort, destPass);
     eventTimeout = 0;
   }
   else if(!destHost.compare("") && !syncProtocol.compare("")){

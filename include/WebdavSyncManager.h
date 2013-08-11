@@ -32,7 +32,7 @@
 
 class WebdavSyncManager : public SyncManager{
 public:
-  WebdavSyncManager(std::string destFolder, std::string syncType,  std::string destUser, std::string destHost, std::string destPort);
+  WebdavSyncManager(std::string destFolder, std::string syncType,  std::string destUser, std::string destHost, std::string destPort, std::string destPass);
   virtual bool syncSourceFolder(std::string rootPath);
   virtual bool syncFolder(std::string rootPath, std::string syncFolder, std::string folder);
   virtual bool syncFile(std::string rootPath, std::string fullPath);
@@ -51,9 +51,6 @@ private:
   std::string replaceSubstring(std::string subject, const std::string& search,const std::string& replace);
   bool hasSymlinkLoop(boost::filesystem::path path);
 
-  std::string mDestPort;
-  std::string mDestUser;
-  std::string mDestHost;
   std::string mDestFolder;
   std::map<unsigned, std::string> mSymlinks;
   WebdavClient mWebdavClient;
