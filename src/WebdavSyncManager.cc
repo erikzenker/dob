@@ -1,8 +1,5 @@
 #include <WebdavSyncManager.h>
 #include <WebdavClient.h>
-#include <WebdavPath.h>
-//#include <Tree.h>
-//#include <algorithm>
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
 				      std::string syncType, 
@@ -24,8 +21,8 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
 }
 
 
-bool WebdavSyncManager::syncFolder(std::string rootPath, std::string syncFolder, std::string folder){
-  return pushFolderRecursively(rootPath, syncFolder + folder, false);
+bool WebdavSyncManager::syncFolder(std::string rootPath, std::string relativePath, std::string folder){
+  return pushFolderRecursively(rootPath, relativePath + folder, false);
   
 }
 
@@ -39,8 +36,8 @@ bool WebdavSyncManager::syncFile(std::string rootPath, std::string fullPath){
   return false;
 }
 
-bool WebdavSyncManager::removeFolder(std::string rootPath, std::string syncFolder, std::string folder){
-  return removeFolder(rootPath, boost::filesystem::path(syncFolder + folder));
+bool WebdavSyncManager::removeFolder(std::string rootPath, std::string relativePath, std::string folder){
+  return removeFolder(rootPath, boost::filesystem::path(relativePath + folder));
 }
 
 /**
@@ -59,7 +56,7 @@ bool WebdavSyncManager::setupDestination(){
   return true;
 }
 
-// @todo Sync also symlinks on startup
+// @todo Check for modtime, can reduce time on big amount of data
 bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, std::string fullPath, bool checkExistance){
   dbg_printc(LOG_DBG, "WebdavSyncManager","pushFolderRecursively", fullPath.c_str());
   // symlink_option::recurse tells the directory_iterator to follow symlinks
@@ -112,7 +109,6 @@ bool WebdavSyncManager::pushFolder(std::string rootPath, boost::filesystem::path
 }
 
 bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::path fullPath){
-
   std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
   dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", uri.c_str());   
   return mWebdavClient.del(uri);
@@ -122,16 +118,15 @@ bool WebdavSyncManager::pullFolderRecursively(std::string rootPath, std::string 
   dbg_printc(LOG_DBG, "WebdavSyncManager", "pullFolderRecursively", "%s", uri.c_str());
   std::vector<WebdavPath> paths = mWebdavClient.ls(uri);
   for(unsigned i = 0; i < paths.size(); ++i){
-    std::string localDestination = rootPath + paths[i].getPath().substr(mDestFolder.length(), paths[i].getPath().length());
+    std::string localDestination = rootPath + paths[i].path.substr(mDestFolder.length(), paths[i].path.length());
     std::string mkdirQuery = "mkdir -p " + localDestination;
     if(!boost::filesystem::exists(localDestination)){
       if(paths[i].isDirectory()){
 	system(mkdirQuery.c_str());
-	pullFolderRecursively(rootPath, paths[i].getPath());
-
+	pullFolderRecursively(rootPath, paths[i].path);
       }
       else if(paths[i].isFile()){
-	mWebdavClient.get(paths[i].getPath(), localDestination);
+	mWebdavClient.get(paths[i].path, localDestination);
 
       }
 
