@@ -17,7 +17,8 @@ DOXYGEN = doxygen
 # compiler flags
 MONGODBLIBS     = -lmongoclient -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
 NEONLIBS        = -lneon
-LIBS		= -lpthread $(MONGODBLIBS) $(NEONLIBS)
+SQLITE3LIBS     = -lsqlite3
+LIBS		= -lpthread $(MONGODBLIBS) $(NEONLIBS) $(SQLITE3LIBS)
 CPPINCLUDES 	= -I./include 
 COMMON_CPPFLAGS = $(CPPINCLUDES)
 CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -fno-strict-aliasing $(shell pkg-config --cflags --libs sigc++-2.0) -std=c++0x
@@ -48,6 +49,10 @@ clean:
 	rm -f $(OBJS) $(DEPS) $(LIBOBJS) $(LIBFILES) $(LIBRISSOBJ)
 	rm -f log.txt
 	rm -f dob
+
+new:
+	make clean
+	make all
 
 # find all todos
 todo:

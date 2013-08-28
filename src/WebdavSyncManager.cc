@@ -1,5 +1,7 @@
 #include <WebdavSyncManager.h>
 #include <WebdavClient.h>
+#include <FileStateDatabase.h>
+#include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
 				      std::string syncType, 
@@ -16,7 +18,11 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
 
 bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
   dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder", rootPath.c_str());
-  return pushFolderRecursively(rootPath, rootPath, true) && pullFolderRecursively(rootPath, mDestFolder);
+  FileStateDatabase db("test");
+  db.updateState(rootPath);
+
+  return false;
+  //return pushFolderRecursively(rootPath, rootPath, true) && pullFolderRecursively(rootPath, mDestFolder);
   
 }
 
@@ -170,6 +176,6 @@ bool WebdavSyncManager::hasSymlinkLoop(boost::filesystem::path path){
       dbg_printc(LOG_WARN, "WebdavSyncManager","hasSymlinkLoop", "Error on lstat %s ernno %d", path.string().c_str(), errno);   
     }
   }
-  return false;;
+  return false;
 
 }
