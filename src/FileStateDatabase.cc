@@ -1,7 +1,13 @@
 #include <FileStateDatabase.h>
+#include <utility> /* std::pair */
+#include <sstream> /* std::stringstream */
+#include <sys/stat.h> /* stat, lstat */
+#include <vector>
+#include <utility>
 
 FileStateDatabase::FileStateDatabase(std::string dataBaseName){
   int error = sqlite3_open(dataBaseName.c_str(), &mDataBase);
+  executeQuery("CREATE TABLE statedb (path varchar(512,modtime int,inode int,is_dir boolean);", FileStateDatabase::printQueryResult, 0);
   if(error){
     dbg_printc(LOG_ERR, "FileStateDatabase", "FileStateDatabase", "Can't open database: %s", sqlite3_errmsg(mDataBase));
     sqlite3_close(mDataBase);
@@ -28,6 +34,7 @@ int FileStateDatabase::getFileStates(void *fileStates, int argc, char **argv, ch
   fileState.path = argv[0];
   fileState.modtime = atoi(argv[1]);
   fileState.inode = atoi(argv[2]);
+  fileState.is_dir = atoi(argv[3]);
 
   ((std::vector<FileState>*)fileStates)->push_back(fileState);
   return 0;
@@ -37,7 +44,7 @@ bool FileStateDatabase::executeQuery(std::string query, int (*callback)(void*,in
   char *errorMsg = 0;
   int error = sqlite3_exec(mDataBase, query.c_str(), callback, userData, &errorMsg);
   if(error){
-    dbg_printc(LOG_ERR, "FileStateDatabase", "updateState", "SQL error: %s", errorMsg);
+    dbg_printc(LOG_ERR, "FileStateDatabase", "executeQuery", "SQL error: %s", errorMsg);
     sqlite3_free(errorMsg);
     return false;
   }
@@ -51,6 +58,7 @@ FileState FileStateDatabase::createFileState(boost::filesystem::path path){
   fileState.path    = path.string();
   fileState.modtime = boost::filesystem::last_write_time(path);
   fileState.inode   = lstat(path.c_str(), &buffer)? 0 : buffer.st_ino;
+  fileState.is_dir  = boost::filesystem::is_directory(path);
 
   return fileState;
 }
@@ -58,7 +66,7 @@ FileState FileStateDatabase::createFileState(boost::filesystem::path path){
 std::map<int, FileState> FileStateDatabase::createFileStateCache(){
   std::vector<FileState> fileStates;
   std::map<int, FileState> fileStateCache;
-  executeQuery("SELECT path, modtime, inode FROM statedb", FileStateDatabase::getFileStates, &fileStates);
+  executeQuery("SELECT path, modtime, inode, is_dir FROM statedb", FileStateDatabase::getFileStates, &fileStates);
   for(unsigned i = 0; i < fileStates.size(); ++i){
     fileStateCache[fileStates[i].inode] = fileStates[i];
   }
@@ -68,11 +76,11 @@ std::map<int, FileState> FileStateDatabase::createFileStateCache(){
 
 bool FileStateDatabase::insertFileState(FileState fileState){
   std::stringstream query;
-  query << "INSERT INTO statedb (path,modtime,inode) VALUES (" 
+  query << "INSERT INTO statedb (path,modtime,inode,is_dir) VALUES (" 
 	<< "'" << fileState.path << "'," 
 	<< fileState.modtime << "," 
-	<< fileState.inode << ")";
-  dbg_printc(LOG_DBG, "FileStateDatabase", "updateState", "Insert fileState: \"%s\" ", query.str().c_str());
+	<< fileState.inode << ","
+	<< fileState.is_dir << ")";
   return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
 
 }
@@ -80,40 +88,80 @@ bool FileStateDatabase::insertFileState(FileState fileState){
 bool FileStateDatabase::updateFileState(FileState fileState){
   std::stringstream query;
   query << "UPDATE statedb SET modtime=" << (int) fileState.modtime << " WHERE inode=" << (int) fileState.inode; 
-  dbg_printc(LOG_DBG, "FileStateDatabase", "updateState", "Update fileState: \"%s\" ", query.str().c_str());
   return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
 
 }
 
-bool FileStateDatabase::resetFileState(){
+bool FileStateDatabase::deleteFileState(FileState fileState){
+  std::stringstream query;
+  query << "DELETE FROM statedb WHERE inode=" << (int) fileState.inode; 
+  return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
+}
+
+bool FileStateDatabase::resetDb(){
   return executeQuery("DELETE FROM statedb", FileStateDatabase::printQueryResult, 0);
 }
 
-bool FileStateDatabase::updateState(std::string rootDirectory){
+std::vector<std::pair<FileState, ModState> > FileStateDatabase::updatedb(std::string rootDirectory){
   boost::filesystem::recursive_directory_iterator it(rootDirectory, boost::filesystem::symlink_option::recurse);
   boost::filesystem::recursive_directory_iterator end;
+
+  // Modification state of changed files since last sync
+  std::vector<std::pair<FileState, ModState> > modStates;
 
   // Create fileStateCache
   std::map<int, FileState> fileStateCache = createFileStateCache();
 
   while(it != end){
     std::string currentPath = ((boost::filesystem::path)*it).string();
+    FileState fileState = createFileState(*it);
+
     if(boost::filesystem::is_regular_file(*it)){
-      FileState fileState = createFileState(*it);
 	
-      auto it = fileStateCache.find(fileState.inode);
-      if(it == fileStateCache.end()){
+      auto cacheIt = fileStateCache.find(fileState.inode);
+      // New file since last sync
+      if(cacheIt == fileStateCache.end()){
 	insertFileState(fileState);
+	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
+	
       }
-      else if(it->second.modtime < fileState.modtime){
+      // Changed file since last sync
+      else if(cacheIt->second.modtime < fileState.modtime){
 	fileState.modtime = fileState.modtime;
 	updateFileState(fileState);
+	fileStateCache.erase(cacheIt);
+	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_MODIFY));
+      }
+      // Unchanged file
+      else {
+	fileStateCache.erase(cacheIt);
+
       }
 
     }
-    it++;
-  }
-  return true;
+    else if(boost::filesystem::is_directory(*it)){
+      auto cacheIt = fileStateCache.find(fileState.inode);
+      if(cacheIt == fileStateCache.end()){
+    	insertFileState(fileState);
+    	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
 
+      }
+      else {
+	fileStateCache.erase(cacheIt);
+
+      }
+    }
+    it++;
+
+  }
+
+  // Remaining files/directories in FileCache were deleted since last sync
+  for(auto cacheIt = fileStateCache.begin(); cacheIt != fileStateCache.end(); ++cacheIt){
+    FileState deletedFileState = cacheIt->second;
+    modStates.push_back(std::pair<FileState, ModState>(deletedFileState, FS_DELETE));
+    deleteFileState(deletedFileState);
+  }
+  
+  return modStates;
 }
 

@@ -18,8 +18,14 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
 
 bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
   dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder", rootPath.c_str());
+
   FileStateDatabase db("test");
-  db.updateState(rootPath);
+  //db.resetDb();
+  std::vector<std::pair<FileState, ModState> > modState = db.updateDb(rootPath);
+  for(auto it = modState.begin(); it != modState.end(); ++it){
+    dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
+
+  }
 
   return false;
   //return pushFolderRecursively(rootPath, rootPath, true) && pullFolderRecursively(rootPath, mDestFolder);
