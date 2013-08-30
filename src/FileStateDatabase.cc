@@ -7,7 +7,7 @@
 
 FileStateDatabase::FileStateDatabase(std::string dataBaseName){
   int error = sqlite3_open(dataBaseName.c_str(), &mDataBase);
-  executeQuery("CREATE TABLE statedb (path varchar(512,modtime int,inode int,is_dir boolean);", FileStateDatabase::printQueryResult, 0);
+  executeQuery("CREATE TABLE statedb (path varchar(512), modtime int, inode int, is_dir boolean);", FileStateDatabase::printQueryResult, 0);
   if(error){
     dbg_printc(LOG_ERR, "FileStateDatabase", "FileStateDatabase", "Can't open database: %s", sqlite3_errmsg(mDataBase));
     sqlite3_close(mDataBase);
@@ -98,7 +98,7 @@ bool FileStateDatabase::deleteFileState(FileState fileState){
   return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
 }
 
-bool FileStateDatabase::resetDb(){
+bool FileStateDatabase::resetdb(){
   return executeQuery("DELETE FROM statedb", FileStateDatabase::printQueryResult, 0);
 }
 

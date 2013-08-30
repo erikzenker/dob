@@ -20,15 +20,32 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
   dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder", rootPath.c_str());
 
   FileStateDatabase db("test");
-  //db.resetDb();
-  std::vector<std::pair<FileState, ModState> > modState = db.updateDb(rootPath);
-  for(auto it = modState.begin(); it != modState.end(); ++it){
-    dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
+  //db.resetdb();
+  std::vector<std::pair<FileState, ModState> > modState = db.updatedb(rootPath);
 
+  for(auto it = modState.begin(); it != modState.end(); ++it){
+    ModState ms      = it->second;
+    bool is_dir      = it->first.is_dir;
+    std::string path = it->first.path;;
+
+    switch(ms){
+    case FS_CREATE:
+      if(is_dir)
+	pushFolder(rootPath, boost::filesystem::path(path));
+      else
+	pushFile(rootPath, boost::filesystem::path(path));
+      break;
+    case FS_DELETE:
+      removeFolder(rootPath, boost::filesystem::path(path));
+      break;
+    default:
+      break;
+    };
+  dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
   }
 
-  return false;
-  //return pushFolderRecursively(rootPath, rootPath, true) && pullFolderRecursively(rootPath, mDestFolder);
+return false;
+//return pushFolderRecursively(rootPath, rootPath, true) && pullFolderRecursively(rootPath, mDestFolder);
   
 }
 
