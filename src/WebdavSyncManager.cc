@@ -26,7 +26,7 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
   for(auto it = modState.begin(); it != modState.end(); ++it){
     ModState ms      = it->second;
     bool is_dir      = it->first.is_dir;
-    std::string path = it->first.path;;
+    std::string path = it->first.path;
 
     switch(ms){
     case FS_CREATE:
@@ -36,12 +36,15 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
 	pushFile(rootPath, boost::filesystem::path(path));
       break;
     case FS_DELETE:
-      removeFolder(rootPath, boost::filesystem::path(path));
+      if(is_dir)
+	removeFolder(rootPath, boost::filesystem::path(path + "/"));
+      else
+	removeFolder(rootPath, boost::filesystem::path(path));
       break;
     default:
       break;
     };
-  dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
+    //dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
   }
 
 return false;
@@ -137,6 +140,10 @@ bool WebdavSyncManager::pushFolder(std::string rootPath, boost::filesystem::path
   return mWebdavClient.mkdir(uri);
 }
 
+/**
+ * @brief Removes folder or file on remote webdavserver. Folder need to end with '/'
+ *
+ **/
 bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::path fullPath){
   std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
   dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", uri.c_str());   

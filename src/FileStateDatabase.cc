@@ -156,10 +156,11 @@ std::vector<std::pair<FileState, ModState> > FileStateDatabase::updatedb(std::st
   }
 
   // Remaining files/directories in FileCache were deleted since last sync
+  std::vector<std::pair<FileState, ModState> > deletedFiles;
   for(auto cacheIt = fileStateCache.begin(); cacheIt != fileStateCache.end(); ++cacheIt){
-    FileState deletedFileState = cacheIt->second;
-    modStates.push_back(std::pair<FileState, ModState>(deletedFileState, FS_DELETE));
-    deleteFileState(deletedFileState);
+    FileState fs = cacheIt->second;
+    modStates.push_back(std::pair<FileState, ModState>(fs, FS_DELETE));
+    deleteFileState(fs);
   }
   
   return modStates;
