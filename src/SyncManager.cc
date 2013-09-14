@@ -1,7 +1,7 @@
-#include "SyncManager.h"
+#include <SyncManager.h>
+#include <SyncType.h>
 
-
-SyncManager::SyncManager(std::string destFolder, std::string syncType) : 
+SyncManager::SyncManager(std::string destFolder, SyncType syncType) : 
   mDestFolder(destFolder),
   mSyncType(syncType){
   

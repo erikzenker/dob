@@ -1,5 +1,12 @@
 #include <ProfileFactory.h>
 #include <WebdavSyncManager.h>
+#include <RemoteSyncManager.h>
+#include <GitSyncManager.h>
+#include <DropboxSyncManager.h>
+#include <SshSyncManager.h>
+#include <InotifyFileSystemScanner.h>
+#include <LocalSyncManager.h>
+#include <FolderEventManager.h>
 #include <FileEventManager.h>
 
 ProfileFactory::ProfileFactory(){
@@ -28,7 +35,7 @@ ProfileFactory::~ProfileFactory(){
  **/
 bool ProfileFactory::makeProfile(Profile* profile){
   std::string profileName =  profile->getName();
-  std::string syncType   = profile->getSyncType();
+  SyncType syncType   = profile->getSyncType();
   std::string scanFolder = profile->getSyncFolder();
   std::string syncProtocol = profile->getSyncProtocol();
 
@@ -86,7 +93,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     pEventManager = new FileEventManager(pSyncManager);
   }
   else{
-    pEventManager = new OptimizedEventManager(pSyncManager);
+    pEventManager = new FolderEventManager(pSyncManager);
   }
 
   pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager);

@@ -15,7 +15,8 @@
 #include <errno.h>
 #include <dbg_print.h>
 
-#include "SyncManager.h"
+#include <SyncManager.h>
+#include <Profile.h>
 
 /**
  * @brief Syncronization with local data
@@ -30,7 +31,7 @@
 class LocalSyncManager : public SyncManager {
 
 public:
-  LocalSyncManager(std::string destFolder, std::string syncType);
+  LocalSyncManager(std::string destFolder, SyncType syncType);
   virtual bool syncSourceFolder(std::string sourceFolder);
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
   virtual bool syncFile(std::string sourceFolder, std::string syncFolder);

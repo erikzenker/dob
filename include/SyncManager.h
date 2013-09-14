@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <dirent.h>
 #include <dbg_print.h>
+#include <SyncType.h>
 
 /**
  * @brief Syncronises a source with destination
@@ -29,7 +30,7 @@
  **/
 class SyncManager{
 public:
-  SyncManager(std::string destFolder, std::string syncType);
+  SyncManager(std::string destFolder, SyncType syncType);
   ~SyncManager();
   virtual bool syncSourceFolder(std::string sourceFolder) =0;
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder) =0;
@@ -40,7 +41,7 @@ protected:
   virtual bool checkDestination() =0;
   virtual bool setupDestination() =0;
   std::string mDestFolder;
-  std::string mSyncType;
+  SyncType mSyncType;
 
 };
 

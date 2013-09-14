@@ -23,14 +23,9 @@
 #include <fcntl.h>
 
 // Include classes
-#include <InotifyFileSystemScanner.h>
-#include <RemoteSyncManager.h>
-#include <LocalSyncManager.h>
-#include <OptimizedEventManager.h>
 #include <ConfigFileParser.h>
 #include <CommandLineParser.h>
 #include <ProfileFactory.h>
-#include <Inotify.h>
 #include <InterProcessCommunication.h>
 #include <ProfileManager.h>
 #include <dbg_print.h>

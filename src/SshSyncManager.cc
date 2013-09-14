@@ -20,7 +20,7 @@
  *        See more in "man rsync"
  */
 SshSyncManager::SshSyncManager( std::string destFolder, 
-				      std::string syncType, 
+				      SyncType syncType, 
 				      std::string destUser, 
 				      std::string destHost,
 				      std::string destPort):

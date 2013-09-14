@@ -1,4 +1,5 @@
-#include "RemoteSyncManager.h"
+#include <RemoteSyncManager.h>
+#include <SyncType.h>
 
 /*
  * @note  Rsync command line parameters
@@ -20,7 +21,7 @@
  *        See more in "man rsync"
  */
 RemoteSyncManager::RemoteSyncManager( std::string destFolder, 
-				      std::string syncType, 
+				      SyncType syncType, 
 				      std::string destUser, 
 				      std::string destHost,
 				      std::string destPort,

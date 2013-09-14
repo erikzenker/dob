@@ -1,6 +1,6 @@
 #include "InotifyFileSystemScanner.h"
 
-InotifyFileSystemScanner::InotifyFileSystemScanner(const string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager) 
+InotifyFileSystemScanner::InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager) 
   : FileSystemScanner(scanFolder, pEventManager ){
 
   mInotify = new Inotify(ignoredFolders, eventTimeout);

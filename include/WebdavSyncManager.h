@@ -21,6 +21,8 @@
 #include <SyncManager.h>
 #include <dbg_print.h>
 #include <WebdavClient.h>
+#include <SyncType.h>
+#include <FileStateDatabase.h>
 
 /**
  * @brief Syncronization with remote host.
@@ -32,7 +34,7 @@
 
 class WebdavSyncManager : public SyncManager{
 public:
-  WebdavSyncManager(std::string destFolder, std::string syncType,  std::string destUser, std::string destHost, std::string destPort, std::string destPass);
+  WebdavSyncManager(std::string destFolder, SyncType syncType,  std::string destUser, std::string destHost, std::string destPort, std::string destPass);
   virtual bool syncSourceFolder(std::string rootPath);
   virtual bool syncFolder(std::string rootPath, std::string syncFolder, std::string folder);
   virtual bool syncFile(std::string rootPath, std::string fullPath);
@@ -54,6 +56,7 @@ private:
   std::string mDestFolder;
   std::map<unsigned, std::string> mSymlinks;
   WebdavClient mWebdavClient;
+  FileStateDatabase mDb;
 
 };
 

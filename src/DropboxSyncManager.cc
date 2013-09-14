@@ -19,7 +19,7 @@
  *            --modify-window=NUM compare mod-times with reduced accuracy
  *        See more in "man rsync"
  */
-DropboxSyncManager::DropboxSyncManager( std::string destFolder, std::string syncType):
+DropboxSyncManager::DropboxSyncManager( std::string destFolder, SyncType syncType):
   SyncManager(destFolder, syncType),
   mOauthKey("1o3430he5dxxgu8"),
   mOauthSecret("thbjxy0k1e4bau7"),

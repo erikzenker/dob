@@ -26,7 +26,7 @@
  **/
 class DropboxSyncManager : public SyncManager{
 public:
-  DropboxSyncManager(std::string destFolder, std::string syncType);
+  DropboxSyncManager(std::string destFolder, SyncType syncType);
   ~DropboxSyncManager();
   virtual bool syncSourceFolder(std::string sourceFolder);
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);

@@ -1,6 +1,7 @@
-#include "GitSyncManager.h"
+#include <GitSyncManager.h>
+#include <SyncType.h>
 
-GitSyncManager::GitSyncManager(std::string destFolder, std::string syncType, std::string destProtocol):
+GitSyncManager::GitSyncManager(std::string destFolder,SyncType syncType, std::string destProtocol):
   SyncManager(destFolder, syncType),
   mDestProtocol(destProtocol),
   mGitIsInitialized(false){

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <SyncManager.h>
 #include <dbg_print.h>
+#include <SyncType.h>
 
 /**
  * @brief Syncronization with git repository
@@ -32,7 +33,7 @@
 class GitSyncManager : public SyncManager{
 
  public:
-  GitSyncManager(std::string destFolder, std::string syncType, std::string destProtocol);
+  GitSyncManager(std::string destFolder, SyncType syncType, std::string destProtocol);
   virtual bool syncSourceFolder(std::string sourceFolder);
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
   virtual bool removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder);

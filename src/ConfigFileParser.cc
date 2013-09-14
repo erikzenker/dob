@@ -1,6 +1,6 @@
 #include "ConfigFileParser.h"
 ConfigFileParser::ConfigFileParser():
-  mpProfiles(new vector<Profile>){
+  mpProfiles(new std::vector<Profile>){
 
 }
 
@@ -21,7 +21,7 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
 
   dbg_printc(LOG_INFO, "ConfigFileParser", "ParseConfigFile", "Parse config file: %s", configFileName.c_str());
   std::string line;
-  ifstream config_file_stream;
+  std::ifstream config_file_stream;
   config_file_stream.open(configFileName.c_str());
 
   if(config_file_stream.is_open())
@@ -42,9 +42,9 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
 	}
       // Parse sync type
       if(qi::phrase_parse(line.begin(), line.end()
-			  ,  qi::string("syncType=") >> qi::string("syncronize")[boost::bind(&ConfigFileParser::setSyncType, this, _1)] 
-			  || qi::string("syncType=") >> qi::string("backup")[boost::bind(&ConfigFileParser::setSyncType, this, _1)] 
-			  || qi::string("syncType=") >> qi::string("update")[boost::bind(&ConfigFileParser::setSyncType, this, _1)]
+			  ,  qi::string("syncType=") >> qi::string("syncronize")[boost::bind(&ConfigFileParser::setSyncType, this, DOB_SYNCRONIZE)] 
+			  || qi::string("syncType=") >> qi::string("backup")[boost::bind(&ConfigFileParser::setSyncType, this, DOB_BACKUP)] 
+			  || qi::string("syncType=") >> qi::string("update")[boost::bind(&ConfigFileParser::setSyncType, this, DOB_UPDATE)]
 			  ,space))
 	{
 	  continue;
@@ -155,14 +155,14 @@ void ConfigFileParser::parseConfigFile(std::string configFileName){
   config_file_stream.close();
 }
 
-void ConfigFileParser::createProfile (vector<char> name){
+void ConfigFileParser::createProfile (std::vector<char> name){
   Profile profile;
   profile.setName(name);
   mpProfiles->push_back(profile);
 
 }
 
-void ConfigFileParser::setSyncType (std::string syncType){
+void ConfigFileParser::setSyncType (SyncType syncType){
   if(mpProfiles->size() != 0)
     mpProfiles->back().setSyncType(syncType);
   else
@@ -170,7 +170,7 @@ void ConfigFileParser::setSyncType (std::string syncType){
 
 }
 
-void ConfigFileParser::setSyncFolder (vector<char> syncFolder){
+void ConfigFileParser::setSyncFolder (std::vector<char> syncFolder){
   if(mpProfiles->size() != 0)
     mpProfiles->back().setSyncFolder(syncFolder);
   else
@@ -266,7 +266,7 @@ void ConfigFileParser::setDestPass(std::vector<char> sshPort){
 /**
  * @return all parsed profiles
  **/
-vector<Profile> *ConfigFileParser::getProfiles(){
+std::vector<Profile> *ConfigFileParser::getProfiles(){
   return mpProfiles;
 }
 

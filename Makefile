@@ -4,7 +4,7 @@
 DATE="`date +%y%m%d%H%M%S`"
 
 # commandline
-CMD = -O0 -g -J2
+CMD = -O0 -g -J4 -pipe
 ARGS = 
 SPACE = " "
 
@@ -32,8 +32,8 @@ DEPS = $(SRCS:.cc=.d)
 # for building the component libraries
 DEPS += $(LIBSRCS:.cc=.d)
 
-all: dob
-	notify-send "COMPILATION" "finished"	
+all: 	dob
+	notify-send "COMPILATION" "finished" 
 
 # build open dropbox
 dob: $(OBJS)

@@ -18,6 +18,7 @@
 #include <sys/shm.h>
 #include <stdlib.h>
 #include <SyncManager.h>
+#include <SyncType.h>
 #include <dbg_print.h>
 
 /**
@@ -34,7 +35,7 @@
 class RemoteSyncManager : public SyncManager{
 public:
   RemoteSyncManager(  std::string destFolder, 
-		      std::string syncType, 
+		      SyncType syncType, 
 		      std::string destUser, 
 		      std::string destHost, 
 		      std::string destPort, 

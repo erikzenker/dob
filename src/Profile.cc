@@ -2,7 +2,7 @@
 
 Profile::Profile() : 
   name(""),
-  mSyncType(""),
+  mSyncType(DOB_BACKUP),
   mSyncFolder(""),
   mSyncProto(""),
   mDestUser(""),
@@ -28,16 +28,16 @@ bool Profile::isValid(){
 }
 
 void Profile::print(){
-  cout << "\nC [" << name << "]";
-  cout << "\nC  syncType=" << mSyncType;
-  cout << "\nC  syncFolder=" << mSyncFolder;
-  cout << "\nC  syncProto=" << mSyncProto;
-  cout << "\nC  destUser=" << mDestUser;
-  cout << "\nC  destHost=" << mDestHost;
-  cout << "\nC  destPort=" << mDestPort;
-  cout << "\nC  destFolder=" << mDestFolder;
-  cout << "\nC	SshPort=" << mSshPort;
-  cout << "\n";
+  std::cout << "\nC [" << name << "]";
+  std::cout << "\nC  syncType=" << mSyncType;
+  std::cout << "\nC  syncFolder=" << mSyncFolder;
+  std::cout << "\nC  syncProto=" << mSyncProto;
+  std::cout << "\nC  destUser=" << mDestUser;
+  std::cout << "\nC  destHost=" << mDestHost;
+  std::cout << "\nC  destPort=" << mDestPort;
+  std::cout << "\nC  destFolder=" << mDestFolder;
+  std::cout << "\nC  SshPort=" << mSshPort;
+  std::cout << "\n";
   
 }
 

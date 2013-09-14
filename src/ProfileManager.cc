@@ -52,7 +52,7 @@ Profile* ProfileManager::getProfileByName(std::string profileName){
 }
 
 bool ProfileManager::startProfiles(){
-  vector<Profile>::iterator profileIter;
+  std::vector<Profile>::iterator profileIter;
   bool profilesAreStarted = true;
   for(profileIter = mpProfiles->begin(); profileIter < mpProfiles->end(); profileIter++){
     profilesAreStarted &= profileIter->startProfile();

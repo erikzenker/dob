@@ -113,7 +113,7 @@ sigc::signal<bool, std::string> InterProcessCommunication::getRestartSignal(){
  * @param profile, that will be stopped
  **/
 void InterProcessCommunication::emitStopSignal(std::vector<char> profileName){
-  string name(profileName.begin(), profileName.end());
+  std::string name(profileName.begin(), profileName.end());
   mStopSignal.emit(name);
 }
 
@@ -124,7 +124,7 @@ void InterProcessCommunication::emitStopSignal(std::vector<char> profileName){
  **/
 
 void InterProcessCommunication::emitStartSignal(std::vector<char> profileName){
-  string name(profileName.begin(), profileName.end());
+  std::string name(profileName.begin(), profileName.end());
   mStartSignal.emit(name);
 }
 
@@ -134,6 +134,6 @@ void InterProcessCommunication::emitStartSignal(std::vector<char> profileName){
  * @param profile, that will be restarted
  **/
 void InterProcessCommunication::emitRestartSignal(std::vector<char> profileName){
-  string name(profileName.begin(), profileName.end());
+  std::string name(profileName.begin(), profileName.end());
   mRestartSignal.emit(name);
 }

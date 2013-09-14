@@ -23,7 +23,7 @@ class ProfileManager {
 
  private:
   Profile* getProfileByName(std::string profileName);
-  vector<Profile>* mpProfiles;
+  std::vector<Profile>* mpProfiles;
 
 };
 

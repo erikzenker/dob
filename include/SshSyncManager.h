@@ -35,10 +35,11 @@
 class SshSyncManager : public SyncManager{
 public:
   SshSyncManager(  std::string destFolder, 
-		      std::string syncType, 
-		      std::string destUser, 
-		      std::string destHost, 
-		      std::string destPort);
+		   SyncType syncType, 
+		   std::string destUser, 
+		   std::string destHost, 
+		   std::string destPort);
+
   virtual bool syncSourceFolder(std::string sourceFolder);
   virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
   virtual bool syncFile(std::string sourceFolder, std::string syncFolder);

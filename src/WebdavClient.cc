@@ -212,7 +212,7 @@ bool WebdavClient::mkdir(std::string uri){
  * @return false if can´t delete directory
  *         true  otherwise
  **/
-bool WebdavClient::del(std::string uri){
+bool WebdavClient::rm(std::string uri){
   int res = ne_delete(mSession, uri.c_str());
   if(res!=NE_OK){
     dbg_printc(LOG_WARN,"WebdavClient", "delete","Delete-request failed: %s", ne_get_error(mSession)); 

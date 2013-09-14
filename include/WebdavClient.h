@@ -47,7 +47,7 @@ class WebdavClient {
   bool put(std::string uri, std::string localSource);
   bool get(std::string uri, std::string localDestination);
   bool mkdir(std::string uri);
-  bool del(std::string uri);
+  bool rm(std::string uri);
 
 
  private:

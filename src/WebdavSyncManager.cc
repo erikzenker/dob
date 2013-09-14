@@ -1,17 +1,18 @@
 #include <WebdavSyncManager.h>
 #include <WebdavClient.h>
-#include <FileStateDatabase.h>
+#include <SyncType.h>
 #include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
-				      std::string syncType, 
+				      SyncType syncType, 
 				      std::string destUser, 
 				      std::string destHost,
 				      std::string destPort,
 				      std::string destPass) :
   SyncManager(destFolder, syncType),
   mDestFolder(destFolder),
-  mWebdavClient(destHost, destPort, destUser, destPass)
+  mWebdavClient(destHost, destPort, destUser, destPass),
+  mDb("test")
   {
 
 }
@@ -19,36 +20,43 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
 bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
   dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder", rootPath.c_str());
 
-  FileStateDatabase db("test");
-  //db.resetdb();
-  std::vector<std::pair<FileState, ModState> > modState = db.updatedb(rootPath);
+  if(mSyncType == DOB_BACKUP){
+    std::vector<std::pair<FileState, ModState> > modStates = mDb.updatedb(rootPath);
 
-  for(auto it = modState.begin(); it != modState.end(); ++it){
-    ModState ms      = it->second;
-    bool is_dir      = it->first.is_dir;
-    std::string path = it->first.path;
+    for(auto it = modStates.begin(); it != modStates.end(); ++it){
+      ModState ms      = it->second;
+      bool is_dir      = it->first.is_dir;
+      std::string path = it->first.path;
 
-    switch(ms){
-    case FS_CREATE:
-      if(is_dir)
-	pushFolder(rootPath, boost::filesystem::path(path));
-      else
-	pushFile(rootPath, boost::filesystem::path(path));
-      break;
-    case FS_DELETE:
-      if(is_dir)
-	removeFolder(rootPath, boost::filesystem::path(path + "/"));
-      else
-	removeFolder(rootPath, boost::filesystem::path(path));
-      break;
-    default:
-      break;
-    };
-    //dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
+      switch(ms){
+      case FS_CREATE:
+	if(is_dir)
+	  pushFolder(rootPath, boost::filesystem::path(path));
+	else
+	  pushFile(rootPath, boost::filesystem::path(path));
+	break;
+	/*
+	  In DOB_BACKUP mode files should not be removed
+	  from backup folder (or should they)
+	*/
+      case FS_DELETE:
+	if(is_dir)
+	  removeFolder(rootPath, boost::filesystem::path(path + "/"));
+	else
+	  removeFolder(rootPath, boost::filesystem::path(path));
+	break;
+      default:
+	break;
+      };
+      //dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
+    }
+    return true;
+  }
+  else {
+    dbg_printc(LOG_ERR, "WebdavSyncManager", "syncSourceFolder", "Choosen SyncType is not implemented for WebdavSyncManager. Please change in configfile.");
   }
 
-return false;
-//return pushFolderRecursively(rootPath, rootPath, true) && pullFolderRecursively(rootPath, mDestFolder);
+  return false;
   
 }
 
@@ -147,7 +155,7 @@ bool WebdavSyncManager::pushFolder(std::string rootPath, boost::filesystem::path
 bool WebdavSyncManager::removeFolder(std::string rootPath, boost::filesystem::path fullPath){
   std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
   dbg_printc(LOG_DBG, "WebdavSyncManager","removeFolder", "%s", uri.c_str());   
-  return mWebdavClient.del(uri);
+  return mWebdavClient.rm(uri);
 }
 
 bool WebdavSyncManager::pullFolderRecursively(std::string rootPath, std::string uri){

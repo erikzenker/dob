@@ -25,7 +25,7 @@ The profiles are defined in a configfile with the following syntax :
      + Folder that will be scanned for modifications. This Folder should be mounted.  
  + __`destFolder=folderpath`__
      + Location backup will be stored. Can be a local or remote location.
- + __`syncType=syncronize`__
+ + __`syncType=push | pull | syncronize`__
      + Direction of syncronisation
  + __`syncProtocol=rsync|git|ssh|webdav`__
      + Set communication protocol in case of remote destination

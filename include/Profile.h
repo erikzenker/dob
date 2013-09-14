@@ -11,13 +11,12 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <InotifyFileSystemScanner.h>
-#include <RemoteSyncManager.h>
-#include <LocalSyncManager.h>
-#include <OptimizedEventManager.h>
+#include <FileSystemScanner.h>
+#include <SyncManager.h>
+#include <SyncManager.h>
+#include <EventManager.h>
+#include <SyncType.h>
 #include <dbg_print.h>
-
-
 
 /**
  * @brief Stores information about a user profile
@@ -31,8 +30,7 @@ class Profile {
   void setName(std::vector<char> name)                 { this->name.assign(name.begin(), name.end());}
   void setName( std::string name )		       { this->name = name; }
 
-  void setSyncType(std::vector<char> syncType)         { this->mSyncType.assign(syncType.begin(), syncType.end());}
-  void setSyncType(std::string syncType)               { this->mSyncType = syncType;}
+  void setSyncType(SyncType syncType)               { this->mSyncType = syncType;}
 
   void setSyncFolder(std::vector<char> syncFolder)     { this->mSyncFolder.assign(syncFolder.begin(), syncFolder.end());}
   void setSyncFolder( std::string syncFolder )	       { this->mSyncFolder = syncFolder; }
@@ -61,7 +59,7 @@ class Profile {
 
   // Getter
   std::string getName()         { return name;}
-  std::string getSyncType()     { return mSyncType;}
+  SyncType getSyncType()        { return mSyncType;}
   std::string getSyncFolder()   { return mSyncFolder;}
   std::string getSyncProtocol() { return mSyncProto;}
   std::string getDestUser()	{ return mDestUser; }
@@ -86,7 +84,7 @@ class Profile {
  
  private:
   std::string name;
-  std::string mSyncType;
+  SyncType mSyncType;
   std::string mSyncFolder;
   std::string mSyncProto;
   std::string mDestUser;

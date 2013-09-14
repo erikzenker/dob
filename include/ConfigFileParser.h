@@ -18,8 +18,6 @@
 
 #include "Profile.h"
 
-using namespace std;
-
 /**
  * @brief Parse configfile.
  *
@@ -33,10 +31,10 @@ class ConfigFileParser{
   ConfigFileParser();
   ~ConfigFileParser();
   void parseConfigFile(std::string configFileName);
-  vector<Profile>* getProfiles();
+  std::vector<Profile>* getProfiles();
  private:
   void createProfile(std::vector<char> name);
-  void setSyncType(std::string syncType);
+  void setSyncType(SyncType syncType);
   void setSyncFolder(std::vector<char> syncFolder);
   void setSyncProtocol( std::vector<char> syncProto );
   void setDestUser(std::vector<char> destUser);
