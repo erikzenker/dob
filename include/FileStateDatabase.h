@@ -22,13 +22,14 @@ class FileStateDatabase {
 public:
   FileStateDatabase(std::string dataBaseName);
   ~FileStateDatabase();
+  bool executeModState(ModState modState, FileState fileState);
+  bool insertFileState(FileState fileState);
+  bool updateFileState(FileState fileState);
+  bool deleteFileState(FileState fileState);
   std::vector<std::pair<FileState, ModState> > updatedb(std::string rootDirectory);
   bool resetdb();
 private:
   bool executeQuery(std::string query, int (*callback)(void*,int,char**,char**) ,void* userData);
-  bool insertFileState(FileState fileState);
-  bool updateFileState(FileState fileState);
-  bool deleteFileState(FileState fileState);
   FileState createFileState(boost::filesystem::path path);
   std::map<int, FileState> createFileStateCache();
 

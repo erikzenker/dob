@@ -24,30 +24,43 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
     std::vector<std::pair<FileState, ModState> > modStates = mDb.updatedb(rootPath);
 
     for(auto it = modStates.begin(); it != modStates.end(); ++it){
+      FileState fs     = it->first;
       ModState ms      = it->second;
-      bool is_dir      = it->first.is_dir;
-      std::string path = it->first.path;
+      bool is_dir      = fs.is_dir;
+      std::string path = fs.path;
 
+      bool result = false;
       switch(ms){
+
+      case FS_MODIFY:
       case FS_CREATE:
 	if(is_dir)
-	  pushFolder(rootPath, boost::filesystem::path(path));
-	else
-	  pushFile(rootPath, boost::filesystem::path(path));
+	  result = pushFolder(rootPath, boost::filesystem::path(path));
+	else 
+	  result = pushFile(rootPath, boost::filesystem::path(path));
 	break;
-	/*
-	  In DOB_BACKUP mode files should not be removed
-	  from backup folder (or should they)
-	*/
+
+      case FS_CREATE:
+	if(is_dir)
+	  result = pushFolder(rootPath, boost::filesystem::path(path));
+	else 
+	  result = pushFile(rootPath, boost::filesystem::path(path));
+	break;
+
       case FS_DELETE:
 	if(is_dir)
-	  removeFolder(rootPath, boost::filesystem::path(path + "/"));
-	else
-	  removeFolder(rootPath, boost::filesystem::path(path));
+	  result = removeFolder(rootPath, boost::filesystem::path(path + "/"));
+	else 
+	  result = removeFolder(rootPath, boost::filesystem::path(path));
 	break;
       default:
 	break;
       };
+      if(result)
+	mDb.executeQuery(ms, fs);
+      
+
+      // DEBUG
       //dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
     }
     return true;
