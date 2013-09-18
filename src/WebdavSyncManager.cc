@@ -33,7 +33,6 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
       switch(ms){
 
       case FS_MODIFY:
-      case FS_CREATE:
 	if(is_dir)
 	  result = pushFolder(rootPath, boost::filesystem::path(path));
 	else 
@@ -57,7 +56,7 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
 	break;
       };
       if(result)
-	mDb.executeQuery(ms, fs);
+	mDb.executeModState(ms, fs);
       
 
       // DEBUG
