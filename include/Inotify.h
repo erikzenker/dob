@@ -8,22 +8,12 @@
 #define INOTIFY_H
 
 #include <sys/inotify.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <dirent.h> // DIR, dirent
-#include <sys/stat.h> // lstat64
-#include <stdlib.h>
-#include <assert.h>
-#include <time.h>
 #include <string>
-#include <cstring> // strcmp
 #include <queue>
-#include <regex>
-#include <boost/filesystem.hpp> // boost::filesystem
-
 #include <map>
-#include <dbg_print.h>
+#include <vector>
+#include <boost/filesystem.hpp>
+
 #include <FileSystemEvent.h>
 
 #define MAX_EVENTS     4096
@@ -43,22 +33,22 @@
  **/
 class Inotify {
  public:
-  Inotify(std::vector<std::string> ignoredFolders, int eventTimeout);
+  Inotify(std::vector< std::string> ignoredFolders,  unsigned eventTimeout, uint32_t eventMask);
   ~Inotify();
-  bool watchFolderRecursively(std::string watchFolder);
+  bool watchDirectoryRecursively(boost::filesystem::path path);
   bool watchFile(boost::filesystem::path file);
-  FileSystemEvent* getNextEvent();
-  int getLastError();
-  std::string wdToFilename(int wd);
   bool removeWatch(int wd);
+  FileSystemEvent getNextEvent();
+  int getLastErrno();
+  boost::filesystem::path wdToFilename(int wd);
+  std::string maskToString(uint32_t mask);
   
  private:
-  bool isDir(std::string folder);
   bool initialize();
   bool isIgnored(std::string file);
   void clearEventQueue();
   bool onTimeout(time_t eventTime);
-  bool checkEvent(FileSystemEvent* event);
+  bool checkEvent(FileSystemEvent event);
 
   // Member
   int mError;
@@ -66,8 +56,8 @@ class Inotify {
   time_t mLastEventTime;
   uint32_t mEventMask;
   std::vector<std::string> mIgnoredFolders;
-  std::queue<FileSystemEvent* > mEventQueue;
-  std::map<int, std::string> mFolderMap;
+  std::queue<FileSystemEvent> mEventQueue;
+  std::map<int, boost::filesystem::path> mFolderMap;
   bool mIsInitialized;
   int mInotifyFd;
 

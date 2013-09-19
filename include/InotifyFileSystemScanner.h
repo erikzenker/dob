@@ -8,19 +8,11 @@
 #ifndef InotifyFileSystemScanner_H
 #define InotifyFileSystemScanner_H
 
-#include <iostream>
+#include <string>
 #include <vector>
-#include <stdio.h>
-#include <sys/inotify.h>
-#include <assert.h>
-#include <dirent.h>
-
 #include <Thread.h>
 #include <FileSystemScanner.h>
-#include <dbg_print.h>
 #include <Inotify.h>
-#include <FileSystemEvent.h>
-#include <Profile.h>
 
 /**
  * @brief Watches a folder for changes with the help of
@@ -48,7 +40,7 @@ public:
   virtual void setup();
 
  private:
-  Inotify * mInotify;
+  Inotify mInotify;
 
 };
 

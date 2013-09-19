@@ -1,16 +1,14 @@
 #include <string>
-#include <unistd.h> /* open, close */
-#include <stdlib.h>
-#include <fcntl.h> /* open, close */
+#include <unistd.h> /* close */
+#include <fcntl.h> /* open */
 #include <cstring> /* strncpy */
-#include <iostream> /* std::cout */
 
-#include <WebdavClient.h>
 #include <neon/ne_props.h> /* ne_simple_propfind, ne_prop_result_set */
 #include <neon/ne_uri.h> /* uri */
-#include <dbg_print.h>
 #include <neon/ne_auth.h> /* ne_set_server_auth, ne_ssl_trust_default_ca */
+#include <neon/ne_basic.h> /* ne_session, ne_put, ne_get, ne_delete, ne_mkcol */
 
+#include <WebdavClient.h>
 
 static const ne_propname fetchProps[] = {
     { "DAV:", "resourcetype" }, 
@@ -23,7 +21,7 @@ static const ne_propname fetchProps[] = {
  * @brief Inits webdav session and ssl authentication
  *
  **/
-WebdavClient::WebdavClient(std::string url, unsigned port, std::string user, std::string pw){
+WebdavClient::WebdavClient(const std::string url, const unsigned port, const std::string user, const std::string pw){
   ne_sock_init();
   mSession = ne_session_create("http", url.c_str(), 80);
   std::vector<std::string> *login = new std::vector<std::string>();
@@ -63,7 +61,6 @@ void WebdavClient::getProps(void *userdata, const ne_uri *uri, const ne_prop_res
     { "DAV:", "getlastmodified" },
     { "DAV:", "getcontenttype"}
   };
-  dbg_printc(LOG_DBG, "WebdavClient", "getProps", "%s %s %s %s %s", uri->host, uri->path, ne_propset_value(set, &props[0]), ne_propset_value(set, &props[1]), ne_propset_value(set, &props[2]));
 
   std::string ressourceType = ne_propset_value(set, &props[0]) ? ne_propset_value(set, &props[0]) : std::string();
   std::string lastModified  =  ne_propset_value(set, &props[1]) ?  ne_propset_value(set, &props[1]) : std::string();
@@ -93,16 +90,16 @@ void WebdavClient::getProps(void *userdata, const ne_uri *uri, const ne_prop_res
  *         false if file/directory not exists
  *
  **/
-bool WebdavClient::exists(std::string uri){
-  dbg_printc(LOG_DBG, "WebdavClient", "exists", "Test directory/file for existance: %s", uri.c_str());
+bool WebdavClient::exist(std::string uri){
   const int depth = NE_DEPTH_ZERO; /* NE_DEPTH_ZERO, NE_DEPTH_ONE, NE_DEPTH_INFINITE */
   std::vector<WebdavPath> * props = new std::vector<WebdavPath>;
   int res = ne_simple_propfind(mSession, uri.c_str(), depth, fetchProps, getProps, props);
   if(res!=NE_OK){ 
-    std::string error = ne_get_error(mSession);
-     if(error.find("404")!= std::string::npos)
-       return false;
-     return true;
+    mError = ne_get_error(mSession);      
+    if(mError.find("404")!= std::string::npos){
+      return false;
+    }
+    return false;
      
   } 
   props->erase(props->begin());
@@ -120,12 +117,11 @@ bool WebdavClient::exists(std::string uri){
  *
  **/
 std::vector<WebdavPath> WebdavClient::ls(std::string uri){
-  dbg_printc(LOG_DBG, "WebdavClient", "ls", "List directory: %s", uri.c_str());
   const int depth = NE_DEPTH_ONE; /* NE_DEPTH_ZERO, NE_DEPTH_ONE, NE_DEPTH_INFINITE */
   std::vector<WebdavPath> * props = new std::vector<WebdavPath>;
   int res = ne_simple_propfind(mSession, uri.c_str(), depth, fetchProps, WebdavClient::getProps, props);
-   if(res!=NE_OK){ 
-     dbg_printc(LOG_WARN,"WebdavClient", "ls","Propfind-request failed: %s", ne_get_error(mSession)); 
+   if(res!=NE_OK){
+     mError = ne_get_error(mSession); 
      return *props;
    } 
    props->erase(props->begin());
@@ -137,13 +133,12 @@ std::vector<WebdavPath> WebdavClient::ls(std::string uri){
  *
  **/
 std::vector<WebdavPath> WebdavClient::tree(std::string uri){
-  dbg_printc(LOG_DBG, "WebdavClient", "tree", "Get directory Tree: %s", uri.c_str());
   std::vector<WebdavPath> *props = new std::vector<WebdavPath>;
   const int depth = NE_DEPTH_INFINITE; /* NE_DEPTH_ZERO, NE_DEPTH_ONE, NE_DEPTH_INFINITE */
   int res = ne_simple_propfind(mSession, uri.c_str(), depth, fetchProps, WebdavClient::getProps, props);
   if(res!=NE_OK){ 
-     dbg_printc(LOG_WARN,"WebdavClient", "tree","Propfind-request failed: %s", ne_get_error(mSession)); 
-     return *props;
+    mError = ne_get_error(mSession);
+    return *props;
    } 
 
   return *props;
@@ -163,7 +158,7 @@ bool WebdavClient::put(std::string uri, std::string localSource){
   int fd = open(localSource.c_str(), O_RDONLY); 
   int res = ne_put(mSession, uri.c_str(), fd); 
   if(res!=NE_OK){ 
-    dbg_printc(LOG_WARN,"WebdavClient", "put","Put-request failed: %s", ne_get_error(mSession)); 
+    mError = ne_get_error(mSession);
     return false;
   } 
   close(fd);
@@ -183,7 +178,7 @@ bool WebdavClient::get(std::string uri, std::string localDestination){
   int fd = open(localDestination.c_str(), O_WRONLY | O_CREAT); 
   int res = ne_get(mSession, uri.c_str(), fd); 
   if(res!=NE_OK){ 
-    dbg_printc(LOG_WARN,"WebdavClient", "get","Get-request failed: %s", ne_get_error(mSession)); 
+    mError = ne_get_error(mSession);
     return false;
   } 
   close(fd);
@@ -202,7 +197,7 @@ bool WebdavClient::get(std::string uri, std::string localDestination){
 bool WebdavClient::mkdir(std::string uri){
   int res = ne_mkcol(mSession, uri.c_str());
   if(res != NE_OK){ 
-    dbg_printc(LOG_WARN,"WebdavClient", "mkol","Mkol-request failed: %s", ne_get_error(mSession)); 
+    mError = ne_get_error(mSession);
     return false;
   }
   return true;
@@ -219,10 +214,12 @@ bool WebdavClient::mkdir(std::string uri){
 bool WebdavClient::rm(std::string uri){
   int res = ne_delete(mSession, uri.c_str());
   if(res!=NE_OK){
-    dbg_printc(LOG_WARN,"WebdavClient", "delete","Delete-request failed: %s", ne_get_error(mSession)); 
+    mError = ne_get_error(mSession);
     return false;
   }
   return true;
 }
 
-
+std::string WebdavClient::getLastError(){
+  return mError;
+}

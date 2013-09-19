@@ -1,9 +1,19 @@
 #include "InotifyFileSystemScanner.h"
 
-InotifyFileSystemScanner::InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager) 
-  : FileSystemScanner(scanFolder, pEventManager ){
+#include <vector>
+#include <string>
+#include <sys/inotify.h>
 
-  mInotify = new Inotify(ignoredFolders, eventTimeout);
+#include <FileSystemScanner.h>
+#include <dbg_print.h>
+#include <Inotify.h>
+#include <FileSystemEvent.h>
+#include <Profile.h>
+
+
+InotifyFileSystemScanner::InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager) 
+  : FileSystemScanner(scanFolder, pEventManager),
+    mInotify(ignoredFolders, eventTimeout, IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
 
 }
 
@@ -41,21 +51,20 @@ void InotifyFileSystemScanner::setup(){
  **/
 void InotifyFileSystemScanner::execute(void* arg){
   // Create file watches
-  if(!mInotify->watchFolderRecursively(mScanFolder)){
-    dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", mInotify->getLastError());
+  if(!mInotify.watchDirectoryRecursively(mScanFolder)){
+    dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", mInotify.getLastErrno());
 
   }
 
   // Update changed files to server
-
   dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
-  FileSystemEvent *fileSystemEvent = mInotify->getNextEvent();
+  FileSystemEvent fileSystemEvent = mInotify.getNextEvent();
 
-  while(fileSystemEvent){
-    mpEventManager->pushBackEvent(fileSystemEvent, mScanFolder);
+  while(true){
+    mpEventManager->pushBackEvent(&fileSystemEvent, mScanFolder);
 
     // Add or delete watches for added/deleted folders or files
-    switch(fileSystemEvent->getMask()){
+    switch(fileSystemEvent.getMask()){
     case IN_MOVED_FROM:
     case IN_DELETE:
     case IN_DELETE | IN_ISDIR:
@@ -70,8 +79,8 @@ void InotifyFileSystemScanner::execute(void* arg){
     case IN_MOVED_TO:
     case IN_CREATE:
     case IN_CREATE | IN_ISDIR:
-      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent->getFilename().c_str());
-      mInotify->watchFolderRecursively(fileSystemEvent->getFullPath());
+      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent.getFilename().c_str());
+      mInotify.watchDirectoryRecursively(fileSystemEvent.getFullPath());
       break;
 
     case IN_MODIFY:
@@ -81,13 +90,7 @@ void InotifyFileSystemScanner::execute(void* arg){
       dbg_printc(LOG_ERR, 
 		 "InotifyFileSystemScanner", 
 		 "Execute",
-		 "Unexpected event was triggered %s %s",fileSystemEvent->getMaskString().c_str(), fileSystemEvent->getFilename().c_str());
-    }
-
-    // Handle next event and ignore NULL-Events
-    fileSystemEvent = NULL;
-    while(!fileSystemEvent){
-      fileSystemEvent = mInotify->getNextEvent();
+		 "Unexpected event was triggered %s %s",fileSystemEvent.getMaskString().c_str(), fileSystemEvent.getFilename().c_str());
     }
 
   }

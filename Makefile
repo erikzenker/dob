@@ -11,7 +11,7 @@ DEPS = $(SRCS:.cc=.d)
 INCS = -I./include $(shell pkg-config --cflags sigc++-2.0)
 
 # compiler flags
-CFLAGS = -c -Wall -std=c++11
+CFLAGS = -c -Wall -std=c++0x
 LDFLAGS = 
 
 # Used libs

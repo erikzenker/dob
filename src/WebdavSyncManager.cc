@@ -123,7 +123,7 @@ bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, std::string 
     
     bool uriExists = false;
     if(checkExistance)
-      uriExists = mWebdavClient.exists(uri);
+      uriExists = mWebdavClient.exist(uri);
 
     if(!uriExists){
       if(boost::filesystem::is_directory(*it) && !hasSymlinkLoop(*it)){
