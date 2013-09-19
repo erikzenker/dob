@@ -1,71 +1,45 @@
-#
-#	Makefile
-#
-DATE="`date +%y%m%d%H%M%S`"
-
-# commandline
-CMD = -O0 -g -J4 -pipe
-ARGS = 
-SPACE = " "
-
-# compiler, linker, archiver
-CPP = g++
-#CPP = colorgcc
-#CPP = clang
+# compiler, tools
+CC = g++
 DOXYGEN = doxygen
 
+# build variables
+EXECUTABLE=dob
+SRCS = $(wildcard src/*.cc)
+OBJS = $(SRCS:.cc=.o)
+DEPS = $(SRCS:.cc=.d)
+INCS = -I ./include
+
 # compiler flags
+CFLAGS = -c -Wall -std=c++11
+LDFLAGS = 
+
+# Used libs
 MONGODBLIBS     = -lmongoclient -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
 NEONLIBS        = -lneon
 SQLITE3LIBS     = -lsqlite3
-LIBS		= -lpthread $(MONGODBLIBS) $(NEONLIBS) $(SQLITE3LIBS)
-CPPINCLUDES 	= -I./include 
-COMMON_CPPFLAGS = $(CPPINCLUDES)
-CPPFLAGS 	= $(COMMON_CPPFLAGS) -Wall -fno-strict-aliasing $(shell pkg-config --cflags --libs sigc++-2.0) -std=c++0x
-LDFLAGS 	= -L. 
+PTHREADLIBS     = -lpthread
+SIGCLIBS        = $(shell pkg-config --cflags --libs sigc++-2.0)
+LIBS		= $(PTHREADLIBS) $(MONGODBLIBS) $(NEONLIBS) $(SQLITE3LIBS) $(SIGCLIBS)
 
-# build variables
-SRCS = $(wildcard src/*.cc src/*/*.cc)
-OBJS = $(SRCS:.cc=.o)
-DEPS = $(SRCS:.cc=.d)
+all: $(SOURCES) $(EXECUTABLE)
 
-# for building the component libraries
-DEPS += $(LIBSRCS:.cc=.d)
+$(EXECUTABLE): $(OBJS) 
+	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
 
-all: 	dob
-	notify-send "COMPILATION" "finished" 
-
-# build open dropbox
-dob: $(OBJS)
-	$(CPP) -o $@ $(OBJS) $(LIBS) $(LDFLAGS) $(CMD) $(CPPFLAGS) $(ARGS)
-
-# build object file and dependencies files
 .cc.o:
-	$(CPP) $(CMD) -MD $(CPPFLAGS) $(ARGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INCS) $(SIGCLIBS) $< -o $@
 
 # clean up backups and old files
 clean:
-	rm -f *~ */*~ */*/*~
-	rm -f $(OBJS) $(DEPS) $(LIBOBJS) $(LIBFILES) $(LIBRISSOBJ)
-	rm -f log.txt
-	rm -f dob
+	rm -f *~ */*~ */*~
+	rm -f $(OBJS) $(DEPS)
+	rm -f $(EXECUTABLE)
 
 new:
 	make clean
 	make all
 
-# find all todos
-todo:
-	grep -n "todo" include/*
-	grep -n "todo" src/*
-
-# find all bugs
-
-
-
 # generate documentation
 doc:
 	$(DOXYGEN) Doxygen.conf
 
-# include headerfile dependencies for sources
--include $(DEPS)

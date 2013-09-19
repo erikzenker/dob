@@ -1,6 +1,7 @@
 #include <WebdavSyncManager.h>
 #include <WebdavClient.h>
 #include <SyncType.h>
+#include <stdlib.h>
 #include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
 
 WebdavSyncManager::WebdavSyncManager( std::string destFolder, 
@@ -11,7 +12,7 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
 				      std::string destPass) :
   SyncManager(destFolder, syncType),
   mDestFolder(destFolder),
-  mWebdavClient(destHost, destPort, destUser, destPass),
+  mWebdavClient(destHost, atoi(destPort.c_str()), destUser, destPass),
   mDb("test")
   {
 
@@ -57,7 +58,6 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
       };
       if(result)
 	mDb.executeModState(ms, fs);
-      
 
       // DEBUG
       //dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);

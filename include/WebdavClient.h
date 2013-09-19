@@ -38,7 +38,7 @@ WebdavPath(std::string host, std::string path, std::string ressourceType, std::s
 
 class WebdavClient {
  public:
-  WebdavClient(std::string url, std::string port, std::string user, std::string pass);
+  WebdavClient(std::string url, unsigned port, std::string user, std::string pass);
   ~WebdavClient();
 
   std::vector<WebdavPath> ls(std::string uri);

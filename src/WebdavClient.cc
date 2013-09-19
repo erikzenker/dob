@@ -19,8 +19,11 @@ static const ne_propname fetchProps[] = {
     { NULL }
   };
 
-// @TODO replace or tolerate "http://" in url string
-WebdavClient::WebdavClient(std::string url, std::string port, std::string user, std::string pw){
+/**
+ * @brief Inits webdav session and ssl authentication
+ *
+ **/
+WebdavClient::WebdavClient(std::string url, unsigned port, std::string user, std::string pw){
   ne_sock_init();
   mSession = ne_session_create("http", url.c_str(), 80);
   std::vector<std::string> *login = new std::vector<std::string>();
@@ -35,6 +38,7 @@ WebdavClient::~WebdavClient(){
   ne_session_destroy(mSession);
   ne_sock_exit();
 }
+
 /**
  * @brief Callback for ne_set_server_auth to set passwort and username of ssl connection
  *
@@ -47,7 +51,7 @@ int WebdavClient::setLogin(void *userdata, const char *realm, int attempts, char
 }
 
 /**
- * @brief Callback of ne_simple_propfind, that fills a vector with properties of files/directory
+ * @brief Callback of ne_simple_propfind, that fills a vector(userdata) with properties of files/directory
  *
  **/
 void WebdavClient::getProps(void *userdata, const ne_uri *uri, const ne_prop_result_set *set){
