@@ -1,4 +1,5 @@
 # compiler, tools
+CC = clang
 CC = g++
 DOXYGEN = doxygen
 
@@ -7,19 +8,19 @@ EXECUTABLE=dob
 SRCS = $(wildcard src/*.cc)
 OBJS = $(SRCS:.cc=.o)
 DEPS = $(SRCS:.cc=.d)
-INCS = -I ./include
+INCS = -I./include $(shell pkg-config --cflags sigc++-2.0)
 
 # compiler flags
 CFLAGS = -c -Wall -std=c++11
 LDFLAGS = 
 
 # Used libs
-MONGODBLIBS     = -lmongoclient -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
-NEONLIBS        = -lneon
-SQLITE3LIBS     = -lsqlite3
-PTHREADLIBS     = -lpthread
-SIGCLIBS        = $(shell pkg-config --cflags --libs sigc++-2.0)
-LIBS		= $(PTHREADLIBS) $(MONGODBLIBS) $(NEONLIBS) $(SQLITE3LIBS) $(SIGCLIBS)
+MONGODBLIBS = -lmongoclient -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
+NEONLIBS    = -lneon
+SQLITE3LIBS = -lsqlite3
+PTHREADLIBS = -lpthread
+SIGCLIBS    = -lsigc-2.0
+LIBS	    = $(PTHREADLIBS) $(MONGODBLIBS) $(NEONLIBS) $(SQLITE3LIBS) $(SIGCLIBS)
 
 all: $(SOURCES) $(EXECUTABLE)
 
@@ -27,7 +28,7 @@ $(EXECUTABLE): $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
 
 .cc.o:
-	$(CC) $(CFLAGS) $(INCS) $(SIGCLIBS) $< -o $@
+	$(CC) $(CFLAGS) $(INCS) $< -o $@
 
 # clean up backups and old files
 clean:

@@ -105,15 +105,15 @@ std::string Inotify::wdToFilename(int wd){
 
 }
 
-FileSystemEvent<int>*  Inotify::getNextEvent(){
+FileSystemEvent*  Inotify::getNextEvent(){
   assert(mIsInitialized);
   inotify_event *event;
-  FileSystemEvent<int> *fileSystemEvent;
+  FileSystemEvent *fileSystemEvent;
   int length = 0;
   int i = 0;
   char buffer[EVENT_BUF_LEN];
   time_t currentEventTime = time(NULL);
-  std::vector<FileSystemEvent<int>* > newEvents;
+  std::vector<FileSystemEvent* > newEvents;
 
 
   // Read Events from fd into buffer
@@ -141,7 +141,7 @@ FileSystemEvent<int>*  Inotify::getNextEvent(){
   currentEventTime = time(NULL);
   while(i < length){
     event = (struct inotify_event *) &buffer[i];
-    fileSystemEvent = new FileSystemEvent<int>(event->wd, event->mask, event->name, wdToFilename(event->wd)); 
+    fileSystemEvent = new FileSystemEvent(event->wd, event->mask, event->name, wdToFilename(event->wd)); 
     if(checkEvent(fileSystemEvent) && fileSystemEvent->getMask() != IN_IGNORED){
       newEvents.push_back(fileSystemEvent);
       dbg_printc(LOG_DBG, "Inotify", "GetNextEvent",
@@ -157,7 +157,7 @@ FileSystemEvent<int>*  Inotify::getNextEvent(){
   }
 
   // Filter events for timeout
-  std::vector<FileSystemEvent<int>* >::iterator eventIter;
+  std::vector<FileSystemEvent* >::iterator eventIter;
   for(eventIter = newEvents.begin(); eventIter < newEvents.end(); ++eventIter){
     if(onTimeout(currentEventTime)){
       newEvents.erase(eventIter);
@@ -227,7 +227,7 @@ bool Inotify::onTimeout(time_t eventTime){
 
 }
 
-bool Inotify::checkEvent(FileSystemEvent<int>* event){
+bool Inotify::checkEvent(FileSystemEvent* event){
   // Events seems to have no syncfolder,
   // this can happen if not the full event
   // was read from inotify fd

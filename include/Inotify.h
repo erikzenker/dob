@@ -47,7 +47,7 @@ class Inotify {
   ~Inotify();
   bool watchFolderRecursively(std::string watchFolder);
   bool watchFile(boost::filesystem::path file);
-  FileSystemEvent<int>* getNextEvent();
+  FileSystemEvent* getNextEvent();
   int getLastError();
   std::string wdToFilename(int wd);
   bool removeWatch(int wd);
@@ -58,7 +58,7 @@ class Inotify {
   bool isIgnored(std::string file);
   void clearEventQueue();
   bool onTimeout(time_t eventTime);
-  bool checkEvent(FileSystemEvent<int>* event);
+  bool checkEvent(FileSystemEvent* event);
 
   // Member
   int mError;
@@ -66,7 +66,7 @@ class Inotify {
   time_t mLastEventTime;
   uint32_t mEventMask;
   std::vector<std::string> mIgnoredFolders;
-  std::queue<FileSystemEvent<int>* > mEventQueue;
+  std::queue<FileSystemEvent* > mEventQueue;
   std::map<int, std::string> mFolderMap;
   bool mIsInitialized;
   int mInotifyFd;

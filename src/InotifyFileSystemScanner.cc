@@ -49,7 +49,7 @@ void InotifyFileSystemScanner::execute(void* arg){
   // Update changed files to server
 
   dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
-  FileSystemEvent<int> * fileSystemEvent = mInotify->getNextEvent();
+  FileSystemEvent *fileSystemEvent = mInotify->getNextEvent();
 
   while(fileSystemEvent){
     mpEventManager->pushBackEvent(fileSystemEvent, mScanFolder);

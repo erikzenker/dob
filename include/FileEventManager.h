@@ -29,7 +29,7 @@ class FileEventManager : public EventManager{
  public:
   FileEventManager(SyncManager * pSyncManager);
  private:
-  virtual bool handleEvent(FileSystemEvent<int>* pEvent, string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent* pEvent, string sourceFolder);
  
 };
 

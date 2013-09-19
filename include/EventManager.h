@@ -30,18 +30,18 @@ public:
   EventManager(SyncManager* const pSyncManager);
   ~EventManager();
   SyncManager* getSyncManager() const;
-  void pushBackEvent(FileSystemEvent<int>* const pNewEvent, const std::string sourceFolder);
+  void pushBackEvent(FileSystemEvent* const pNewEvent, const std::string sourceFolder);
   EventManagerSignal signalEvent();
 
 protected:
-  bool dispatchEvent(FileSystemEvent<int>* const pEvent, const std::string sourceFolder);
-  virtual bool handleEvent(FileSystemEvent<int>* const pEvent, const std::string sourceFolder) = 0;
+  bool dispatchEvent(FileSystemEvent* const pEvent, const std::string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent* const pEvent, const std::string sourceFolder) = 0;
   void setPauseIcon() const;
   void setSyncIcon() const;
   void setScanIcon() const;
   
   /* Member */ 
-  std::vector<FileSystemEvent<int>* > mEventList;
+  std::vector<FileSystemEvent* > mEventList;
   SyncManager* const mpSyncManager;
   EventManagerSignal mEventManagerSignal;
 

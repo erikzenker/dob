@@ -4,7 +4,7 @@ FolderEventManager::FolderEventManager(SyncManager * pSyncManager)
   : EventManager(pSyncManager){
 }
 
-bool FolderEventManager::handleEvent(FileSystemEvent<int>* pEvent, string sourceFolder){
+bool FolderEventManager::handleEvent(FileSystemEvent* pEvent, string sourceFolder){
   std::string syncFolder = pEvent->getWatchFolder();
   std::string folder = pEvent->getFilename();
 
