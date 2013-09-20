@@ -56,20 +56,16 @@ bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
       default:
 	break;
       };
+
       if(result)
 	mDb.executeModState(ms, fs);
-
-      // DEBUG
-      //dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder","Modstate %s %d %d %d %d", it->first.path.c_str(), it->first.modtime, it->first.inode , it->first.is_dir, it->second);
+      else
+	dbg_printc(LOG_WARN, "WebdavSyncManager","syncSourceFolder","Not able to execute ModState for %s! %s", path.c_str(), mWebdavClient.getLastError().c_str());
     }
     return true;
   }
-  else {
-    dbg_printc(LOG_ERR, "WebdavSyncManager", "syncSourceFolder", "Choosen SyncType is not implemented for WebdavSyncManager. Please change in configfile.");
-  }
-
+  dbg_printc(LOG_ERR, "WebdavSyncManager", "syncSourceFolder", "Choosen SyncType is not implemented for WebdavSyncManager. Please change in configfile.");
   return false;
-  
 }
 
 
@@ -149,6 +145,7 @@ bool WebdavSyncManager::pushFolderRecursively(std::string rootPath, std::string 
 
 bool WebdavSyncManager::pushFile(std::string rootPath, boost::filesystem::path fullPath){
   std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
+  uri = replaceSubstring(uri, " ", "%20");
   std::string localSource = fullPath.string();
   dbg_printc(LOG_DBG, "WebdavSyncManager","pushFile", "Push file %s to %s", localSource.c_str(), uri.c_str());   
   return mWebdavClient.put(uri, localSource);
