@@ -38,11 +38,7 @@ std::string FileSystemEvent::getMaskString(){
 }
 
 std::string FileSystemEvent::getFullPath(){
-  return mWatchFolder.append(mFilename);
-}
-
-std::string FileSystemEvent::getFolderPath(){
-  return mWatchFolder;
+  return mWatchFolder +mFilename;
 }
 
 std::string FileSystemEvent::maskToString(uint32_t mask){

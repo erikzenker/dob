@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#include <iostream>
 #include <boost/filesystem.hpp>
 
 #include <FileSystemEvent.h>
@@ -45,22 +46,25 @@ bool Inotify::initialize(){
 
 bool Inotify::watchDirectoryRecursively(boost::filesystem::path path){
   assert(mIsInitialized);
-  if(boost::filesystem::is_directory(path)){
-    boost::filesystem::recursive_directory_iterator it(path);
-    boost::filesystem::recursive_directory_iterator end;
+  if(boost::filesystem::exists(path)){
+    if(boost::filesystem::is_directory(path)){
+      boost::filesystem::recursive_directory_iterator it(path);
+      boost::filesystem::recursive_directory_iterator end;
   
-    while(it != end){
-      boost::filesystem::path currentPath = *it;
+      while(it != end){
+	boost::filesystem::path currentPath = *it;
 
-      if(boost::filesystem::is_regular_file(currentPath) || boost::filesystem::is_directory(currentPath)){
-	watchFile(currentPath);
+	if(boost::filesystem::is_regular_file(currentPath) || boost::filesystem::is_directory(currentPath)){
+	  watchFile(currentPath);
+	}
+	++it;
+
       }
-      ++it;
 
     }
-
+    return watchFile(path);
   }
-  return watchFile(path);
+  return false;
 }
 
 bool Inotify::watchFile(boost::filesystem::path filePath){
@@ -128,13 +132,13 @@ FileSystemEvent Inotify::getNextEvent(){
     currentEventTime = time(NULL);
     int i = 0;
     while(i < length){
-      inotify_event e = *((struct inotify_event*) &buffer[i]);
-      FileSystemEvent fsEvent(e.wd, e.mask, e.name, wdToFilename(e.wd).string());
+      inotify_event *e = ((struct inotify_event*) &buffer[i]);
+      FileSystemEvent fsEvent(e->wd, e->mask, e->name, wdToFilename(e->wd).string());
       if(checkEvent(fsEvent)){
 	events.push_back(fsEvent);
 
       }
-      i += EVENT_SIZE + e.len;
+      i += EVENT_SIZE + e->len;
 
     }
 

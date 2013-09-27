@@ -58,9 +58,16 @@ void InotifyFileSystemScanner::execute(void* arg){
 
   // Update changed files to server
   dbg_printc(LOG_DBG,"InotifyFileSystemScanner", "Execute", "Start scanning folder: %s", mScanFolder.c_str());
-  FileSystemEvent fileSystemEvent = mInotify.getNextEvent();
 
   while(true){
+    FileSystemEvent fileSystemEvent = mInotify.getNextEvent();
+    dbg_printc(LOG_DBG, 
+	       "FileSystemEvent",
+	       "execute",
+	       "New event %s %d %s",
+	       fileSystemEvent.getFullPath().c_str(), 
+	       fileSystemEvent.getMask(),
+	       fileSystemEvent.getMaskString().c_str());
     mpEventManager->pushBackEvent(&fileSystemEvent, mScanFolder);
 
     // Add or delete watches for added/deleted folders or files

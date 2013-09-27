@@ -1,5 +1,6 @@
 #include <FileEventManager.h>
 #include <unistd.h>
+#include <iostream>
 
 FileEventManager::FileEventManager(SyncManager * pSyncManager)
   : EventManager(pSyncManager){
@@ -8,7 +9,6 @@ FileEventManager::FileEventManager(SyncManager * pSyncManager)
 bool FileEventManager::handleEvent(FileSystemEvent* pEvent, string sourceFolder){
   std::string syncFolder = pEvent->getWatchFolder();
   std::string folder = pEvent->getFilename();
-
 
   switch(pEvent->getMask()){
   case IN_MOVED_TO:

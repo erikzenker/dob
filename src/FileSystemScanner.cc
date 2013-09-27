@@ -1,4 +1,5 @@
 #include "FileSystemScanner.h"
+#include "iostream"
 
 FileSystemScanner::FileSystemScanner(std::string scanFolder, EventManager* const pEventManager):
 mScanFolder(scanFolder),
@@ -14,6 +15,7 @@ FileSystemScanner::~FileSystemScanner(){
 }
 
 std::string FileSystemScanner::getScanFolder() const{
+
   return mScanFolder;
 
 }

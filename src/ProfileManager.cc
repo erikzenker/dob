@@ -1,4 +1,5 @@
 #include <ProfileManager.h>
+#include <iostream>
 
 ProfileManager::ProfileManager(std::vector<Profile>* pProfiles) : 
   mpProfiles(pProfiles){

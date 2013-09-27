@@ -9,6 +9,8 @@
 #include <FolderEventManager.h>
 #include <FileEventManager.h>
 
+#include <iostream>
+
 ProfileFactory::ProfileFactory(){
 
 }
@@ -45,7 +47,6 @@ bool ProfileFactory::makeProfile(Profile* profile){
   std::string destFolder = profile->getDestFolder();
   std::string destPass   = profile->getDestPass();
   std::string sshPort    = profile->getSshPort();
-
 
   EventManager* pEventManager;
   SyncManager* pSyncManager;

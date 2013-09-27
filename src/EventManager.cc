@@ -28,7 +28,6 @@ SyncManager* EventManager::getSyncManager() const{
  *
  **/
 void EventManager::pushBackEvent(FileSystemEvent* const pNewEvent, const std::string sourceFolder){
-  //SetSyncIcon();
   mEventList.push_back(pNewEvent);
   if(handleEvent(pNewEvent, sourceFolder)){
     mEventList.pop_back();
@@ -36,7 +35,7 @@ void EventManager::pushBackEvent(FileSystemEvent* const pNewEvent, const std::st
 	       "EventManager",
 	       "PushBackEvent",
 	       "Last event was handled %s %d %s",
-	       pNewEvent->getFilename().c_str(), 
+	       pNewEvent->getFullPath().c_str(), 
 	       pNewEvent->getMask(),
 	       pNewEvent->getMaskString().c_str());
 
@@ -46,13 +45,15 @@ void EventManager::pushBackEvent(FileSystemEvent* const pNewEvent, const std::st
     dbg_printc(LOG_DBG, 
 	       "EventManager",
 	       "PushBackEvent",
-	       "Last event was not handled, need to be redone! (%d event(s) left for handling)", 
+	       "Last event was not handled %s %d %s, need to be redone! (%d event(s) left for handling)", 
+	       pNewEvent->getFullPath().c_str(), 
+	       pNewEvent->getMask(),
+	       pNewEvent->getMaskString().c_str(),
 	       mEventList.size());
     if(!dispatchEvent(pNewEvent, sourceFolder))
       mEventList.pop_back();
 
   }
-  //SetScanIcon();
 
 }
 

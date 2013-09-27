@@ -20,7 +20,7 @@ WebdavSyncManager::WebdavSyncManager( std::string destFolder,
 
 bool WebdavSyncManager::syncSourceFolder(std::string rootPath){
   dbg_printc(LOG_DBG, "WebdavSyncManager","syncSourceFolder", rootPath.c_str());
-
+  
   if(mSyncType == DOB_BACKUP){
     std::vector<std::pair<FileState, ModState> > modStates = mDb.updatedb(rootPath);
 
@@ -147,8 +147,16 @@ bool WebdavSyncManager::pushFile(std::string rootPath, boost::filesystem::path f
   std::string uri = mDestFolder + fullPath.string().substr(rootPath.length(), fullPath.string().length());
   uri = replaceSubstring(uri, " ", "%20");
   std::string localSource = fullPath.string();
-  dbg_printc(LOG_DBG, "WebdavSyncManager","pushFile", "Push file %s to %s", localSource.c_str(), uri.c_str());   
-  return mWebdavClient.put(uri, localSource);
+
+
+  if(mWebdavClient.put(uri, localSource)){
+    dbg_printc(LOG_DBG, "WebdavSyncManager","pushFile", "Push file %s to %s", localSource.c_str(), uri.c_str());   
+    return true;
+  }
+  else {
+    dbg_printc(LOG_DBG, "WebdavSyncManager","pushFile", "Push file %s to %s error ! %s!", localSource.c_str(), uri.c_str(), mWebdavClient.getLastError().c_str()); 
+    return false;
+  }
 }
 
 bool WebdavSyncManager::pushFolder(std::string rootPath, boost::filesystem::path fullPath){

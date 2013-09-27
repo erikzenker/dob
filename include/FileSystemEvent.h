@@ -36,7 +36,6 @@ class FileSystemEvent {
   std::string getFilename();
   std::string getWatchFolder();
   std::string getFullPath();
-  std::string getFolderPath();
 
  private:
   std::string maskToString(uint32_t events);
