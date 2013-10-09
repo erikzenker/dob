@@ -15,12 +15,12 @@ CFLAGS = -c -Wall -std=c++0x
 LDFLAGS = 
 
 # Used libs
-MONGODBLIBS = -lmongoclient -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
+BOOSTLIBS = -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
 NEONLIBS    = -lneon
 SQLITE3LIBS = -lsqlite3
 PTHREADLIBS = -lpthread
 SIGCLIBS    = -lsigc-2.0
-LIBS	    = $(PTHREADLIBS) $(MONGODBLIBS) $(NEONLIBS) $(SQLITE3LIBS) $(SIGCLIBS)
+LIBS	    = $(PTHREADLIBS) $(BOOSTLIBS) $(NEONLIBS) $(SQLITE3LIBS) $(SIGCLIBS)
 
 all: $(SOURCES) $(EXECUTABLE)
 

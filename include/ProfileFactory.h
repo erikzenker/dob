@@ -12,9 +12,6 @@
 #include <vector>
 
 #include <Profile.h>
-#include <GitSyncManager.h>
-#include <SshSyncManager.h>
-#include <DropboxSyncManager.h>
 #include <dbg_print.h>
 
 

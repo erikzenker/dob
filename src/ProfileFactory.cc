@@ -1,11 +1,7 @@
 #include <ProfileFactory.h>
 #include <WebdavSyncManager.h>
-#include <RemoteSyncManager.h>
-#include <GitSyncManager.h>
-#include <DropboxSyncManager.h>
-#include <SshSyncManager.h>
-#include <InotifyFileSystemScanner.h>
 #include <LocalSyncManager.h>
+#include <InotifyFileSystemScanner.h>
 #include <FolderEventManager.h>
 #include <FileEventManager.h>
 
@@ -58,26 +54,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     return false;
 // if local transfer is used, this assumes remote, before it checks for local!
 // TODO revise!
-  if(!syncProtocol.compare("rsync")){
-    pSyncManager = new RemoteSyncManager(destFolder, syncType, destUser, destHost, destPort, sshPort);
-    eventTimeout = 1;
-  }
-  else if(!syncProtocol.compare("ssh")){
-    pSyncManager = new SshSyncManager(destFolder, syncType, destUser, destHost, destPort);
-    eventTimeout = 1;
-  }
-  else if(!syncProtocol.compare("git")){
-    pSyncManager = new GitSyncManager(destFolder, syncType, syncProtocol);
-    std::string ignoredGitFolder = scanFolder;
-    ignoredGitFolder.append(".git");
-    ignoredFolders.push_back(ignoredGitFolder);
-    eventTimeout = 1;
-  }
-  else if(!syncProtocol.compare("dropbox")){
-    pSyncManager = new DropboxSyncManager(destFolder, syncType);
-    eventTimeout = 1; 
-  }
-  else if(!syncProtocol.compare("webdav")){
+  if(!syncProtocol.compare("webdav")){
     pSyncManager = new WebdavSyncManager(destFolder, syncType, destUser, destHost, destPort, destPass);
     eventTimeout = 0;
   }
