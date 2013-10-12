@@ -1,4 +1,5 @@
 #include <EventManager.h>
+#include <boost/filesystem.hpp>
 
 EventManager::EventManager(SyncManager * const pSyncManager) : 
   mpSyncManager(pSyncManager){
@@ -35,7 +36,7 @@ void EventManager::pushBackEvent(FileSystemEvent* const pNewEvent, const std::st
 	       "EventManager",
 	       "PushBackEvent",
 	       "Last event was handled %s %d %s",
-	       pNewEvent->getFullPath().c_str(), 
+	       pNewEvent->getPath().string().c_str(), 
 	       pNewEvent->getMask(),
 	       pNewEvent->getMaskString().c_str());
 
@@ -46,7 +47,7 @@ void EventManager::pushBackEvent(FileSystemEvent* const pNewEvent, const std::st
 	       "EventManager",
 	       "PushBackEvent",
 	       "Last event was not handled %s %d %s, need to be redone! (%d event(s) left for handling)", 
-	       pNewEvent->getFullPath().c_str(), 
+	       pNewEvent->getPath().string().c_str(), 
 	       pNewEvent->getMask(),
 	       pNewEvent->getMaskString().c_str(),
 	       mEventList.size());
@@ -67,34 +68,13 @@ void EventManager::pushBackEvent(FileSystemEvent* const pNewEvent, const std::st
  **/
 bool EventManager::dispatchEvent(FileSystemEvent* const pEvent, const std::string sourceFolder){
   dbg_printc(LOG_DBG, "EventManager", "DispatchEvent","Dispatch event");
-  std::string syncFolder = pEvent->getWatchFolder();
-  std::string folder = pEvent->getFilename();
-  std::string filename = "";
-
-  filename.append(syncFolder).append(folder);
-
-  std::ifstream dispatch_file_stream;
-  dispatch_file_stream.open(filename.c_str());
-  if(dispatch_file_stream.good()){
+  boost::filesystem::path eventPath = pEvent->getPath();
+  if(boost::filesystem::exists(eventPath)){
     return !handleEvent(pEvent, sourceFolder);
-    
   }
   dbg_printc(LOG_DBG, "EventManager","DispatchEvent","Tried to dispatch event, but event was tropped because file is not there anymore");
   return false;
 
-}
-
-
-void EventManager::setPauseIcon() const{
-  mEventManagerSignal.emit(false, 0);
-}
-
-void EventManager::setSyncIcon() const{
-  mEventManagerSignal.emit(false, 1);
-}
-
-void EventManager::setScanIcon() const{
-  mEventManagerSignal.emit(false, 2);
 }
 
 /**

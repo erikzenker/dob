@@ -36,9 +36,6 @@ public:
 protected:
   bool dispatchEvent(FileSystemEvent* const pEvent, const std::string sourceFolder);
   virtual bool handleEvent(FileSystemEvent* const pEvent, const std::string sourceFolder) = 0;
-  void setPauseIcon() const;
-  void setSyncIcon() const;
-  void setScanIcon() const;
   
   /* Member */ 
   std::vector<FileSystemEvent* > mEventList;

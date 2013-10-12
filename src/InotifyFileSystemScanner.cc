@@ -65,9 +65,10 @@ void InotifyFileSystemScanner::execute(void* arg){
 	       "FileSystemEvent",
 	       "execute",
 	       "New event %s %d %s",
-	       fileSystemEvent.getFullPath().c_str(), 
+	       fileSystemEvent.getPath().string().c_str(), 
 	       fileSystemEvent.getMask(),
 	       fileSystemEvent.getMaskString().c_str());
+
     mpEventManager->pushBackEvent(&fileSystemEvent, mScanFolder);
 
     // Add or delete watches for added/deleted folders or files
@@ -86,8 +87,8 @@ void InotifyFileSystemScanner::execute(void* arg){
     case IN_MOVED_TO:
     case IN_CREATE:
     case IN_CREATE | IN_ISDIR:
-      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent.getFilename().c_str());
-      mInotify.watchDirectoryRecursively(fileSystemEvent.getFullPath());
+      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent.getPath().string().c_str());
+      mInotify.watchDirectoryRecursively(fileSystemEvent.getPath().string());
       break;
 
     case IN_MODIFY:
@@ -97,7 +98,7 @@ void InotifyFileSystemScanner::execute(void* arg){
       dbg_printc(LOG_ERR, 
 		 "InotifyFileSystemScanner", 
 		 "Execute",
-		 "Unexpected event was triggered %s %s",fileSystemEvent.getMaskString().c_str(), fileSystemEvent.getFilename().c_str());
+		 "Unexpected event was triggered %s %s",fileSystemEvent.getMaskString().c_str(), fileSystemEvent.getPath().string().c_str());
     }
 
   }
