@@ -1,12 +1,11 @@
 #include <SyncManager.h>
 #include <SyncType.h>
 
-SyncManager::SyncManager(std::string destFolder, SyncType syncType) : 
-  mDestFolder(destFolder),
+SyncManager::SyncManager(boost::filesystem::path destPath, SyncType syncType) : 
+  mDestPath(destPath),
   mSyncType(syncType){
   
-  if(mDestFolder[mDestFolder.size()-1] != '/')
-     mDestFolder.append("/");
+  mDestPath / "/";
 
 }
 

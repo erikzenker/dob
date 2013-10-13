@@ -9,17 +9,9 @@
 #define WebdavSyncManager_H
 
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <errno.h>
-#include <sys/stat.h> /* lstat */
-#include <stdlib.h>
 #include <boost/filesystem.hpp> /* filesystem, is_directory, file_size, last_write_time */
 #include <map> /* map */
-
 #include <SyncManager.h>
-#include <dbg_print.h>
 #include <WebdavClient.h>
 #include <SyncType.h>
 #include <FileStateDatabase.h>
@@ -32,31 +24,25 @@
  * 
  **/
 
-class WebdavSyncManager : public SyncManager{
+class WebdavSyncManager : public SyncManager {
 public:
-  WebdavSyncManager(std::string destFolder, SyncType syncType,  std::string destUser, std::string destHost, std::string destPort, std::string destPass);
-  virtual bool syncSourceFolder(std::string rootPath);
-  virtual bool syncFolder(std::string rootPath, std::string syncFolder, std::string folder);
-  virtual bool syncFile(std::string rootPath, std::string fullPath);
-  virtual bool removeFolder(std::string rootPath, std::string syncFolder, std::string folder);
-
-protected:
-  virtual bool checkDestination();
-  virtual bool setupDestination();
+  WebdavSyncManager(boost::filesystem::path scanPath, std::string destFolder, SyncType syncType,  std::string destUser, std::string destHost, std::string destPort, std::string destPass);
+  virtual bool syncInitial(boost::filesystem::path rootPath);
+  virtual bool syncFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
+  virtual bool syncFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms);
+  virtual bool removeFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
 
 private:
-  bool pushFile(std::string rootPath, boost::filesystem::path fullPath);
-  bool pushFolder(std::string rootPath, boost::filesystem::path fullPath);
-  bool removeFolder(std::string rootPath, boost::filesystem::path fullPath);
-  bool pushFolderRecursively(std::string rootPath, std::string fullPath, bool checkExistance);
-  bool pullFolderRecursively(std::string rootPath, std::string fullPath);
+  bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms);
+  bool pushFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms);
+  bool pushFolderRecursively(boost::filesystem::path rootPath, boost::filesystem::path fullPath, bool checkExistance);
+  bool pullFolderRecursively(boost::filesystem::path rootPath, std::string uri);
   std::string replaceSubstring(std::string subject, const std::string& search,const std::string& replace);
   bool hasSymlinkLoop(boost::filesystem::path path);
 
-  std::string mDestFolder;
   std::map<unsigned, std::string> mSymlinks;
   WebdavClient mWebdavClient;
-  FileStateDatabase mDb;
+  FileStateDatabase mFileStateDatabase;
 
 };
 

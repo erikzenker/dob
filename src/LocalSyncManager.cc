@@ -1,5 +1,7 @@
 #include <LocalSyncManager.h>
+#include <FileStateDatabase.h>
 #include <boost/filesystem.hpp>
+#include <dbg_print.h>
 
 /*
  * @note  Rsync command line parameters
@@ -21,33 +23,16 @@
  *        -q  --quiet             suppress non-error messages
  *        See more in "man rsync"
  */
-LocalSyncManager::LocalSyncManager(std::string destFolder, SyncType syncType):
+LocalSyncManager::LocalSyncManager(boost::filesystem::path destFolder, SyncType syncType):
   SyncManager(destFolder, syncType),
   mRsyncOptions("rsync -qvruLKpt --progress --inplace "){
 
 }
 
-bool LocalSyncManager::checkDestination(){
-  boost::filesystem::path destPath(mDestFolder);
-  if(boost::filesystem::is_directory(destPath))
-    return true;
-  return false;
-  
-}
-
-bool LocalSyncManager::setupDestination(){
-  return checkDestination();
-}
-
-bool LocalSyncManager::syncSourceFolder(std::string rootPath){
-  if(!checkDestination()){
-    dbg_printc(LOG_ERR,"LocalManager","SyncSourceFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
-    return false;
-  }
-
+bool LocalSyncManager::syncInitial(boost::filesystem::path rootPath){
   dbg_printc(LOG_DBG, "LocalManager", "SyncSourceFolder", "Syncronise source and destination folder");
-  std::string push_query = mRsyncOptions + rootPath + " " + mDestFolder;
-  std::string pull_query = mRsyncOptions + mDestFolder  + " " + rootPath;
+  std::string push_query = mRsyncOptions + rootPath.string() + " " + mDestPath.string();
+  std::string pull_query = mRsyncOptions + mDestPath.string()  + " " + rootPath.string();
 
   switch(mSyncType){
   case DOB_BACKUP:
@@ -66,14 +51,9 @@ bool LocalSyncManager::syncSourceFolder(std::string rootPath){
   return true;
 }
 
-bool LocalSyncManager::syncFolder(std::string rootPath, std::string syncFolder, std::string folder){
-  if(!checkDestination()){
-    dbg_printc(LOG_ERR,"LocalManager","SyncFolder", "Failed syncronise source and destination folder, because destination folder is not reachable or not mounted");
-    return false;
-  }
-
-  std::string relativePath = syncFolder.substr(rootPath.length(), syncFolder.length());
-  std::string cp_query = "cp -RLv " + syncFolder + folder + " " + mDestFolder +  relativePath + " ";  
+bool LocalSyncManager::syncFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath){
+  std::string relativePath = fullPath.string().substr(rootPath.string().length(), fullPath.string().length());
+  std::string cp_query = "cp -RLv " + fullPath.string() + " " + mDestPath.string() +  relativePath + " ";  
   
   if(system(cp_query.c_str())){
     dbg_printc(LOG_DBG, "LocalManager","SyncFolder","Can't reach destination folder, maybe location is offline or file doesn't exist anymore");
@@ -85,14 +65,9 @@ bool LocalSyncManager::syncFolder(std::string rootPath, std::string syncFolder, 
   
 }
 
-bool LocalSyncManager::removeFolder(std::string rootPath, std::string syncFolder, std::string folder){
-  if(!checkDestination()){
-    dbg_printc(LOG_ERR,"LOcalManager","RemoveFolder", "Failed syncronise source and destination folder, because destination folder is not mounted");
-    return false;
-  }
-
-  std::string relativePath = syncFolder.substr(rootPath.length(), syncFolder.length());
-  std::string rm_query = mRsyncOptions + "--delete " + syncFolder + " " + mDestFolder + relativePath;
+bool LocalSyncManager::removeFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath){
+  std::string relativePath = fullPath.string().substr(rootPath.string().length(), fullPath.string().length());
+  std::string rm_query = mRsyncOptions + "--delete " + fullPath.string() + " " + mDestPath.string() + relativePath;
 
   dbg_printc(LOG_DBG, "LocalSyncManager","RemoveFolder","%s", rm_query.c_str());
   system(rm_query.c_str());
@@ -100,9 +75,9 @@ bool LocalSyncManager::removeFolder(std::string rootPath, std::string syncFolder
   return true;
 }
 
-bool LocalSyncManager::syncFile(std::string rootPath, std::string syncFolder){
-  std::string relativePath = syncFolder.substr(rootPath.length(), syncFolder.length());
-  std::string rsync_query = mRsyncOptions + syncFolder + " " + mDestFolder + relativePath;
+bool LocalSyncManager::syncFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms){
+  std::string relativePath = fullPath.string().substr(rootPath.string().length(), fullPath.string().length());
+  std::string rsync_query = mRsyncOptions + fullPath.string() + " " + mDestPath.string() + relativePath;
 
   dbg_printc(LOG_DBG,"LocalSyncManager","SyncFile","%s ", rsync_query.c_str());  
   system(rsync_query.c_str());

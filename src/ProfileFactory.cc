@@ -55,7 +55,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
 // if local transfer is used, this assumes remote, before it checks for local!
 // TODO revise!
   if(!syncProtocol.compare("webdav")){
-    pSyncManager = new WebdavSyncManager(destFolder, syncType, destUser, destHost, destPort, destPass);
+    pSyncManager = new WebdavSyncManager(scanFolder, destFolder, syncType, destUser, destHost, destPort, destPass);
     eventTimeout = 0;
   }
   else if(!destHost.compare("") && !syncProtocol.compare("")){

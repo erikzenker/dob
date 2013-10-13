@@ -47,7 +47,7 @@ bool Profile::startProfile(){
 
 bool Profile::startSyncProfile(){
   dbg_printc(LOG_INFO, "Main", "main", "Start sync with profile: [\033[32m%s\033[m] ", name.c_str());
-  return mpSyncManager->syncSourceFolder(mpFileSystemScanner->getScanFolder());
+  return mpSyncManager->syncInitial(mpFileSystemScanner->getScanFolder());
 }
 
 bool Profile::startScanProfile(){

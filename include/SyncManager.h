@@ -9,12 +9,9 @@
 #define SyncManager_H
 
 #include <string>
-#include <iostream>
-#include <stdlib.h>
-#include <assert.h>
-#include <dirent.h>
-#include <dbg_print.h>
 #include <SyncType.h>
+#include <FileStateDatabase.h>
+#include <boost/filesystem.hpp>
 
 /**
  * @brief Syncronises a source with destination
@@ -30,17 +27,15 @@
  **/
 class SyncManager{
 public:
-  SyncManager(std::string destFolder, SyncType syncType);
+  SyncManager(boost::filesystem::path destPath, SyncType syncType);
   ~SyncManager();
-  virtual bool syncSourceFolder(std::string sourceFolder) =0;
-  virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder) =0;
-  virtual bool syncFile(std::string sourceFolder, std::string syncFolder) =0;
-  virtual bool removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder) =0;
+  virtual bool syncInitial(boost::filesystem::path scanPath) =0;
+  virtual bool syncFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+  virtual bool syncFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms) =0;
+  virtual bool removeFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
 
 protected:
-  virtual bool checkDestination() =0;
-  virtual bool setupDestination() =0;
-  std::string mDestFolder;
+  boost::filesystem::path mDestPath;
   SyncType mSyncType;
 
 };

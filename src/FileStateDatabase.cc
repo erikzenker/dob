@@ -3,13 +3,15 @@
 #include <sstream> /* std::stringstream */
 #include <sys/stat.h> /* stat, lstat */
 #include <vector>
-#include <utility>
+#include <boost/filesystem.hpp>
+#include <iostream>
 
-FileStateDatabase::FileStateDatabase(std::string dataBaseName){
-  int error = sqlite3_open(dataBaseName.c_str(), &mDataBase);
-  executeQuery("CREATE TABLE statedb (path varchar(512), modtime int, inode int, is_dir boolean);", FileStateDatabase::printQueryResult, 0);
+FileStateDatabase::FileStateDatabase(std::string dataBaseLocation, boost::filesystem::path rootPath) 
+  : mRootPath(rootPath){
+  
+  int error = sqlite3_open(dataBaseLocation.c_str(), &mDataBase);
+  executeQuery("CREATE TABLE statedb (path varchar(512), modtime int, inode int, is_dir boolean);", FileStateDatabase::noAction, 0);
   if(error){
-    dbg_printc(LOG_ERR, "FileStateDatabase", "FileStateDatabase", "Can't open database: %s", sqlite3_errmsg(mDataBase));
     sqlite3_close(mDataBase);
 
   }
@@ -21,9 +23,9 @@ FileStateDatabase::~FileStateDatabase(){
 
 }
 
-int FileStateDatabase::printQueryResult(void *NotUsed, int argc, char **argv, char **azColName){
-  for(int i=0; i<argc; ++i){
-    dbg_printc(LOG_DBG, "FileStateDatabase", "getColumns", "%s = %s", azColName[i], argv[i] ? argv[i] : "NULL");
+int FileStateDatabase::noAction(void *NotUsed, int argc, char **argv, char **azColName){
+  for(int i=0; i < argc; ++i){
+    //do nothing
   }
   return 0;
 }
@@ -42,9 +44,10 @@ int FileStateDatabase::getFileStates(void *fileStates, int argc, char **argv, ch
   
 bool FileStateDatabase::executeQuery(std::string query, int (*callback)(void*,int,char**,char**) ,void* userData){
   char *errorMsg = 0;
+  //std::cout << "Execute:" << query << std::endl;
   int error = sqlite3_exec(mDataBase, query.c_str(), callback, userData, &errorMsg);
   if(error){
-    dbg_printc(LOG_ERR, "FileStateDatabase", "executeQuery", "SQL error: %s", errorMsg);
+    //std::cout << "SQL error: "<< errorMsg << std::endl;
     sqlite3_free(errorMsg);
     return false;
   }
@@ -73,9 +76,18 @@ std::map<int, FileState> FileStateDatabase::createFileStateCache(){
 
   return fileStateCache;
 }
+bool FileStateDatabase::propagateUpdate(boost::filesystem::path path, ModState ms){
+  std::pair<FileState, ModState> update(createFileState(path), ms);
+  return propagateUpdate(update);
 
-bool FileStateDatabase::executeModState(ModState modState, FileState fileState){
-  switch(modState){
+}
+
+
+bool FileStateDatabase::propagateUpdate(std::pair<FileState, ModState> update){
+  FileState fileState = update.first;
+  ModState modState   = update.second;
+
+ switch(modState){
   case FS_CREATE:
     return insertFileState(fileState);
   case FS_MODIFY:
@@ -102,7 +114,8 @@ bool FileStateDatabase::insertFileState(FileState fileState){
 	<< fileState.modtime << "," 
 	<< fileState.inode << ","
 	<< fileState.is_dir << ")";
-  return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
+
+  return executeQuery(query.str(), FileStateDatabase::noAction, 0);
 
 }
 
@@ -114,7 +127,7 @@ bool FileStateDatabase::insertFileState(FileState fileState){
 bool FileStateDatabase::updateFileState(FileState fileState){
   std::stringstream query;
   query << "UPDATE statedb SET modtime=" << (int) fileState.modtime << " WHERE inode=" << (int) fileState.inode; 
-  return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
+  return executeQuery(query.str(), FileStateDatabase::noAction, 0);
 
 }
 
@@ -126,7 +139,7 @@ bool FileStateDatabase::updateFileState(FileState fileState){
 bool FileStateDatabase::deleteFileState(FileState fileState){
   std::stringstream query;
   query << "DELETE FROM statedb WHERE inode=" << (int) fileState.inode; 
-  return executeQuery(query.str(), FileStateDatabase::printQueryResult, 0);
+  return executeQuery(query.str(), FileStateDatabase::noAction, 0);
 }
 
 /**
@@ -134,21 +147,19 @@ bool FileStateDatabase::deleteFileState(FileState fileState){
  *
  **/
 bool FileStateDatabase::resetdb(){
-  return executeQuery("DELETE FROM statedb", FileStateDatabase::printQueryResult, 0);
+  return executeQuery("DELETE FROM statedb", FileStateDatabase::noAction, 0);
 }
 
 /**
- * @brief Generates a list of new, updated or deleted files since last call of updatedb.
+ * @brief Generates a list of new, updated or deleted files since last call of getUpdates.
  *        The changes have to be iterated and executed through insertFileState, 
  *        updateFileState and deleteFileState.
- *
- * @param rootDirectory is the directory which will be compared with the filestate Database
  *
  * @return a pair of FileState and ModState(new, update, delete)
  *
  **/
-std::vector<std::pair<FileState, ModState> > FileStateDatabase::updatedb(std::string rootDirectory){
-  boost::filesystem::recursive_directory_iterator it(rootDirectory, boost::filesystem::symlink_option::recurse);
+std::vector<std::pair<FileState, ModState> > FileStateDatabase::getUpdates(){
+  boost::filesystem::recursive_directory_iterator it(mRootPath, boost::filesystem::symlink_option::recurse);
   boost::filesystem::recursive_directory_iterator end;
 
   // Modification state of changed files since last sync
@@ -166,14 +177,12 @@ std::vector<std::pair<FileState, ModState> > FileStateDatabase::updatedb(std::st
       auto cacheIt = fileStateCache.find(fileState.inode);
       // New file since last sync
       if(cacheIt == fileStateCache.end()){
-	//insertFileState(fileState);
 	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
 	
       }
       // Changed file since last sync
       else if(cacheIt->second.modtime < fileState.modtime){
 	fileState.modtime = fileState.modtime;
-	//updateFileState(fileState);
 	fileStateCache.erase(cacheIt);
 	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_MODIFY));
       }
@@ -187,7 +196,6 @@ std::vector<std::pair<FileState, ModState> > FileStateDatabase::updatedb(std::st
     else if(boost::filesystem::is_directory(*it)){
       auto cacheIt = fileStateCache.find(fileState.inode);
       if(cacheIt == fileStateCache.end()){
-    	//insertFileState(fileState);
     	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
 
       }
@@ -205,9 +213,24 @@ std::vector<std::pair<FileState, ModState> > FileStateDatabase::updatedb(std::st
   for(auto cacheIt = fileStateCache.begin(); cacheIt != fileStateCache.end(); ++cacheIt){
     FileState fs = cacheIt->second;
     modStates.push_back(std::pair<FileState, ModState>(fs, FS_DELETE));
-    //deleteFileState(fs);
   }
   
   return modStates;
+}
+
+std::string FileStateDatabase::modStateToString(const ModState modState){
+  switch(modState){
+  case FS_CREATE:
+    return std::string("FS_CREATE");
+  case FS_MODIFY:
+    return std::string("FS_MODIFY");
+  case FS_DELETE:
+    return std::string("FS_DELETE");
+  default:
+    break;
+
+  };
+  return std::string("");
+
 }
 

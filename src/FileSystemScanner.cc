@@ -1,5 +1,8 @@
 #include "FileSystemScanner.h"
 #include "iostream"
+#include <sys/types.h> /* opendir */
+#include <dirent.h> /* opendir */
+
 
 FileSystemScanner::FileSystemScanner(std::string scanFolder, EventManager* const pEventManager):
 mScanFolder(scanFolder),

@@ -9,14 +9,8 @@
 #define LocalSyncManager_H
 
 #include <string>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <dbg_print.h>
-
 #include <SyncManager.h>
-#include <Profile.h>
+#include <FileStateDatabase.h>
 
 /**
  * @brief Syncronization with local data
@@ -31,15 +25,13 @@
 class LocalSyncManager : public SyncManager {
 
 public:
-  LocalSyncManager(std::string destFolder, SyncType syncType);
-  virtual bool syncSourceFolder(std::string sourceFolder);
-  virtual bool syncFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
-  virtual bool syncFile(std::string sourceFolder, std::string syncFolder);
-  virtual bool removeFolder(std::string sourceFolder, std::string syncFolder, std::string folder);
+  LocalSyncManager(boost::filesystem::path destFolder, SyncType syncType);
+  virtual bool syncInitial(boost::filesystem::path sourceFolder);
+  virtual bool syncFolder(boost::filesystem::path sourceFolder, boost::filesystem::path syncFolder);
+  virtual bool syncFile(boost::filesystem::path sourceFolder, boost::filesystem::path syncFolder, ModState ms);
+  virtual bool removeFolder(boost::filesystem::path sourceFolder, boost::filesystem::path syncFolder);
 
  protected: 
-  virtual bool checkDestination();
-  virtual bool setupDestination();
   std::string mRsyncOptions;
 
 };
