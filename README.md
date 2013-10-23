@@ -25,20 +25,14 @@ The profiles are defined in a configfile with the following syntax :
      + Folder that will be scanned for modifications. This Folder should be mounted.  
  + __`destFolder=folderpath`__
      + Location backup will be stored. Can be a local or remote location.
- + __`syncType=push | pull | syncronize`__
+ + __`syncType=backup | update | syncronize`__
      + Direction of syncronisation
  + __`syncProtocol=rsync|git|ssh|webdav`__
      + Set communication protocol in case of remote destination
  + __`destUser= username`__
      + SSH username on remote host
- + __`destHost=hostIP`__
+ + __`destHost=hostIP or URL`__
      + IP or URL of the remote host
- + __`destPort=port`__
-     + With this key you are able to change the default port for remote machine
-     + There exist for each protocol an default port !
- + __`sshPort=portNumber`__
-     + Custom SSH port, if you don't use the standard (22)
-     + This is just useful in rsync-case, because ssh and rsync listening to differenz ports 
  + __`ignore=file`__
      + This will ignore all files or folders that fit the regex \*`file`\*
 
@@ -46,7 +40,7 @@ The profiles are defined in a configfile with the following syntax :
  It is possible to set symlinks into the syncFolder. These symlinks will be followd by the  
  scanprocess, thus all modifications on this symlinked folder will be recognized.  
 
- With the help of a ssh-server and some storage on it, it is very easy to setup a cloud storage solution     
+ With the help of a webdav-server and some storage on it, it is very easy to setup a cloud storage solution     
  for your linux devices (Netbook, Laptop, PC). You just need to install dob on all your devices, setup profiles  
  with the same destLocation and start dob. From now on, data will be syncronized between these  
  different devices.  
@@ -63,40 +57,6 @@ The profiles are defined in a configfile with the following syntax :
      `syncFolder=/home/jondo/important_data/`   
      `destFolder=/media/external_hdd/`  
   
- + Syncronize data with a remote host via ssh, also possible with multiple users
-  
-     `[privatecloud]`  
-     `syncType=syncronize`  
-     `syncFolder=/home/jondo/important_data/`  
-     `syncProto=ssh`  
-     `destFolder=/home/jondo/`  
-     `destUser=jondo`   
-     `destHost=myprivatecloud.com`   
-     `destPort=22`   
-    
- + Automatically put data into a git repository
-  
-     `[githost]`  
-     `syncType=syncronize`  
-     `syncFolder=/home/jondo/important_data/`   
-     `syncProto=git`  
-     `destFolder=/gitlocation/`  
-     `destUser=jondo`   
-     `destHost=githost.com`  
-     `destPort=22`   
-
- + Use rsync modules on your remote machine
-  
-     `[rsynchost]`  
-     `syncType=syncronize`  
-     `syncFolder=/home/jondo/important_data/`   
-     `syncProto=rsync`  
-     `destFolder=rsyncModuleName`  
-     `destUser=jondo`   
-     `destHost=rsynchost.com`  
-     `destPort=873`  
-     `sshPort=22`  
-
  + Use http server with webdav support (apache etc.)
   
      `[webdavhost]`  
@@ -105,13 +65,16 @@ The profiles are defined in a configfile with the following syntax :
      `syncProto=webdav`  
      `destFolder=/webdav_folder/`  
      `destUser=jondo`   
-     `destHost=rsynchost.com`  
+     `destHost=mywebdavserver.com`  
 
 ## Dependencies ##
  + rsync
- + git
  + boost-libs
  + libsigc++
+ + neon
+ + make
+ + gcc
+ + pkg-config
  + Linux Kernel 2.6.13 (inotify)
 
 ## Copyrigth

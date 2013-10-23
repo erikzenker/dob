@@ -23,7 +23,6 @@ Archlinux:
    * libsigc++
    * make
    * gcc
-   * mongodb
    * neon
 
 
@@ -49,18 +48,13 @@ USAGE
 2. Edit the configfile, if it not exists just create one
    ==> create: touch dob.conf
    ==> edit  : syncFolder=/home/<Your username>/Backup/
-       	       syncType= syncronize 
-	       syncProtocol = rsync || git || https
+       	       syncType= syncronize | update | backup
+	       syncProtocol= webdav
 	       destUser= username
-	       destHost= server IP
-	       destPort= server rsync port or leave empty for standard
+	       destHost= server IP or url
        	       destFolder=/<syncronization>/<Folder>/
 	       ignore=file (is like regex *file*)
-	       sshPort= server ssh port or leave empty for standard
 
-    NOTE: if rsync is used, destUser needs to be the rsync and ssh login. 
-	  Consider this, when writing your rsyncd.conf on the destHost.
- 
 
 3. Start the programm
    ==> ./dob --config=dob.conf 
