@@ -33,7 +33,11 @@ int FileStateDatabase::noAction(void *NotUsed, int argc, char **argv, char **azC
 
 int FileStateDatabase::getFileStates(void *fileStates, int argc, char **argv, char **azColName){
   FileState fileState = {"", 0};
-  fileState.path = argv[0];
+
+  std::string path = argv[0];
+  path.erase(path.begin(), path.begin()+1); // Erase " at beginning 
+  path.erase(path.end()-1, path.end());     // Erase " at ending
+  fileState.path = path;
   fileState.modtime = atoi(argv[1]);
   fileState.inode = atoi(argv[2]);
   fileState.is_dir = atoi(argv[3]);
@@ -59,10 +63,11 @@ FileState FileStateDatabase::createFileState(boost::filesystem::path path){
   FileState fileState;
   struct stat buffer;
   fileState.path    = path.string();
-  fileState.modtime = boost::filesystem::last_write_time(path);
-  fileState.inode   = lstat(path.c_str(), &buffer)? 0 : buffer.st_ino;
-  fileState.is_dir  = boost::filesystem::is_directory(path);
-
+  if(boost::filesystem::exists(fileState.path)){
+    fileState.modtime = boost::filesystem::last_write_time(path);
+    fileState.inode   = lstat(path.c_str(), &buffer)? 0 : buffer.st_ino;
+    fileState.is_dir  = boost::filesystem::is_directory(path);
+  }
   return fileState;
 }
 

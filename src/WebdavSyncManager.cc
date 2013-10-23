@@ -50,7 +50,7 @@ bool WebdavSyncManager::syncInitial(boost::filesystem::path rootPath){
 
       case FS_DELETE:
 	if(is_dir)
-	  result = removeFolder(rootPath, path/"/");
+	  result = removeFolder(rootPath, path/"");
 	else 
 	  result = removeFolder(rootPath, path);
 	break;
