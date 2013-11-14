@@ -32,7 +32,7 @@ int FileStateDatabase::noAction(void *NotUsed, int argc, char **argv, char **azC
 
 
 int FileStateDatabase::getFileStates(void *fileStates, int argc, char **argv, char **azColName){
-  FileState fileState = {"", 0};
+  FileState fileState = {"", 0,0,0};
 
   std::string path = argv[0];
   path.erase(path.begin(), path.begin()+1); // Erase " at beginning 
@@ -60,7 +60,8 @@ bool FileStateDatabase::executeQuery(std::string query, int (*callback)(void*,in
 }
 
 FileState FileStateDatabase::createFileState(boost::filesystem::path path){
-  FileState fileState;
+  FileState fileState = {"",0,0,0};
+
   struct stat buffer;
   fileState.path    = path.string();
   if(boost::filesystem::exists(fileState.path)){
