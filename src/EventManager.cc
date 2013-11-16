@@ -10,11 +10,6 @@ EventManager::~EventManager(){
   free(mpSyncManager);
 }
 
-SyncManager* EventManager::getSyncManager() const{
-  return mpSyncManager;
-
-}
-
 /**
  * @brief Events can be pushed back and will be queued.
  *
@@ -76,15 +71,5 @@ bool EventManager::dispatchEvent(FileSystemEvent* const pEvent, const std::strin
   return false;
 
 }
-
-/**
- * @brief Can be used to signal new events
- *
- **/
-EventManagerSignal EventManager::signalEvent(){
-  return mEventManagerSignal;
-
-}
-
 
 

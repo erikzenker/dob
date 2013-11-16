@@ -23,15 +23,12 @@
  * 
  *
  **/
-typedef sigc::signal<void, bool, int> EventManagerSignal;
 
 class EventManager{
 public:
   EventManager(SyncManager* const pSyncManager);
   ~EventManager();
-  SyncManager* getSyncManager() const;
   void pushBackEvent(FileSystemEvent* const pNewEvent, const std::string sourceFolder);
-  EventManagerSignal signalEvent();
 
 protected:
   bool dispatchEvent(FileSystemEvent* const pEvent, const std::string sourceFolder);
@@ -40,7 +37,6 @@ protected:
   /* Member */ 
   std::vector<FileSystemEvent* > mEventList;
   SyncManager* const mpSyncManager;
-  EventManagerSignal mEventManagerSignal;
 
 };
 
