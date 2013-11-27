@@ -24,6 +24,7 @@ public:
   ~FileStateDatabase();
   bool propagateUpdate(std::pair<FileState, ModState> update);
   bool propagateUpdate(boost::filesystem::path path, ModState ms);
+  FileState getFileState(boost::filesystem::path path);
   static std::string modStateToString(ModState modState);
   bool resetdb();
 

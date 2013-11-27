@@ -35,8 +35,6 @@ int FileStateDatabase::getFileStates(void *fileStates, int argc, char **argv, ch
   FileState fileState = {"", 0,0,0};
 
   std::string path = argv[0];
-  path.erase(path.begin(), path.begin()+1); // Erase " at beginning 
-  path.erase(path.end()-1, path.end());     // Erase " at ending
   fileState.path = path;
   fileState.modtime = atoi(argv[1]);
   fileState.inode = atoi(argv[2]);
@@ -116,7 +114,7 @@ bool FileStateDatabase::propagateUpdate(std::pair<FileState, ModState> update){
 bool FileStateDatabase::insertFileState(FileState fileState){
   std::stringstream query;
   query << "INSERT INTO statedb (path,modtime,inode,is_dir) VALUES (" 
-	<< "'" << fileState.path << "'," 
+	<< "'" << fileState.path.string().c_str() << "'," 
 	<< fileState.modtime << "," 
 	<< fileState.inode << ","
 	<< fileState.is_dir << ")";
@@ -239,4 +237,8 @@ std::string FileStateDatabase::modStateToString(const ModState modState){
   return std::string("");
 
 }
+
+FileState FileStateDatabase::getFileState(boost::filesystem::path path){
+
+};
 
