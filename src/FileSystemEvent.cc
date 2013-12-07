@@ -18,6 +18,10 @@ uint32_t FileSystemEvent::getMask(){
   return mMask;
 }
 
+void FileSystemEvent::setMask(uint32_t mask){
+  mMask = mask;
+}
+
 int FileSystemEvent::getWd(){
   return mWd;
 }

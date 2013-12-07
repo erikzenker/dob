@@ -10,6 +10,7 @@
 #include <SyncManager.h>
 #include <dbg_print.h>
 #include <FileSystemEvent.h>
+#include <boost/filesystem.hpp>
 
 /**
  * @brief Handels events from FileSystemScanner
@@ -26,16 +27,16 @@
 
 class EventManager{
 public:
-  EventManager(SyncManager* const pSyncManager);
+  EventManager(SyncManager* const pSyncManager, boost::filesystem::path scanPath);
   ~EventManager();
-  void pushBackEvent(FileSystemEvent* const pNewEvent, const std::string sourceFolder);
+  bool pushBackEvent(FileSystemEvent newEvent, const std::string sourceFolder);
 
 protected:
-  bool dispatchEvent(FileSystemEvent* const pEvent, const std::string sourceFolder);
-  virtual bool handleEvent(FileSystemEvent* const pEvent, const std::string sourceFolder) = 0;
+  bool dispatchEvent(const FileSystemEvent event, const std::string sourceFolder);
+  virtual bool handleEvent(const FileSystemEvent event, const std::string sourceFolder) = 0;
   
   /* Member */ 
-  std::vector<FileSystemEvent* > mEventList;
+  std::vector<FileSystemEvent> mEventList;
   SyncManager* const mpSyncManager;
 
 };

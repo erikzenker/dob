@@ -26,23 +26,25 @@
 
 class WebdavSyncManager : public SyncManager {
 public:
-  WebdavSyncManager(boost::filesystem::path scanPath, std::string destFolder, SyncType syncType,  std::string destUser, std::string destHost, std::string destPort, std::string destPass);
-  virtual bool syncInitial(boost::filesystem::path rootPath);
-  virtual bool syncFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
-  virtual bool syncFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms);
-  virtual bool removeFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
+  WebdavSyncManager(boost::filesystem::path scanPath, 
+		    std::string destFolder, 
+		    SyncType syncType,  
+		    std::string destUser, 
+		    std::string destHost, 
+		    std::string destPort, 
+		    std::string destPass);
+
+  virtual bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
+  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
+  virtual bool removeFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
+  virtual bool removeDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
 
 private:
-  bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms);
-  bool pushFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms);
-  bool pushFolderRecursively(boost::filesystem::path rootPath, boost::filesystem::path fullPath, bool checkExistance);
-  bool pullFolderRecursively(boost::filesystem::path rootPath, std::string uri);
-  std::string replaceSubstring(std::string subject, const std::string& search,const std::string& replace);
-  bool hasSymlinkLoop(boost::filesystem::path path);
+  std::string replaceSubstring(std::string subject, const std::string& search, const std::string& replace);
+  bool mkdir(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
 
-  std::map<unsigned, std::string> mSymlinks;
+  /* std::map<unsigned, std::string> mSymlinks; */
   WebdavClient mWebdavClient;
-  FileStateDatabase mFileStateDatabase;
 
 };
 

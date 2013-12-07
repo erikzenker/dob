@@ -30,6 +30,7 @@ class FileSystemEvent {
   FileSystemEvent(int wd, uint32_t mask, boost::filesystem::path path);
   ~FileSystemEvent();
   uint32_t getMask();
+  void setMask(uint32_t mask);
   int getWd();
   std::string getMaskString();
   boost::filesystem::path getPath();

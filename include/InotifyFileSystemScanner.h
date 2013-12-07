@@ -13,6 +13,7 @@
 #include <Thread.h>
 #include <FileSystemScanner.h>
 #include <Inotify.h>
+#include <FileStateDatabase.h>
 
 /**
  * @brief Watches a folder for changes with the help of
@@ -40,7 +41,9 @@ public:
   virtual void setup();
 
  private:
+  FileSystemEvent toFileSystemEvent(std::pair<FileState, ModState> update);
   Inotify mInotify;
+  FileStateDatabase mFileStateDatabase;
 
 };
 

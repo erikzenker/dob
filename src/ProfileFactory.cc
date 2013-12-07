@@ -1,6 +1,6 @@
 #include <ProfileFactory.h>
 #include <WebdavSyncManager.h>
-#include <LocalSyncManager.h>
+//#include <LocalSyncManager.h>
 #include <InotifyFileSystemScanner.h>
 #include <FolderEventManager.h>
 #include <FileEventManager.h>
@@ -59,7 +59,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     eventTimeout = 0;
   }
   else if(!destHost.compare("") && !syncProtocol.compare("")){
-    pSyncManager = new LocalSyncManager(destFolder, syncType);
+    //pSyncManager = new LocalSyncManager(destFolder, syncType);
     eventTimeout = 1;
   }
   else{
@@ -68,10 +68,10 @@ bool ProfileFactory::makeProfile(Profile* profile){
   }
 
   if(!syncProtocol.compare("webdav")){
-    pEventManager = new FileEventManager(pSyncManager);
+    pEventManager = new FileEventManager(pSyncManager, scanFolder);
   }
   else{
-    pEventManager = new FolderEventManager(pSyncManager);
+    pEventManager = new FolderEventManager(pSyncManager, scanFolder);
   }
 
   pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager);

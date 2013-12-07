@@ -9,6 +9,7 @@
 #include <SyncManager.h>
 #include <EventManager.h>
 #include <dbg_print.h>
+#include <boost/filesystem.hpp>
 
 using namespace std;
 
@@ -27,9 +28,9 @@ using namespace std;
  **/
 class FileEventManager : public EventManager{
  public:
-  FileEventManager(SyncManager * pSyncManager);
+  FileEventManager(SyncManager * pSyncManager, boost::filesystem::path scanPath);
  private:
-  virtual bool handleEvent(FileSystemEvent* pEvent, string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent event, string sourceFolder);
  
 };
 

@@ -29,10 +29,11 @@ class SyncManager{
 public:
   SyncManager(boost::filesystem::path destPath, SyncType syncType);
   ~SyncManager();
-  virtual bool syncInitial(boost::filesystem::path scanPath) =0;
-  virtual bool syncFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
-  virtual bool syncFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath, ModState ms) =0;
-  virtual bool removeFolder(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+
+  virtual bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+  virtual bool removeFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+  virtual bool removeDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
 
 protected:
   boost::filesystem::path mDestPath;

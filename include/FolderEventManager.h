@@ -2,15 +2,11 @@
 #ifndef FolderEventManager_H
 #define FolderEventManager_H
 
-#include <vector>
-#include <iostream>
 #include <string>
-#include <stdlib.h>
 #include <SyncManager.h>
 #include <EventManager.h>
-#include <dbg_print.h>
+#include <boost/filesystem.hpp>
 
-using namespace std;
 
 /**
  *
@@ -27,9 +23,9 @@ using namespace std;
  **/
 class FolderEventManager : public EventManager{
  public:
-  FolderEventManager(SyncManager * pSyncManager);
+  FolderEventManager(SyncManager * pSyncManager, boost::filesystem::path scanPath);
  private:
-  virtual bool handleEvent(FileSystemEvent* pEvent, string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent event, std::string sourceFolder);
  
 };
 

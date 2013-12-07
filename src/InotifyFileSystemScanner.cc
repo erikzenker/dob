@@ -9,11 +9,14 @@
 #include <Inotify.h>
 #include <FileSystemEvent.h>
 #include <Profile.h>
+#include <FileStateDatabase.h>
+#include <FileState.h>
 
 
-InotifyFileSystemScanner::InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager) 
-  : FileSystemScanner(scanFolder, pEventManager),
-    mInotify(ignoredFolders, eventTimeout, IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE){
+InotifyFileSystemScanner::InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager) : 
+  FileSystemScanner(scanFolder, pEventManager),
+  mInotify(ignoredFolders, eventTimeout, IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
+  mFileStateDatabase("dobFileStateDatabase", scanFolder){
 
 }
 
@@ -50,6 +53,21 @@ void InotifyFileSystemScanner::setup(){
  * 
  **/
 void InotifyFileSystemScanner::execute(void* arg){
+  // Handle updates since last call
+  auto updates = mFileStateDatabase.updates();
+  for(auto update = updates.begin(); update != updates.end(); ++update){
+    auto fileSystemEvent = toFileSystemEvent(*update);
+    FileState fs = update->first;
+    bool result = mpEventManager->pushBackEvent(fileSystemEvent, mScanFolder);
+    if(result){
+      mFileStateDatabase.propagateUpdate(*update);
+      std::cout << "Event was handled" << std::endl;
+    } else{
+      std::cout << "Event was not handled" << std::endl;
+    }
+    
+  }
+
   // Create file watches
   if(!mInotify.watchDirectoryRecursively(mScanFolder)){
     dbg_printc(LOG_ERR,"InotifyFileSystemScanner", "Execute", "Failed to watch recursively errno: %d", mInotify.getLastErrno());
@@ -69,40 +87,85 @@ void InotifyFileSystemScanner::execute(void* arg){
 	       fileSystemEvent.getMask(),
 	       fileSystemEvent.getMaskString().c_str());
 
-    mpEventManager->pushBackEvent(&fileSystemEvent, mScanFolder);
 
-    // Add or delete watches for added/deleted folders or files
-    switch(fileSystemEvent.getMask()){
-    case IN_MOVED_FROM:
-    case IN_DELETE:
-    case IN_DELETE | IN_ISDIR:
-      // @todo remove watches recursively
-      // @bug removing watches also removes information
-      //      about the location of a watch
-      // @todo think about this situation
-      //mInotify->watchFile(fileSystemEvent->getFolderPath());
-      //mInotify->removeWatch(fileSystemEvent->getId());
-      break;
+    // In case file was deleted, need to get FileState
+    FileState fs = mFileStateDatabase.getFileState(fileSystemEvent.getPath());
+    if(fs.is_dir){
+      fileSystemEvent.setMask(fileSystemEvent.getMask() | IN_ISDIR);
+    }
 
-    case IN_MOVED_TO:
-    case IN_CREATE:
-    case IN_CREATE | IN_ISDIR:
-      dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent.getPath().string().c_str());
-      mInotify.watchDirectoryRecursively(fileSystemEvent.getPath().string());
-      break;
+    // Handle event by eventmanager
+    bool result = mpEventManager->pushBackEvent(fileSystemEvent, mScanFolder);
 
-    case IN_MODIFY:
-      // Do nothing
-      break;
-    default:
-      dbg_printc(LOG_ERR, 
-		 "InotifyFileSystemScanner", 
-		 "Execute",
-		 "Unexpected event was triggered %s %s",fileSystemEvent.getMaskString().c_str(), fileSystemEvent.getPath().string().c_str());
+    if(result){
+      // Add or delete watches for added/deleted folders or files
+      switch(fileSystemEvent.getMask()){
+      case IN_MOVED_FROM:
+      case IN_DELETE:
+      case IN_DELETE | IN_ISDIR:
+	mFileStateDatabase.propagateUpdate(fileSystemEvent.getPath(), FS_DELETE);
+	// @todo remove watches recursively
+	// @bug removing watches also removes information
+	//      about the location of a watch
+	// @todo think about this situation
+	//       can be solved by FileStateDatabase
+	//mInotify->watchFile(fileSystemEvent->getFolderPath());
+	//mInotify->removeWatch(fileSystemEvent->getId());
+	break;
+
+      case IN_MOVED_TO:
+      case IN_CREATE:
+      case IN_CREATE | IN_ISDIR:
+	dbg_printc(LOG_DBG, "InotifyFileSystemScanner", "Execute", "Add new watch file: %s", fileSystemEvent.getPath().string().c_str());
+	mInotify.watchDirectoryRecursively(fileSystemEvent.getPath().string());
+	mFileStateDatabase.propagateUpdate(fileSystemEvent.getPath(), FS_CREATE);
+	break;
+
+      case IN_MODIFY:
+	mFileStateDatabase.propagateUpdate(fileSystemEvent.getPath(), FS_MODIFY);
+	break;
+      default:
+	dbg_printc(LOG_ERR, 
+		   "InotifyFileSystemScanner", 
+		   "Execute",
+		   "Unexpected event was triggered %s %s",fileSystemEvent.getMaskString().c_str(), fileSystemEvent.getPath().string().c_str());
+      }
+
     }
 
   }
       
 }
 
+FileSystemEvent InotifyFileSystemScanner::toFileSystemEvent(std::pair<FileState, ModState> update){
+  FileState fs = update.first;
+  ModState ms  = update.second;
 
+  bool is_dir = fs.is_dir;
+  boost::filesystem::path path = fs.path;
+  uint32_t mask = 0;
+
+  // Convert modstate to inotify mask
+  if(is_dir)
+    mask |= IN_ISDIR;
+
+  switch(ms){
+
+  case FS_MODIFY:
+    mask |= IN_MODIFY;
+    break;
+
+  case FS_CREATE:
+    mask |= IN_CREATE;
+    break;
+
+  case FS_DELETE:
+    mask |= IN_DELETE;
+    break;
+  default:
+    break;
+  };
+
+  return FileSystemEvent(0, mask, path);
+
+}
