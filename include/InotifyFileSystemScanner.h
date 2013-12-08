@@ -14,6 +14,7 @@
 #include <FileSystemScanner.h>
 #include <Inotify.h>
 #include <FileStateDatabase.h>
+#include <boost/filesystem.hpp>
 
 /**
  * @brief Watches a folder for changes with the help of
@@ -31,7 +32,7 @@
  **/
 class InotifyFileSystemScanner : public FileSystemScanner, public Thread {
 public:
-  InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager);
+  InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager, const std::string profileName);
   ~InotifyFileSystemScanner();
   virtual int startToScan();
   virtual int stopToScan();
@@ -42,6 +43,7 @@ public:
 
  private:
   FileSystemEvent toFileSystemEvent(std::pair<FileState, ModState> update);
+  void propagateUpdateRecursive(const boost::filesystem::path rootPath, const ModState ms);
   Inotify mInotify;
   FileStateDatabase mFileStateDatabase;
 

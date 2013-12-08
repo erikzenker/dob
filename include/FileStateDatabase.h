@@ -20,8 +20,9 @@ public:
 
   // methods
   std::vector<std::pair<FileState, ModState> > updates();
-  bool propagateUpdate(const std::pair<FileState, ModState> update);
-  bool propagateUpdate(const boost::filesystem::path path, const ModState ms);
+  bool propagateUpdate(const std::pair<FileState, ModState> update, const bool recursive);
+  bool propagateUpdate(const boost::filesystem::path path, const ModState ms, const bool recursive);
+
   FileState getFileState(const boost::filesystem::path path);
 
   // statics
@@ -31,7 +32,7 @@ private:
   // Modify database
   bool insertFileState(const FileState fileState);
   bool updateFileState(const FileState fileState);
-  bool deleteFileState(const FileState fileState);
+  bool deleteFileState(const FileState fileState, const bool recursive);
   void setFileState(const FileState fs);
   bool executeQuery(const std::string query, int (*callback)(void*,int,char**,char**) ,void* userData);
 

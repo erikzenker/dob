@@ -136,9 +136,7 @@ FileSystemEvent Inotify::getNextEvent(){
     while(i < length){
       inotify_event *e = ((struct inotify_event*) &buffer[i]);
       boost::filesystem::path path(wdToFilename(e->wd));
-      if(!boost::filesystem::is_symlink(path)){
-	path = path / std::string(e->name);
-      }
+      path = path / std::string(e->name);
       if(boost::filesystem::is_directory(path)){
 	e->mask |= IN_ISDIR;
       }

@@ -29,11 +29,11 @@ class EventManager{
 public:
   EventManager(SyncManager* const pSyncManager, boost::filesystem::path scanPath);
   ~EventManager();
-  bool pushBackEvent(FileSystemEvent newEvent, const std::string sourceFolder);
+  bool pushBackEvent(FileSystemEvent newEvent, const std::string sourceFolder, const bool recursive);
 
 protected:
   bool dispatchEvent(const FileSystemEvent event, const std::string sourceFolder);
-  virtual bool handleEvent(const FileSystemEvent event, const std::string sourceFolder) = 0;
+  virtual bool handleEvent(const FileSystemEvent event, const std::string sourceFolder, const bool recursive = true) = 0;
   
   /* Member */ 
   std::vector<FileSystemEvent> mEventList;

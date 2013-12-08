@@ -24,9 +24,9 @@ EventManager::~EventManager(){
  * @param sourceFolder The scanned folder
  *
  **/
-bool EventManager::pushBackEvent(FileSystemEvent newEvent, const std::string sourceFolder){
+bool EventManager::pushBackEvent(FileSystemEvent newEvent, const std::string sourceFolder, const bool recursive = true){
   mEventList.push_back(newEvent);
-  if(handleEvent(newEvent, sourceFolder)){
+  if(handleEvent(newEvent, sourceFolder, recursive)){
     mEventList.pop_back();
     dbg_printc(LOG_DBG, 
 	       "EventManager",
@@ -38,17 +38,16 @@ bool EventManager::pushBackEvent(FileSystemEvent newEvent, const std::string sou
     return true;
   }
   else{
-    dbg_printc(LOG_DBG, 
-	       "EventManager",
-	       "PushBackEvent",
-	       "Last event was not handled %s %d %s, need to be redone! (%d event(s) left for handling)", 
-	       newEvent.getPath().string().c_str(), 
-	       newEvent.getMask(),
-	       newEvent.getMaskString().c_str(),
-	       mEventList.size());
-    if(dispatchEvent(newEvent, sourceFolder))
-      return true;
-
+    dbg_printc(LOG_WARN, 
+    	       "EventManager",
+    	       "PushBackEvent",
+    	       "Last event was not handled %s %d %s", 
+    	       newEvent.getPath().string().c_str(), 
+    	       newEvent.getMask(),
+    	       newEvent.getMaskString().c_str(),
+    	       mEventList.size());
+    // if(dispatchEvent(newEvent, sourceFolder))
+    //   return true;
     mEventList.pop_back();
   }
   return false;
@@ -67,7 +66,7 @@ bool EventManager::dispatchEvent(FileSystemEvent event, const std::string source
   dbg_printc(LOG_DBG, "EventManager", "DispatchEvent","Dispatch event");
   boost::filesystem::path eventPath = event.getPath();
   if(boost::filesystem::exists(eventPath)){
-    return !handleEvent(event, sourceFolder);
+    return !handleEvent(event, sourceFolder, true);
   }
   dbg_printc(LOG_DBG, "EventManager","DispatchEvent","Tried to dispatch event, but event was tropped because file is not there anymore");
   return false;

@@ -5,7 +5,7 @@ FolderEventManager::FolderEventManager(SyncManager * pSyncManager, boost::filesy
   : EventManager(pSyncManager, scanPath){
 }
 
-bool FolderEventManager::handleEvent(FileSystemEvent event, std::string sourceFolder){
+bool FolderEventManager::handleEvent(FileSystemEvent event, std::string sourceFolder, const bool recursive){
   boost::filesystem::path eventPath = event.getPath();
 
   switch(event.getMask()){
@@ -17,7 +17,7 @@ bool FolderEventManager::handleEvent(FileSystemEvent event, std::string sourceFo
     return(mpSyncManager->pushFile(sourceFolder, eventPath));
     break;
   case IN_CREATE | IN_ISDIR:
-    return(mpSyncManager->pushDir(sourceFolder, eventPath));
+    return(mpSyncManager->pushDir(sourceFolder, eventPath, recursive));
     break;
 
   case IN_MOVED_FROM:

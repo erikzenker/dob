@@ -30,7 +30,7 @@ class FileEventManager : public EventManager{
  public:
   FileEventManager(SyncManager * pSyncManager, boost::filesystem::path scanPath);
  private:
-  virtual bool handleEvent(FileSystemEvent event, string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent event, string sourceFolder, const bool recursive);
  
 };
 

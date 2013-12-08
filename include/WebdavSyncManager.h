@@ -35,7 +35,7 @@ public:
 		    std::string destPass);
 
   virtual bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
-  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
+  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath, const bool recursive);
   virtual bool removeFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
   virtual bool removeDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath);
 

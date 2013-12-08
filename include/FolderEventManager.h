@@ -25,7 +25,7 @@ class FolderEventManager : public EventManager{
  public:
   FolderEventManager(SyncManager * pSyncManager, boost::filesystem::path scanPath);
  private:
-  virtual bool handleEvent(FileSystemEvent event, std::string sourceFolder);
+  virtual bool handleEvent(FileSystemEvent event, std::string sourceFolder, const bool recursive);
  
 };
 

@@ -7,7 +7,7 @@ FileEventManager::FileEventManager(SyncManager * pSyncManager, boost::filesystem
   : EventManager(pSyncManager, scanPath){
 }
 
-bool FileEventManager::handleEvent(FileSystemEvent event, string sourceFolder){
+bool FileEventManager::handleEvent(FileSystemEvent event, string sourceFolder, const bool recursive){
   boost::filesystem::path eventPath = event.getPath();
 
 
@@ -23,7 +23,7 @@ bool FileEventManager::handleEvent(FileSystemEvent event, string sourceFolder){
   case IN_CREATE | IN_ISDIR:
     // Delay gives os time to cp data into folder
     usleep(1000000); 
-    return(mpSyncManager->pushDir(sourceFolder, eventPath));
+    return(mpSyncManager->pushDir(sourceFolder, eventPath, recursive));
     break;
 
   case IN_MOVED_FROM:

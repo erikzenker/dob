@@ -31,7 +31,7 @@ public:
   ~SyncManager();
 
   virtual bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
-  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath, const bool recursive) =0;
   virtual bool removeFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
   virtual bool removeDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
 

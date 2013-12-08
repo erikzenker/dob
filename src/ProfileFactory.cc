@@ -74,7 +74,7 @@ bool ProfileFactory::makeProfile(Profile* profile){
     pEventManager = new FolderEventManager(pSyncManager, scanFolder);
   }
 
-  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager);
+  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager, profileName);
 
   profile->setSyncManager(pSyncManager);
   profile->setEventManager(pEventManager);

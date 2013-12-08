@@ -88,14 +88,14 @@ void FileStateDatabase::createFileStateCache(){
   }
 }
 
-bool FileStateDatabase::propagateUpdate(const boost::filesystem::path path,const ModState ms){
+bool FileStateDatabase::propagateUpdate(const boost::filesystem::path path,const ModState ms, const bool recursive){
   std::pair<FileState, ModState> update(createFileState(path), ms);
-  return propagateUpdate(update);
+  return propagateUpdate(update, recursive);
 
 }
 
 
-bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> update){
+bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> update, const bool recursive){
   FileState fileState = update.first;
   ModState modState   = update.second;
 
@@ -105,7 +105,7 @@ bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> upd
   case FS_MODIFY:
     return  updateFileState(fileState);
   case FS_DELETE:
-    return deleteFileState(fileState);
+    return deleteFileState(fileState, recursive);
   default:
     break;
 
@@ -156,9 +156,14 @@ bool FileStateDatabase::updateFileState(const FileState fileState){
  * @return true on succes
  *
  **/
-bool FileStateDatabase::deleteFileState(const FileState fileState){
+bool FileStateDatabase::deleteFileState(const FileState fileState, const bool recursive){
   std::stringstream query;
-  query << "DELETE FROM statedb WHERE inode=" << (int) fileState.inode; 
+  if(recursive){
+    query << "DELETE FROM statedb WHERE path LIKE '" << fileState.path.string() << "%'"; 
+  }
+  else {
+    query << "DELETE FROM statedb WHERE inode=" << (int) fileState.inode; 
+  }
   bool result = executeQuery(query.str(), FileStateDatabase::noAction, 0);
   if(result){
     auto cacheIt = mFileStateCache.find(fileState.path.string());

@@ -33,13 +33,17 @@ bool WebdavSyncManager::pushFile(boost::filesystem::path rootPath, boost::filesy
   return false;
 }
 
-bool WebdavSyncManager::pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath){
+bool WebdavSyncManager::pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath, const bool recursive){
   dbg_printc(LOG_DBG, "WebdavSyncManager","pushDir", fullPath.c_str());
   // symlink_option::recurse tells the directory_iterator to follow symlinks
   boost::filesystem::recursive_directory_iterator it(fullPath, boost::filesystem::symlink_option::recurse);
   boost::filesystem::recursive_directory_iterator end;
 
+
   mkdir(rootPath, fullPath);
+  
+  if(!recursive)
+    return true;
 
   while(it != end){
     std::string currentPath = ((boost::filesystem::path)*it).string();
