@@ -5,13 +5,12 @@
  * @copyright Gnu Public License
  */
 
-#ifndef SyncManager_H
-#define SyncManager_H
-
+#pragma once
 #include <string>
-#include <SyncType.h>
-#include <FileStateDatabase.h>
 #include <boost/filesystem.hpp>
+
+#include <SyncType.h>
+
 
 /**
  * @brief Syncronises a source with destination
@@ -30,15 +29,16 @@ public:
   SyncManager(boost::filesystem::path destPath, SyncType syncType);
   ~SyncManager();
 
-  virtual bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
-  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath, const bool recursive) =0;
-  virtual bool removeFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
-  virtual bool removeDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) =0;
+  virtual bool pushFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) const =0;
+  virtual bool pushDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) const =0;
+  virtual bool mkdir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) const =0;
+  virtual bool removeFile(boost::filesystem::path rootPath, boost::filesystem::path fullPath) const =0;
+  virtual bool removeDir(boost::filesystem::path rootPath, boost::filesystem::path fullPath) const =0;
 
 protected:
-  boost::filesystem::path mDestPath;
-  SyncType mSyncType;
+  const boost::filesystem::path destPath;
+  const SyncType syncType;
 
 };
 
-#endif /* SyncManager_H */
+

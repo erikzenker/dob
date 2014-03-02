@@ -5,11 +5,10 @@
  * @copyright Gnu Public License
  */
 
-#ifndef PROFILEFACTORY_H
-#define PROFILEFACTORY_H
-
-#include <iostream>
+#pragma once
 #include <vector>
+#include <string>
+#include <boost/filesystem.hpp>
 
 #include <Profile.h>
 #include <dbg_print.h>
@@ -31,9 +30,8 @@ class ProfileFactory {
  public:
   ProfileFactory();
   ~ProfileFactory();
-  bool makeProfiles(std::vector<Profile>* pProfiles);
+  std::vector<Profile> makeProfiles(boost::filesystem::path configFileName);
  private:
-  bool makeProfile(Profile* profile);
+  Profile makeProfile(ProfileData profileData);
 };
 
-#endif /* PROFILEFACTORY_H */

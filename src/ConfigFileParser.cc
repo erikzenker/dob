@@ -1,274 +1,113 @@
-#include "ConfigFileParser.h"
-ConfigFileParser::ConfigFileParser():
-  mpProfiles(new std::vector<Profile>){
+#include <ConfigFileParser.h>
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <exception>
+// phrase_parse includes
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_no_skip.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+
+#include <Profile.h>
+#include <SyncType.h>
+#include <dbg_print.h>
+
+ConfigFileParser::ConfigFileParser(){
 
 }
 
 ConfigFileParser::~ConfigFileParser(){
-  free(mpProfiles);
+
+}
+
+void checkProfileData(ProfileData profileData){
+	if(!profileData.profileName.compare("")){
+		throw std::runtime_error("No profile in config file or wrong syntax!");
+	}
+	if(!profileData.syncPath.compare("")){
+		throw std::runtime_error("No syncPath in config file");
+	}
+	if(!profileData.destPath.compare("")){
+		throw std::runtime_error("No destPath in config file");
+	}
+
 }
 
 /**
  * @brief Parses key/value pairs from configfile with help of boost::spirit
  *
- * @todo  parser should use one grammar and should be prettier
- * @param location of the configfile
+ * @param configFileName
  **/
-void ConfigFileParser::parseConfigFile(std::string configFileName){
-  namespace qi = boost::spirit::qi;
-  namespace ascii = boost::spirit::ascii;
-  using ascii::space;
+std::vector<ProfileData> ConfigFileParser::parseConfigFile(boost::filesystem::path configFileName){
+  	namespace qi = boost::spirit::qi;
 
-  dbg_printc(LOG_INFO, "ConfigFileParser", "ParseConfigFile", "Parse config file: %s", configFileName.c_str());
-  std::string line;
-  std::ifstream config_file_stream;
-  config_file_stream.open(configFileName.c_str());
+	ProfileData* profileData;
+	std::vector<ProfileData*> profileDatas;
 
-  if(config_file_stream.is_open())
-  {
-    while(config_file_stream.good()){
-      getline (config_file_stream,line);
+  	dbg_printc(LOG_INFO, "ConfigFileParser", "ParseConfigFile", "Parse config file: %s", configFileName.c_str());
+  	std::ifstream ConfigFileStream;
+  	ConfigFileStream.open(configFileName.string());
 
-      // Parse profile name
-      //@todo profile should also be closed by "]"
-      //      tried to implement "]" but seems not to work
-      //      for some reason.
-      if(qi::phrase_parse(line.begin(),line.end()
-			  ,"[" >> (*qi::char_("a-zA-Z"))[boost::bind(&ConfigFileParser::createProfile, this, _1)]
-			  ,space))
-	{
-	  continue;
+  	if(ConfigFileStream.is_open()){
+    		while(ConfigFileStream.good()){
+  			std::string syncType;
+			std::string profileName;
+			std::string ignoredPath;
 
+			std::string line;
+      			getline (ConfigFileStream, line);
+			std::string::iterator begin = line.begin();
+			std::string::iterator end   = line.end();
+
+			// Parse
+			if(qi::parse(begin, end, "[" >> +qi::char_("a-zA-Z_0-9") >> "]", profileName)) {
+				profileData = new ProfileData;
+				profileDatas.push_back(profileData);
+				profileData->profileName = profileName;
+				continue;	
+			}
+			
+			if(qi::parse(begin, end, "syncType="     >> qi::char_("a-z")    , syncType)){
+				if(!syncType.compare("backup")) profileData->syncType = SyncType::BACKUP;
+				if(!syncType.compare("update")) profileData->syncType = SyncType::UPDATE;
+				if(!syncType.compare("syncronize")) profileData->syncType = SyncType::SYNCRONIZE;
+			}
+			if(qi::parse(begin, end, "syncPath="     >> +qi::char_ , profileData->syncPath)) continue;
+			if(qi::parse(begin, end, "syncProtocol=" >> +qi::char_ , profileData->syncProtocol)) continue;
+			if(qi::parse(begin, end, "destPath="     >> +qi::char_ , profileData->destPath)) continue;
+			if(qi::parse(begin, end, "destHost="     >> +qi::char_ , profileData->destHost)) continue;
+			if(qi::parse(begin, end, "destUser="     >> +qi::char_ , profileData->destUser)) continue;
+			if(qi::parse(begin, end, "destPort="     >> +qi::char_("0-9") , profileData->destPort)) continue;
+			if(qi::parse(begin, end, "destPass="     >> +qi::char_ , profileData->destPass)) continue;
+			if(qi::parse(begin, end, "ignore="       >> +qi::char_ , ignoredPath)){
+				profileData->ignoredPaths.push_back(ignoredPath);
+				continue;
+			}
+			
+
+		}
+
+
+  	}
+  	else {
+		throw std::runtime_error("Unable to open configfile " + configFileName.string());
 	}
-      // Parse sync type
-      if(qi::phrase_parse(line.begin(), line.end()
-			  ,  qi::string("syncType=") >> qi::string("syncronize")[boost::bind(&ConfigFileParser::setSyncType, this, DOB_SYNCRONIZE)] 
-			  || qi::string("syncType=") >> qi::string("backup")[boost::bind(&ConfigFileParser::setSyncType, this, DOB_BACKUP)] 
-			  || qi::string("syncType=") >> qi::string("update")[boost::bind(&ConfigFileParser::setSyncType, this, DOB_UPDATE)]
-			  ,space))
-	{
-	  continue;
-	  
-	}
-      // Parse sync folder
-      if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("syncFolder=") 
-			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setSyncFolder, this, _1)]
-			  ,space))
-	{
-	  continue;
-	  
-	}
-      // Parse sync protocol
-      if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("syncProtocol=") 
-			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setSyncProtocol, this, _1)]
-			  ,space))
-	{
-	  continue;
-	  
-	}
-      // Parse destination folder
-      if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destFolder=") 
-			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestFolder, this, _1)]
-			  ,space))
-	{
-	  continue;
-	  
-	}
-      // Parse destination host
-      if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destHost=") 
-			  >> 
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestHost, this, _1)] 
-			  ,space))
-	{
-	  continue;
-	  
-	}
-      // Parse destination user
-      if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("destUser=") 
-			  >> 
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestUser, this, _1)] 
-			  ,space))
-	{
-	  continue;
-	  
-	}
-      // Parse ssh port
-      if(qi::phrase_parse(line.begin(), line.end()
-			  , qi::string("sshPort=") 
-			  >>     
-			  (*qi::char_)[boost::bind(&ConfigFileParser::setSshPort, this, _1)]
-			  ,space))
-	{
-	  continue;
-	  
+  	ConfigFileStream.close();
+
+	// Remove pointer
+	std::vector<ProfileData> tmpProfileDatas;
+	for(ProfileData* p: profileDatas){
+		checkProfileData(*p);
+		tmpProfileDatas.push_back(*p);
 	}
 
-      // Parse ignored files / folders
-      if(qi::phrase_parse(line.begin(), line.end()
-      			  , qi::string("ignore=") 
-      			  >>     
-      			  (*qi::char_)[boost::bind(&ConfigFileParser::pushIgnoredFolder, this, _1)]
-      			  ,space))
-      	{
-      	  continue;
-	  
-      	}
-      // Parse destPort
-      if(qi::phrase_parse(line.begin(), line.end()
-      			  , qi::string("destPort=") 
-      			  >>     
-      			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestPort, this, _1)]
-      			  ,space))
-      	{
-      	  continue;
-	  
-      	}
-
-      // Parse destPort
-      if(qi::phrase_parse(line.begin(), line.end()
-      			  , qi::string("destPass=") 
-      			  >>     
-      			  (*qi::char_)[boost::bind(&ConfigFileParser::setDestPass, this, _1)]
-      			  ,space))
-      	{
-      	  continue;
-	  
-      	}
-
-
-
-
-    }
-    config_file_stream.close();
-
-  }
-  else 
-    dbg_printc(LOG_ERR, "ConfigFileParser", "ParseConfigFile", "Unable to open configfile: %s", configFileName.c_str()); 
-  config_file_stream.close();
+	return tmpProfileDatas;
+	
 }
 
-void ConfigFileParser::createProfile (std::vector<char> name){
-  Profile profile;
-  profile.setName(name);
-  mpProfiles->push_back(profile);
-
-}
-
-void ConfigFileParser::setSyncType (SyncType syncType){
-  if(mpProfiles->size() != 0)
-    mpProfiles->back().setSyncType(syncType);
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setSyncType", "Try to set syncType, but there is no profile"); 
-
-}
-
-void ConfigFileParser::setSyncFolder (std::vector<char> syncFolder){
-  if(mpProfiles->size() != 0)
-    mpProfiles->back().setSyncFolder(syncFolder);
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setSyncFolder", "Try to set syncFolder, but there is no profile"); 
-
-}
-
-void ConfigFileParser::setSyncProtocol(std::vector<char> syncProto){
-  if(mpProfiles->size() != 0)
-    mpProfiles->back().setSyncProtocol(syncProto);
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setSyncProtocol", "Try to set syncProtocol, but there is no profile"); 
-}
-
-
-void ConfigFileParser::setDestFolder( std::vector<char> destFolder){
-  if(mpProfiles->size() != 0)
-    mpProfiles->back().setDestFolder(destFolder);
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestFolder", "Try to set destFolder, but there is no profile"); 
-
-}
-
-void ConfigFileParser::setDestHost(std::vector<char> destHost){
-  if(mpProfiles->size() != 0) {
-    std::string toString( destHost.begin(), destHost.end() );
-    mpProfiles->back().setDestHost(toString);
-  }
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestHost", "Try to set destHost, but there is no profile"); 
-
-}
-/*
-void ConfigFileParser::setDestUser(std::string destUser){
-  if(mpProfiles->size() != 0)
-    mpProfiles->back().setDestUser(destUser);
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestUser", "Try to set destUser, but there is no profile"); 
-
-}
-*/
-void ConfigFileParser::setDestUser(std::vector<char> destUser){
-  if(mpProfiles->size() != 0){
-    std::string toString( destUser.begin(), destUser.end() );
-    mpProfiles->back().setDestUser(toString);
-  }
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestUser", "Try to set destUser, but there is no profile"); 
-
-}
-
-void ConfigFileParser::pushIgnoredFolder(std::vector<char> ignoredFolder){
-  if(mpProfiles->size() != 0){
-    std::string toString(ignoredFolder.begin(), ignoredFolder.end());
-    mpProfiles->back().pushIgnoredFolder(toString);
-  }
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "pushIgnoredFolder", "Try to push ignored folder, but there is no profile"); 
-
-}
-
-void ConfigFileParser::setDestPort(std::vector<char> port_char){
-  if(mpProfiles->size() != 0){
-    std::string portString(port_char.begin(), port_char.end());
-     mpProfiles->back().setDestPort(portString);
-  }
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestPort", "Try to set destination port, but there is no profile"); 
-  
-}
-
-void ConfigFileParser::setSshPort(std::vector<char> sshPort){
-  if(mpProfiles->size() != 0){
-    std::string portString(sshPort.begin(), sshPort.end());
-     mpProfiles->back().setSshPort(portString);
-  }
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setSshPort", "Try to set SSH port, but there is no profile"); 
-  
-}
-
-void ConfigFileParser::setDestPass(std::vector<char> sshPort){
-  if(mpProfiles->size() != 0){
-    std::string passString(sshPort.begin(), sshPort.end());
-     mpProfiles->back().setDestPass(passString);
-  }
-  else
-    dbg_printc(LOG_WARN, "ConfigFileParser", "setDestPass", "Try to set destination password, but there is no profile"); 
-  
-}
-
-
-/**
- * @return all parsed profiles
- **/
-std::vector<Profile> *ConfigFileParser::getProfiles(){
-  return mpProfiles;
-}
 
 
 

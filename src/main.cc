@@ -12,83 +12,41 @@
  ***/
 
 // Include libraries
-#include <iostream>
+#include <vector>
 #include <string>
-#include <stdlib.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
 
-// Include classes
-#include <ConfigFileParser.h>
-#include <CommandLineParser.h>
+#include <LocalSyncManager.h>
+#include <FileEventManager.h>
+#include <InotifyFileSystemScanner.h>
+#include <Profile.h>
 #include <ProfileFactory.h>
-#include <InterProcessCommunication.h>
-#include <ProfileManager.h>
+#include <CommandLineParser.h>
 #include <dbg_print.h>
-
-using namespace std;
 
 int dbg_print_level;
 
 int main(int argc, char *argv[]){
-  // Variable definitions
-  vector<Profile>* pProfiles;
-  string configFileName;
-  ConfigFileParser configFileParser;
-  CommandLineParser commandLineParser;
-  ProfileFactory profileFactory;
-  InterProcessCommunication ipc("/tmp/dob_fifo");
-  ProfileManager *pProfileManager;
+  	// Variable definitions
+  	CommandLineParser commandLineParser;
+ 	ProfileFactory profileFactory;
+	std::vector<Profile> profiles;
+  	dbg_print_level = LOG_DBG;
   
-  dbg_print_level = LOG_DBG;
-  
-  // Parse commandline
-  dbg_printc(LOG_INFO, "", "main","Start dob client");
-  if(!commandLineParser.parseCommandLine(argc, argv)){
-    dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-    dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
-    return 0;
-  }
-  dbg_print_level = commandLineParser.getDebugLevel();
+  	// Parse commandline
+  	if(!commandLineParser.parseCommandLine(argc, argv)){
+   	 	dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
+   	 	dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
+    		return 0;
+  	}
 
-  // Parse configfile
-  configFileName = commandLineParser.getConfigFileName();
-  configFileParser.parseConfigFile(configFileName);
-  pProfiles = configFileParser.getProfiles();
+	// Parse profiles from configfile
+ 	profiles = profileFactory.makeProfiles(commandLineParser.getConfigFileName());
 
-  // Setup Profiles
-  if(!profileFactory.makeProfiles(pProfiles)){
-    dbg_printc(LOG_FATAL, "Main","main", "Profile(s) can´t be generated from this config file, please check it\n");
-    return 0;
-  }
+	// Start profiles
+ 	for(Profile profile: profiles){
+		profile.start();
+	}
 
-  if(pProfiles->size() == 0){
-    dbg_printc(LOG_ERR, "Main","main", "There are no profiles defined in your config file: %s\n", configFileName.c_str());
-    return 0;
-  }
-
-  // Setup ProfileManager
-  pProfileManager = new ProfileManager(pProfiles);
-  ipc.getStopSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::stopProfile));
-  ipc.getStartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::startProfile));
-  ipc.getRestartSignal().connect(sigc::mem_fun(*pProfileManager, &ProfileManager::restartProfile));
- 
-  // Start sync 
-  if(!pProfileManager->startProfiles()){
-    dbg_printc(LOG_ERR, "Main","main", "Can't start all profiles");
-    return 0;
-  }
-
-  // Read from IPC Interface
-  ipc.readFromPipe();    
-
-  // Cleanup memory
-  free(pProfiles);
-  free(pProfileManager);
-  return 0;
+  	return 0;
   
 }

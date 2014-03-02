@@ -1,6 +1,5 @@
-#ifndef SyncType_H
-#define SyncType_H
+#pragma once
 
-enum SyncType {DOB_BACKUP, DOB_UPDATE, DOB_SYNCRONIZE};
+enum SyncType {BACKUP, UPDATE, SYNCRONIZE};
 
-#endif /* SyncType_H */
+

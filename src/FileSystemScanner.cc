@@ -1,32 +1,23 @@
-#include "FileSystemScanner.h"
-#include "iostream"
-#include <sys/types.h> /* opendir */
-#include <dirent.h> /* opendir */
+#include <FileSystemScanner.h>
+
+#include <boost/filesystem.hpp>
+#include <exception>
 
 
-FileSystemScanner::FileSystemScanner(std::string scanFolder, EventManager* const pEventManager):
-mScanFolder(scanFolder),
-mpEventManager(pEventManager){
-  assert(opendir(scanFolder.c_str()));
-  if(mScanFolder[mScanFolder.size()-1] != '/')
-     mScanFolder.append("/");
+FileSystemScanner::FileSystemScanner(const boost::filesystem::path rootPath, const EventManager& eventManager):
+	rootPath(rootPath),
+	eventManager(eventManager){
 
+	if(!boost::filesystem::exists(rootPath)){
+		throw std::invalid_argument("Can't initialize FileSystemscanner! RootPath does not exist. RootPath: " + rootPath.string());
+	}
+		
 }
 
 FileSystemScanner::~FileSystemScanner(){
-  free(mpEventManager);
-}
-
-std::string FileSystemScanner::getScanFolder() const{
-
-  return mScanFolder;
 
 }
 
-EventManager* FileSystemScanner::getEventManager() const{
-  return mpEventManager;
-
-}
 
 
 

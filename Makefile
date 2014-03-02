@@ -1,6 +1,6 @@
 # compiler, tools
-CC = clang
 CC = g++
+CC = clang++
 DOXYGEN = doxygen
 
 # build variables
@@ -8,10 +8,11 @@ EXECUTABLE=dob
 SRCS = $(wildcard src/*.cc)
 OBJS = $(SRCS:.cc=.o)
 DEPS = $(SRCS:.cc=.d)
-INCS = -I./include $(shell pkg-config --cflags sigc++-2.0)
+SIGCINC = $(shell pkg-config --cflags sigc++-2.0)
+INCS = -I./include 
 
 # compiler flags
-CFLAGS = -c -Wall -std=c++0x
+CFLAGS = -c -Wall -std=c++11
 LDFLAGS = 
 
 # Used libs
@@ -20,7 +21,7 @@ NEONLIBS    = -lneon
 SQLITE3LIBS = -lsqlite3
 PTHREADLIBS = -lpthread
 SIGCLIBS    = -lsigc-2.0
-LIBS	    = $(PTHREADLIBS) $(BOOSTLIBS) $(NEONLIBS) $(SQLITE3LIBS) $(SIGCLIBS)
+LIBS	    = $(BOOSTLIBS) $(NEONLIBS) $(SQLITE3LIBS)
 
 all: $(SOURCES) $(EXECUTABLE)
 

@@ -5,11 +5,10 @@
  * @copyright Gnu Public License
  */
 
-#ifndef FileSystemScanner_H
-#define FileSystemScanner_H
-
+#pragma once
 #include <string>
-#include "EventManager.h"
+#include <boost/filesystem.hpp>
+#include <EventManager.h>
 
 
 /**
@@ -24,18 +23,15 @@
  **/
 class FileSystemScanner {
 public:
-  FileSystemScanner(const std::string scanFolder, EventManager* const pEventManager);
+  FileSystemScanner(const boost::filesystem::path rootPath, const EventManager& eventManager);
   ~FileSystemScanner();
-  std::string getScanFolder() const;
-  EventManager* getEventManager() const;
-  virtual int startToScan() = 0;
-  virtual int stopToScan()  = 0;
+  virtual void start() = 0;
+  virtual void stop()  = 0;
 
 protected:
-  std::string mScanFolder;
-  EventManager* const mpEventManager;
+  const boost::filesystem::path rootPath;
+  const EventManager& eventManager;
 
 
 };
 
-#endif /* FileSystemScanner */

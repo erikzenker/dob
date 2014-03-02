@@ -1,9 +1,14 @@
-#include "CommandLineParser.h"
+#include <CommandLineParser.h>
+
+#include <string>
+#include <dbg_print.h>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
 
 CommandLineParser::CommandLineParser() :
   mConfigFileName(""),
-  mDebugLevel(LOG_INFO),
-  mUseGui(false){
+  mDebugLevel(LOG_INFO){
 
 }
 
@@ -31,9 +36,6 @@ bool CommandLineParser::parseCommandLine(unsigned argc, char *argv[]){
   qi::rule<char const*>                configFileNameKey   = qi::string("--config=");
   qi::rule<char const*, std::string()> configFileNameValue = (*qi::char_);
 
-  // UseGui Rule
-  qi::rule<char const*> useGuiKey = qi::string("--usegui");
-
   // Debug Level Rule (unsigned between 0 and 5)
   qi::rule<char const*>             debugLevelKey   = qi::string("-d=");
   qi::rule<char const*, unsigned()> debugLevelValue = qi::int_parser<int, 10, 0, 5>();
@@ -45,7 +47,6 @@ bool CommandLineParser::parseCommandLine(unsigned argc, char *argv[]){
 
     matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
     matched = matched || qi::parse(begin, end, debugLevelKey >> debugLevelValue, mDebugLevel);
-    mUseGui = qi::parse(begin, end, useGuiKey);
     if(!matched) 
       dbg_printc(LOG_ERR, "CommandLineParser", "parseCommandLine", "Unknown parameter %s", argv[i]); 
 
@@ -60,9 +61,4 @@ std::string CommandLineParser::getConfigFileName() const{
 
 unsigned CommandLineParser::getDebugLevel() const{
   return mDebugLevel;
-}
-
-
-bool CommandLineParser::getUseGui() const{
-  return mUseGui;
 }

@@ -5,9 +5,7 @@
  * @copyright Gnu Public License
  **/
 
-#ifndef FileSystemEvent_H
-#define FileSystemEvent_H
-
+#pragma once
 #include <string>
 #include <boost/filesystem.hpp>
 
@@ -17,32 +15,22 @@
  *        FileSystemEvent.h
  *        "include/FileSystemEvent.h"
  *
- * The intention for FileSystemEvent was to
- * create some common interface for different
- * filesystem scan methods. For example you
- * could poll your filesystem every 10 seconds
- * to seek for changes or use inotify which detects 
- * events by it self.
  *
  **/
 class FileSystemEvent {
  public:
-  FileSystemEvent(int wd, uint32_t mask, boost::filesystem::path path);
+  FileSystemEvent(int wd, uint32_t mask, const boost::filesystem::path path);
   ~FileSystemEvent();
-  uint32_t getMask();
-  void setMask(uint32_t mask);
-  int getWd();
-  std::string getMaskString();
-  boost::filesystem::path getPath();
+  std::string getMaskString() const;
+
+  /* Member */
+  bool isRecursive;
+  int wd;
+  uint32_t mask;
+  boost::filesystem::path path;
 
  private:
-  std::string maskToString(uint32_t events);
-
-  // Member
-  int mWd;
-  uint32_t mMask;
-  boost::filesystem::path mPath;
+  std::string maskToString(uint32_t events) const;
 
 };
 
-#endif /* FileSystemEvent_H */

@@ -5,16 +5,9 @@
  * @copyright Gnu Public License
  */
 
-#ifndef CommandLineParser_H
-#define CommandLineParser_H
+#pragma once
 
 #include <string>
-#include <dbg_print.h>
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/bind.hpp>
-#include <iostream>
 
 /**
  * @brief Parses parameters from the commandline with help 
@@ -38,13 +31,10 @@ class CommandLineParser{
   bool parseCommandLine(unsigned argc, char *argv[]);
   std::string getConfigFileName() const;
   unsigned getDebugLevel() const;
-  bool getUseGui() const;
 
  private:
   std::string mConfigFileName;
   unsigned mDebugLevel;
-  bool mUseGui;
 };
 
-#endif /* CommandLineParser_H */
 

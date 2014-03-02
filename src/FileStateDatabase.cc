@@ -72,8 +72,8 @@ bool FileStateDatabase::executeQuery(const std::string query, int (*callback)(vo
 FileState FileStateDatabase::createFileState(boost::filesystem::path path){
   FileState fileState;
   struct stat buffer;
+  fileState.path    = path;
   if(boost::filesystem::exists(path)){
-    fileState.path    = path;
     fileState.modtime = boost::filesystem::last_write_time(path);
     fileState.inode   = lstat(path.c_str(), &buffer)? 0 : buffer.st_ino;
     fileState.is_dir  = boost::filesystem::is_directory(path);
@@ -88,24 +88,26 @@ void FileStateDatabase::createFileStateCache(){
   }
 }
 
-bool FileStateDatabase::propagateUpdate(const boost::filesystem::path path,const ModState ms, const bool recursive){
+bool FileStateDatabase::propagateUpdate(const boost::filesystem::path path,const ModState ms){
   std::pair<FileState, ModState> update(createFileState(path), ms);
-  return propagateUpdate(update, recursive);
+  return propagateUpdate(update);
 
 }
 
 
-bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> update, const bool recursive){
+bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> update){
   FileState fileState = update.first;
   ModState modState   = update.second;
 
+
+  std::cout << "propagateUpdate " << fileState.path << std::endl;
  switch(modState){
   case FS_CREATE:
     return insertFileState(fileState);
   case FS_MODIFY:
     return  updateFileState(fileState);
   case FS_DELETE:
-    return deleteFileState(fileState, recursive);
+    return deleteFileState(fileState, false);
   default:
     break;
 
@@ -113,6 +115,36 @@ bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> upd
   return false;
 
 }
+
+void FileStateDatabase::propagateUpdateRecursively(const boost::filesystem::path rootPath, const ModState ms){
+  if(ms == FS_DELETE){
+    deleteFileState(createFileState(rootPath), true);
+
+  }
+  else{
+    if(boost::filesystem::is_regular_file(rootPath)){
+      propagateUpdate(rootPath, ms);
+
+    }
+    else{
+      boost::filesystem::recursive_directory_iterator it(rootPath, boost::filesystem::symlink_option::recurse);
+      boost::filesystem::recursive_directory_iterator end;
+
+      propagateUpdate(rootPath, ms);
+
+      while(it != end){
+	boost::filesystem::path currentPath = ((boost::filesystem::path)*it);
+	propagateUpdate(currentPath, ms);
+	++it;
+
+      }
+
+    }
+
+  }
+
+}
+
 
 /**
  * @brief inserts a file in database

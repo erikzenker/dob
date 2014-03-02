@@ -1,16 +1,11 @@
 
-#ifndef EventManager_H
-#define EventManager_H
 
+#pragma once
 #include <vector>
-#include <fstream>
-#include <unistd.h>
-#include <sys/inotify.h>
-#include <sigc++/sigc++.h>
-#include <SyncManager.h>
-#include <dbg_print.h>
-#include <FileSystemEvent.h>
 #include <boost/filesystem.hpp>
+
+#include <SyncManager.h>
+#include <FileSystemEvent.h>
 
 /**
  * @brief Handels events from FileSystemScanner
@@ -27,18 +22,13 @@
 
 class EventManager{
 public:
-  EventManager(SyncManager* const pSyncManager, boost::filesystem::path scanPath);
+  EventManager(const SyncManager& syncManager);
   ~EventManager();
-  bool pushBackEvent(FileSystemEvent newEvent, const std::string sourceFolder, const bool recursive);
+  virtual bool handleEvent(const FileSystemEvent event, const boost::filesystem::path rootPath) const = 0;
 
 protected:
-  bool dispatchEvent(const FileSystemEvent event, const std::string sourceFolder);
-  virtual bool handleEvent(const FileSystemEvent event, const std::string sourceFolder, const bool recursive = true) = 0;
-  
-  /* Member */ 
-  std::vector<FileSystemEvent> mEventList;
-  SyncManager* const mpSyncManager;
+  const SyncManager& syncManager;
 
 };
 
-#endif /* EventManager_H */
+

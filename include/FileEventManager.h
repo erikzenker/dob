@@ -1,15 +1,11 @@
 
-#ifndef FileEventManager_H
-#define FileEventManager_H
+#pragma once
+#include <boost/filesystem.hpp>
 
-#include <vector>
-#include <iostream>
-#include <string>
-#include <stdlib.h>
 #include <SyncManager.h>
 #include <EventManager.h>
-#include <dbg_print.h>
-#include <boost/filesystem.hpp>
+#include <FileSystemEvent.h>
+
 
 using namespace std;
 
@@ -28,10 +24,10 @@ using namespace std;
  **/
 class FileEventManager : public EventManager{
  public:
-  FileEventManager(SyncManager * pSyncManager, boost::filesystem::path scanPath);
+  FileEventManager(SyncManager& syncManager);
  private:
-  virtual bool handleEvent(FileSystemEvent event, string sourceFolder, const bool recursive);
+  virtual bool handleEvent(const FileSystemEvent event, const boost::filesystem::path rootPath) const;
  
 };
 
-#endif /* FileEventManager_H */
+

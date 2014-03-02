@@ -5,16 +5,14 @@
  * @copyright Gnu Public License
  **/
 
-#ifndef InotifyFileSystemScanner_H
-#define InotifyFileSystemScanner_H
-
+#pragma once
 #include <string>
 #include <vector>
-#include <Thread.h>
-#include <FileSystemScanner.h>
-#include <Inotify.h>
-#include <FileStateDatabase.h>
 #include <boost/filesystem.hpp>
+
+#include <FileSystemScanner.h>
+#include <FileStateDatabase.h>
+#include <Inotify.h>
 
 /**
  * @brief Watches a folder for changes with the help of
@@ -24,29 +22,23 @@
  *        InotifyFileSystemScanner.h
  *        "include/InotifyFileSystemScanner.h"
  *
- * Watches a folder (scanFolder) for changes. Every change
+ * Watches a folder (rootPath) for changes. Every change
  * will raise an event of Inotify which will be processed
- * by a Eventmanager (pEventManager). New folders or files will 
+ * by a Eventmanager (eventManager). New folders or files will 
  * also watched in future.
  *
  **/
-class InotifyFileSystemScanner : public FileSystemScanner, public Thread {
+class InotifyFileSystemScanner : public FileSystemScanner{
 public:
-  InotifyFileSystemScanner(const std::string scanFolder, std::vector<std::string> ignoredFolders, const int eventTimeout, EventManager* const pEventManager, const std::string profileName);
+  InotifyFileSystemScanner(const boost::filesystem::path rootPath, const EventManager& eventManager, const std::vector<std::string> ignoredFolders, const unsigned eventTimeout, const std::string profileName);
   ~InotifyFileSystemScanner();
-  virtual int startToScan();
-  virtual int stopToScan();
-
- protected:
-  virtual void execute(void* arg);
-  virtual void setup();
+  virtual void start();
+  virtual void stop();
 
  private:
   FileSystemEvent toFileSystemEvent(std::pair<FileState, ModState> update);
-  void propagateUpdateRecursive(const boost::filesystem::path rootPath, const ModState ms);
-  Inotify mInotify;
-  FileStateDatabase mFileStateDatabase;
+  Inotify _inotify;
+  FileStateDatabase _fileStateDatabase;
 
 };
 
-#endif /* InotifyFileSystemScanner_H */

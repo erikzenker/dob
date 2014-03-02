@@ -1,11 +1,8 @@
 #include <ProfileFactory.h>
-#include <WebdavSyncManager.h>
-//#include <LocalSyncManager.h>
+#include <LocalSyncManager.h>
 #include <InotifyFileSystemScanner.h>
-#include <FolderEventManager.h>
 #include <FileEventManager.h>
-
-#include <iostream>
+#include <ConfigFileParser.h>
 
 ProfileFactory::ProfileFactory(){
 
@@ -17,95 +14,48 @@ ProfileFactory::~ProfileFactory(){
 
 
 /**
- * @brief Manipulates one profile object.
+ * @brief Generates profile from profile data
  *
- * Depending on the information given by the profile,
- * the right objects will be instanciated to create
- * the full profile.
- * If there are some Information missing, for example
- * profileName or destType, the method will return
- * false and won't manipulate the profile object.
- *
- * @param  Profile you want to instanciate
- * @return true  the Profile was instanciated right
- * @return false there are information missing
- *               in the profile information
  **/
-bool ProfileFactory::makeProfile(Profile* profile){
-  std::string profileName =  profile->getName();
-  SyncType syncType   = profile->getSyncType();
-  std::string scanFolder = profile->getSyncFolder();
-  std::string syncProtocol = profile->getSyncProtocol();
+Profile ProfileFactory::makeProfile(ProfileData profileData){
 
-  std::string destUser	 = profile->getDestUser();
-  std::string destHost	 = profile->getDestHost();
-  std::string destPort	 = profile->getDestPort();
-  std::string destFolder = profile->getDestFolder();
-  std::string destPass   = profile->getDestPass();
-  std::string sshPort    = profile->getSshPort();
-
-  EventManager* pEventManager;
-  SyncManager* pSyncManager;
-  FileSystemScanner* pFileSystemScanner;
-  std::vector<std::string> ignoredFolders = profile->getIgnoredFolders();
-  int eventTimeout = 0;
+  	EventManager* eventManager = nullptr;
+  	SyncManager* syncManager = nullptr;
+  	FileSystemScanner* fileSystemScanner = nullptr;
+  	int eventTimeout = 0;
   
-  if(!profileName.compare(""))
-    return false;
-// if local transfer is used, this assumes remote, before it checks for local!
-// TODO revise!
-  if(!syncProtocol.compare("webdav")){
-    pSyncManager = new WebdavSyncManager(scanFolder, destFolder, syncType, destUser, destHost, destPort, destPass);
-    eventTimeout = 0;
-  }
-  else if(!destHost.compare("") && !syncProtocol.compare("")){
-    //pSyncManager = new LocalSyncManager(destFolder, syncType);
-    eventTimeout = 1;
-  }
-  else{
-    dbg_printc(LOG_FATAL,"ProfileFactory","makeProfile","syncProtocol %s in configfile is not an option", syncProtocol.c_str());
-    return false;
-  }
+  	if(!profileData.syncProtocol.compare("webdav")){
+    		//pSyncManager = new WebdavSyncManager(scanFolder, destFolder, syncType, destUser, destHost, destPort, destPass);
+  	}
+  	else if(!profileData.destHost.compare("") && !profileData.syncProtocol.compare("")){
+    		syncManager = new LocalSyncManager(profileData.destPath, profileData.syncType);
+  	}
+  	else {
+    		throw std::runtime_error("syncProtocol " + profileData.syncProtocol +" in configfile is not an option");
+  	}
 
-  if(!syncProtocol.compare("webdav")){
-    pEventManager = new FileEventManager(pSyncManager, scanFolder);
-  }
-  else{
-    pEventManager = new FolderEventManager(pSyncManager, scanFolder);
-  }
+  
+    	eventManager      = new FileEventManager(*syncManager);
+  	fileSystemScanner = new InotifyFileSystemScanner(profileData.syncPath, *eventManager, profileData.ignoredPaths, eventTimeout, profileData.profileName);
 
-  pFileSystemScanner = new InotifyFileSystemScanner(scanFolder, ignoredFolders, eventTimeout, pEventManager, profileName);
+	Profile profile(*fileSystemScanner, *eventManager, *syncManager);
 
-  profile->setSyncManager(pSyncManager);
-  profile->setEventManager(pEventManager);
-  profile->setFileSystemScanner(pFileSystemScanner);
-  return true;
+  	return profile;
 
 }
 
+
 /**
- * @brief Manipulates a list of profiles.
- * @see    makeProfile
+ * @brief Creates a list of profiles from config file
  * 
- * @param  list of profiles
- * @return true  if all profiles were instanciated
- * @return false if there were some information
- *               missing in at least one profile 
- *
  **/
-bool ProfileFactory::makeProfiles(std::vector<Profile>* pProfiles){
-  for(unsigned i = 0; i < pProfiles->size(); ++i){
-    if(pProfiles->at(i).isValid()){
-      if(!makeProfile(&(pProfiles->at(i)))){
-	return false;
-      }
+std::vector<Profile> ProfileFactory::makeProfiles(boost::filesystem::path configFileName){
+	ConfigFileParser configFileParser;
+	std::vector<Profile> profiles;
+	std::vector<ProfileData> profileDatas = configFileParser.parseConfigFile(configFileName);
+	for(ProfileData profileData : profileDatas){
+		profiles.push_back(makeProfile(profileData));
+	}
 
-    }
-    else{
-      return false;
-    }
-
-  }
-
-  return true;
+	return profiles;
 }

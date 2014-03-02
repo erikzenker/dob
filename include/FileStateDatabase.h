@@ -20,8 +20,9 @@ public:
 
   // methods
   std::vector<std::pair<FileState, ModState> > updates();
-  bool propagateUpdate(const std::pair<FileState, ModState> update, const bool recursive);
-  bool propagateUpdate(const boost::filesystem::path path, const ModState ms, const bool recursive);
+  bool propagateUpdate(const std::pair<FileState, ModState> update);
+  bool propagateUpdate(const boost::filesystem::path path, const ModState ms);
+  void propagateUpdateRecursively(const boost::filesystem::path rootPath, const ModState ms);
 
   FileState getFileState(const boost::filesystem::path path);
 

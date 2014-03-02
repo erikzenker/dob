@@ -2,10 +2,10 @@
 #include <SyncType.h>
 
 SyncManager::SyncManager(boost::filesystem::path destPath, SyncType syncType) : 
-  mDestPath(destPath),
-  mSyncType(syncType){
+  destPath(destPath),
+  syncType(syncType){
   
-  mDestPath / "/";
+  destPath / "/";
 
 }
 
