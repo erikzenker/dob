@@ -15,7 +15,7 @@ enum ModState {FS_DELETE, FS_MODIFY, FS_CREATE};
 
 class FileStateDatabase {
 public:
-  FileStateDatabase(std::string dataBaseName, boost::filesystem::path rootPath);
+  FileStateDatabase(std::vector<std::string> ignoredDirectories, std::string dataBaseName, boost::filesystem::path rootPath);
   ~FileStateDatabase();
 
   // methods
@@ -39,6 +39,7 @@ private:
 
   FileState createFileState(boost::filesystem::path path);
   void createFileStateCache();
+  bool isIgnored(std::string file);
 
   // sqlite3_exec callbacks
   static int noAction(void *NotUsed, int argc, char **argv, char **azColName);
@@ -48,6 +49,7 @@ private:
   sqlite3 *mDataBase;
   boost::filesystem::path mRootPath;
   std::map<std::string, FileState> mFileStateCache;
+  std::vector<std::string> mIgnoredDirectories;
 
 };
 

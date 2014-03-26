@@ -7,8 +7,10 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 
-FileStateDatabase::FileStateDatabase(std::string dataBaseLocation, boost::filesystem::path rootPath) 
-  : mRootPath(rootPath){
+FileStateDatabase::FileStateDatabase(std::vector<std::string> ignoredDirectories, std::string dataBaseLocation, boost::filesystem::path rootPath) : 
+  mRootPath(rootPath),
+  mIgnoredDirectories(ignoredDirectories)
+{
   
   int error = sqlite3_open(dataBaseLocation.c_str(), &mDataBase);
   executeQuery("CREATE TABLE statedb (path varchar(512), modtime int, inode int, is_dir boolean);", FileStateDatabase::noAction, 0);
@@ -244,37 +246,42 @@ std::vector<std::pair<FileState, ModState> > FileStateDatabase::updates(){
   
   while(it != end){
     std::string currentPath = ((boost::filesystem::path)*it).string();
-    FileState fileState = createFileState(currentPath);
-    if(boost::filesystem::is_regular_file(*it)){
+
+    if(!isIgnored(currentPath)){
+      FileState fileState = createFileState(currentPath);
+      if(boost::filesystem::is_regular_file(*it)){
 	
-      auto cacheIt = updates.find(fileState.path.string());
-      // New file since last sync
-      if(cacheIt == updates.end()){
-	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
+	auto cacheIt = updates.find(fileState.path.string());
+
+
+	// New file since last sync
+	if(cacheIt == updates.end()){
+	  modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
 	
-      }
-      // Changed file since last sync
-      else if(cacheIt->second.modtime < fileState.modtime){
-	fileState.modtime = fileState.modtime;
-	updates.erase(cacheIt);
-	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_MODIFY));
-      }
-      // Unchanged file
-      else {
-	updates.erase(cacheIt);
+	}
+	// Changed file since last sync
+	else if(cacheIt->second.modtime < fileState.modtime){
+	  fileState.modtime = fileState.modtime;
+	  updates.erase(cacheIt);
+	  modStates.push_back(std::pair<FileState, ModState>(fileState, FS_MODIFY));
+	}
+	// Unchanged file
+	else {
+	  updates.erase(cacheIt);
+
+	}
 
       }
+      else if(boost::filesystem::is_directory(*it)){
+	auto cacheIt = updates.find(fileState.path.string());
+	if(cacheIt == updates.end()){
+	  modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
 
-    }
-    else if(boost::filesystem::is_directory(*it)){
-      auto cacheIt = updates.find(fileState.path.string());
-      if(cacheIt == updates.end()){
-    	modStates.push_back(std::pair<FileState, ModState>(fileState, FS_CREATE));
+	}
+	else {
+	  updates.erase(cacheIt);
 
-      }
-      else {
-	updates.erase(cacheIt);
-
+	}
       }
     }
     it++;
@@ -307,4 +314,17 @@ std::string FileStateDatabase::modStateToString(const ModState modState){
 
 }
 
+bool FileStateDatabase::isIgnored( std::string file){
+  if(mIgnoredDirectories.empty()){
+    return false;
+  }
+
+  for(unsigned i = 0; i < mIgnoredDirectories.size(); ++i){
+    size_t pos = file.find(mIgnoredDirectories[i]);
+    if(pos!= std::string::npos){
+      return true;
+    }
+  }
+  return false;
+}
 

@@ -14,7 +14,7 @@
 InotifyFileSystemScanner::InotifyFileSystemScanner(const boost::filesystem::path rootPath, const EventManager& eventManager, const std::vector<std::string> ignoredFolders, const unsigned eventTimeout, const std::string profileName) : 
   FileSystemScanner(rootPath, eventManager),
   _inotify(ignoredFolders, eventTimeout, IN_CREATE | IN_MODIFY | IN_DELETE | IN_MOVE),
-  _fileStateDatabase("." + profileName + "_statedb.sql", rootPath){
+  _fileStateDatabase(ignoredFolders,"." + profileName + "_statedb.sql", rootPath){
 
 }
 
@@ -39,7 +39,13 @@ void InotifyFileSystemScanner::start(){
   }
 
   // Create file watches
-  _inotify.watchDirectoryRecursively(rootPath);
+  try{
+    _inotify.watchDirectoryRecursively(rootPath);
+  }
+  catch(std::runtime_error e){
+    std::cerr << e.what() << std::endl;
+  }
+  
 
   while(true){
     FileSystemEvent fileSystemEvent = _inotify.getNextEvent();
@@ -73,7 +79,12 @@ void InotifyFileSystemScanner::start(){
       case IN_MOVED_TO:
       case IN_CREATE:
       case IN_CREATE | IN_ISDIR:
-  	_inotify.watchDirectoryRecursively(fileSystemEvent.path);
+	try{
+	  _inotify.watchDirectoryRecursively(fileSystemEvent.path);
+	}
+	catch(std::runtime_error e){
+	  std::cerr << e.what() << std::endl;
+	}
   	_fileStateDatabase.propagateUpdateRecursively(fileSystemEvent.path, FS_CREATE);
   	break;
 

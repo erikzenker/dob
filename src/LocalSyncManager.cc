@@ -20,7 +20,12 @@ LocalSyncManager::LocalSyncManager(fs::path destPath, SyncType syncType) :
 bool LocalSyncManager::pushFile(fs::path rootPath, fs::path fullPath) const{
 	const fs::path fullDestPath = constructDestPath(rootPath, fullPath, destPath);
 	std::cout << "pushFile " << fullPath << " to " << fullDestPath << std::endl;
-	fs::copy_file(fullPath, fullDestPath, fs::copy_option::overwrite_if_exists);
+	try {
+	  fs::copy_file(fullPath, fullDestPath, fs::copy_option::overwrite_if_exists);
+	}
+	catch(boost::filesystem::filesystem_error e){
+	  std::cerr << e.what() << std::endl;
+	}
 	return true;
 }
 
