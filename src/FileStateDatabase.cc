@@ -6,6 +6,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <iostream>
+#include <exception>
 
 FileStateDatabase::FileStateDatabase(std::vector<std::string> ignoredDirectories, std::string dataBaseLocation, boost::filesystem::path rootPath) : 
   mRootPath(rootPath),
@@ -119,33 +120,41 @@ bool FileStateDatabase::propagateUpdate(const std::pair<FileState, ModState> upd
 }
 
 void FileStateDatabase::propagateUpdateRecursively(const boost::filesystem::path rootPath, const ModState ms){
-  if(ms == FS_DELETE){
-    deleteFileState(createFileState(rootPath), true);
-
-  }
-  else{
-    if(boost::filesystem::is_regular_file(rootPath)){
-      propagateUpdate(rootPath, ms);
+  try {
+    if(ms == FS_DELETE){
+      deleteFileState(createFileState(rootPath), true);
 
     }
     else{
-      boost::filesystem::recursive_directory_iterator it(rootPath, boost::filesystem::symlink_option::recurse);
-      boost::filesystem::recursive_directory_iterator end;
+      if(boost::filesystem::is_regular_file(rootPath)){
+	propagateUpdate(rootPath, ms);
 
-      propagateUpdate(rootPath, ms);
+      }
+      else{
+	boost::filesystem::recursive_directory_iterator it(rootPath, boost::filesystem::symlink_option::recurse);
+	boost::filesystem::recursive_directory_iterator end;
 
-      while(it != end){
-	boost::filesystem::path currentPath = ((boost::filesystem::path)*it);
-	propagateUpdate(currentPath, ms);
-	++it;
+	propagateUpdate(rootPath, ms);
+
+	while(it != end){
+	  boost::filesystem::path currentPath = ((boost::filesystem::path)*it);
+	  propagateUpdate(currentPath, ms);
+	  ++it;
+
+	}
 
       }
 
     }
 
   }
+  catch(std::exception e){
+    std::cerr << e.what() << std::endl;
+
+  }
 
 }
+
 
 
 /**

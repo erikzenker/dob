@@ -70,14 +70,19 @@ bool LocalSyncManager::mkdir(fs::path rootPath, fs::path fullPath) const{
 bool LocalSyncManager::removeFile(fs::path rootPath, fs::path fullPath) const{
 	fs::path fullDestPath = constructDestPath(rootPath, fullPath, destPath);
 	std::cout << "removeFile " << fullPath << " from " << fullDestPath << std::endl;
-	return fs::remove_all(fullDestPath);
+	fs::remove_all(fullDestPath);
+	return true; 
+
 }
 
 bool LocalSyncManager::removeDir(fs::path rootPath, fs::path fullPath) const{
 	fs::path fullDestPath = constructDestPath(rootPath, fullPath, destPath);
 	std::cout << "removeDir " << fullPath << " from " << fullDestPath << std::endl;
-	return fs::remove_all(fullDestPath);
+	fs::remove_all(fullDestPath);
+	return true;
 }
+
+
 
 fs::path constructDestPath(const fs::path rootPath, fs::path fullPath, fs::path destRootPath){
 	return destRootPath.string() + fullPath.string().substr(rootPath.string().length(), fullPath.string().length());

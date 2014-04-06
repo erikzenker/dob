@@ -212,7 +212,7 @@ FileSystemEvent Inotify::getNextEvent(){
 	e->mask |= IN_ISDIR;
       }
       FileSystemEvent fsEvent(e->wd, e->mask, path);
-      if(!fsEvent.getPath().empty()){
+      if(!fsEvent.path.empty()){
 	events.push_back(fsEvent);
 	
       }
@@ -229,7 +229,7 @@ FileSystemEvent Inotify::getNextEvent(){
 	events.erase(eventIt);
     
       }
-      else if(isIgnored(currentEvent.getPath().string())){
+      else if(isIgnored(currentEvent.path.string())){
       	events.erase(eventIt);
       }
       else{

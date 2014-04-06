@@ -84,6 +84,11 @@ void InotifyFileSystemScanner::start(){
 	}
 	catch(std::runtime_error e){
 	  std::cerr << e.what() << std::endl;
+	  break;
+	}
+	catch(std::invalid_argument e){
+	  std::cerr << e.what() << std::endl;
+	  break;
 	}
   	_fileStateDatabase.propagateUpdateRecursively(fileSystemEvent.path, FS_CREATE);
   	break;
