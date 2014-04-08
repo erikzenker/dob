@@ -5,12 +5,17 @@
 #include <Inotify.h>
 
 
-FileEventManager::FileEventManager(SyncManager& syncManager)
-  : EventManager(syncManager){
+FileEventManager::FileEventManager(SyncManager& syncManager,  const std::vector<std::string> ignoredDirectories) : 
+  EventManager(syncManager),
+  mIgnoredDirectories(ignoredDirectories){
 }
 
 bool FileEventManager::handleEvent(const FileSystemEvent event, const boost::filesystem::path rootPath) const{
   const boost::filesystem::path eventPath = event.path;
+
+  if(isIgnored(eventPath.string())){
+    return true;
+  }
 
   switch(event.mask){
   case IN_MODIFY:
@@ -46,6 +51,22 @@ bool FileEventManager::handleEvent(const FileSystemEvent event, const boost::fil
     break;
 
   }
+  return false;
+}
+
+
+bool FileEventManager::isIgnored(std::string file) const{
+  if(mIgnoredDirectories.empty()){
+    return false;
+  }
+ 
+  for(unsigned i = 0; i < mIgnoredDirectories.size(); ++i){
+    size_t pos = file.find(mIgnoredDirectories[i]);
+    if(pos!= std::string::npos){
+      return true;
+    }
+  }
+
   return false;
 }
 

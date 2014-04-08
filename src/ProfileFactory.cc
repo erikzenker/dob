@@ -35,7 +35,7 @@ Profile ProfileFactory::makeProfile(ProfileData profileData){
   	}
 
   
-    	eventManager      = new FileEventManager(*syncManager);
+    	eventManager      = new FileEventManager(*syncManager, profileData.ignoredPaths);
   	fileSystemScanner = new InotifyFileSystemScanner(profileData.syncPath, *eventManager, profileData.ignoredPaths, eventTimeout, profileData.profileName);
 
 	Profile profile(*fileSystemScanner, *eventManager, *syncManager);

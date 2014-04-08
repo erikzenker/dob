@@ -2,6 +2,7 @@
 
 #pragma once
 #include <vector>
+#include <string>
 #include <boost/filesystem.hpp>
 
 #include <SyncManager.h>
@@ -28,6 +29,7 @@ public:
 
 protected:
   const SyncManager& syncManager;
+
 
 };
 

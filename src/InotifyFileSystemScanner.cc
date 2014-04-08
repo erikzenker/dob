@@ -10,6 +10,7 @@
 #include <FileSystemEvent.h>
 #include <FileStateDatabase.h>
 #include <FileState.h>
+#include <dbg_print.h>
 
 InotifyFileSystemScanner::InotifyFileSystemScanner(const boost::filesystem::path rootPath, const EventManager& eventManager, const std::vector<std::string> ignoredFolders, const unsigned eventTimeout, const std::string profileName) : 
   FileSystemScanner(rootPath, eventManager),
@@ -29,6 +30,7 @@ InotifyFileSystemScanner::~InotifyFileSystemScanner(){
  **/
 void InotifyFileSystemScanner::start(){
   // Handle updates since last call
+  dbg_printc(LOG_INFO, "InotifyFileSystemScanner", "start", "Update fileStateDatabase");
   for(auto update: _fileStateDatabase.updates()){
     FileSystemEvent fileSystemEvent = toFileSystemEvent(update);
 
@@ -39,6 +41,7 @@ void InotifyFileSystemScanner::start(){
   }
 
   // Create file watches
+  dbg_printc(LOG_INFO, "InotifyFileSystemScanner", "start", "Start to watch %s", rootPath.c_str());
   try{
     _inotify.watchDirectoryRecursively(rootPath);
   }
@@ -46,10 +49,15 @@ void InotifyFileSystemScanner::start(){
     std::cerr << e.what() << std::endl;
   }
   
-
+  // Wait for events
+  dbg_printc(LOG_INFO, "InotifyFileSystemScanner", "start", "Wait for events");
   while(true){
+
     FileSystemEvent fileSystemEvent = _inotify.getNextEvent();
     fileSystemEvent.isRecursive = true;
+
+    //dbg_printc(LOG_INFO, "InotifyFileSystemScanner", "start", "New event %s on %s", );
+    std::cerr << "New Event " << fileSystemEvent.getMaskString() << fileSystemEvent.path << std::endl;
 
     // In case file was deleted, need to restore FileState 
     FileState fs = _fileStateDatabase.getFileState(fileSystemEvent.path);

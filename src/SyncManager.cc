@@ -13,4 +13,3 @@ SyncManager::SyncManager(boost::filesystem::path destPath, SyncType syncType) :
 
  }
 
-
