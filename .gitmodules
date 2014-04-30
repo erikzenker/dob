@@ -1,0 +1,3 @@
+[submodule "include/Inotify"]
+	path = include/Inotify
+	url = https://github.com/erikzenker/Inotify.git

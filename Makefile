@@ -1,47 +1,40 @@
-# compiler, tools
+# Compiler, tools
 CC = g++
 CC = clang++
 DOXYGEN = doxygen
 
-# build variables
+# Build variables
 EXECUTABLE=dob
 SRCS = $(wildcard src/*.cc)
-OBJS = $(SRCS:.cc=.o)
-DEPS = $(SRCS:.cc=.d)
-SIGCINC = $(shell pkg-config --cflags sigc++-2.0)
-INCS = -I./include 
+OBJS = $(SRCS:src/%.cc=bin/%.o)
+INCS = -I ./include -I./include/Inotify
 
-# compiler flags
-CFLAGS = -c -Wall -std=c++11
+# Compiler flags
+CCFLAGS = -c -Wall -std=c++11 
 LDFLAGS = 
 
 # Used libs
-BOOSTLIBS = -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
+BOOSTLIBS   = -lboost_thread -lboost_filesystem -lboost_program_options -lboost_system
 NEONLIBS    = -lneon
 SQLITE3LIBS = -lsqlite3
 PTHREADLIBS = -lpthread
 SIGCLIBS    = -lsigc-2.0
-LIBS	    = $(BOOSTLIBS) $(NEONLIBS) $(SQLITE3LIBS)
+ALL_LIBS    = $(BOOSTLIBS) $(NEONLIBS) $(SQLITE3LIBS)
 
-all: $(SOURCES) $(EXECUTABLE)
+# Compilation rules
+all: $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJS) 
-	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+$(EXECUTABLE): $(OBJS) Makefile
+	mkdir -p bin
+	$(CC) $(LDFLAGS) $(OBJS) $(ALL_LIBS) -o bin/$@
 
-.cc.o:
-	$(CC) $(CFLAGS) $(INCS) $< -o $@
+bin/%.o: src/%.cc $(wildcard include/*.h)
+	 $(CC) $< $(CCFLAGS) $(INCS) -o $@
 
-# clean up backups and old files
 clean:
-	rm -f *~ */*~ */*~
-	rm -f $(OBJS) $(DEPS)
-	rm -f $(EXECUTABLE)
+	rm -f bin/*
 
 new:
 	make clean
-	make all
-
-# generate documentation
-doc:
-	$(DOXYGEN) Doxygen.conf
+	make
 
