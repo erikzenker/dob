@@ -1,3 +1,6 @@
 [submodule "include/Inotify"]
 	path = include/Inotify
 	url = https://github.com/erikzenker/Inotify.git
+[submodule "include/FileStateDatabase"]
+	path = include/FileStateDatabase
+	url = https://github.com/erikzenker/FileStateDatabase.git

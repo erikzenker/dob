@@ -7,7 +7,7 @@ DOXYGEN = doxygen
 EXECUTABLE=dob
 SRCS = $(wildcard src/*.cc)
 OBJS = $(SRCS:src/%.cc=bin/%.o)
-INCS = -I ./include -I./include/Inotify
+INCS = -I ./include -I./include/Inotify -I./include/FileStateDatabase
 
 # Compiler flags
 CCFLAGS = -c -Wall -std=c++11 
