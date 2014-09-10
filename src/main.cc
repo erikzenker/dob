@@ -34,8 +34,8 @@ int main(int argc, char *argv[]){
   
   	// Parse commandline
   	if(!commandLineParser.parseCommandLine(argc, argv)){
-   	 	dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-   	 	dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
+   	 	// dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
+   	 	// dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
     		return 0;
   	}
 
