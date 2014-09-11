@@ -30,8 +30,10 @@ CommandLineParser::~CommandLineParser(){
  *
  */
 bool CommandLineParser::parseCommandLine(unsigned argc, char *argv[]){
-  dbg_printc(LOG_INFO, "CommandLineParser", "ParseCommandLine", "Parse commandline");
+  //dbg_printc(LOG_INFO, "CommandLineParser", "ParseCommandLine", "Parse commandline");
   namespace po = boost::program_options;
+
+  bool matched = true;
 
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -43,43 +45,20 @@ bool CommandLineParser::parseCommandLine(unsigned argc, char *argv[]){
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);   
 
-  if(vm.count("config")){
-    return true;
+  if(!vm.count("config")){
+    matched &= false;
   }
 
-  if(vm.count("help")){
+  if(vm.count("help") or !matched){
     std::cout << "Usage: ./dob [options]" << std::endl;
     std::cout << std::endl;
     std::cout << desc << std::endl;
+    matched &= false;
   }
 
-  return false;
+  return matched;
 
-  // namespace qi = boost::spirit::qi;  
-  // namespace ascii = boost::spirit::ascii;
-  // using ascii::space;
-  // bool matched = false;
-
-  // // ConfigFileName Rule
-  // qi::rule<char const*>                configFileNameKey   = qi::string("--config=");
-  // qi::rule<char const*, std::string()> configFileNameValue = (*qi::char_);
-
-  // // Debug Level Rule (unsigned between 0 and 5)
-  // qi::rule<char const*>             debugLevelKey   = qi::string("-d=");
-  // qi::rule<char const*, unsigned()> debugLevelValue = qi::int_parser<int, 10, 0, 5>();
-  
-  // for(unsigned i = 1; i < argc; ++i){
-  //   char const* begin(argv[i]);
-  //   char const* end(begin + strlen(begin));
-  //   matched = false;
-
-  //   matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
-  //   matched = matched || qi::parse(begin, end, debugLevelKey >> debugLevelValue, mDebugLevel);
-  //   if(!matched) 
-  //     dbg_printc(LOG_ERR, "CommandLineParser", "parseCommandLine", "Unknown parameter %s", argv[i]); 
-
-  // }
-  // return matched;
+ 
 
 }
 
@@ -90,3 +69,34 @@ std::string CommandLineParser::getConfigFileName() const{
 unsigned CommandLineParser::getDebugLevel() const{
   return mDebugLevel;
 }
+
+
+/**
+ * OLD spirit commandline parser
+ *
+// namespace qi = boost::spirit::qi;  
+// namespace ascii = boost::spirit::ascii;
+// using ascii::space;
+// bool matched = false;
+
+// // ConfigFileName Rule
+// qi::rule<char const*>                configFileNameKey   = qi::string("--config=");
+// qi::rule<char const*, std::string()> configFileNameValue = (*qi::char_);
+
+// // Debug Level Rule (unsigned between 0 and 5)
+// qi::rule<char const*>             debugLevelKey   = qi::string("-d=");
+// qi::rule<char const*, unsigned()> debugLevelValue = qi::int_parser<int, 10, 0, 5>();
+  
+// for(unsigned i = 1; i < argc; ++i){
+//   char const* begin(argv[i]);
+//   char const* end(begin + strlen(begin));
+//   matched = false;
+
+//   matched = matched || qi::parse(begin, end, configFileNameKey >> configFileNameValue, mConfigFileName);
+//   matched = matched || qi::parse(begin, end, debugLevelKey >> debugLevelValue, mDebugLevel);
+//   if(!matched) 
+//     dbg_printc(LOG_ERR, "CommandLineParser", "parseCommandLine", "Unknown parameter %s", argv[i]); 
+
+// }
+// return matched;
+*/
