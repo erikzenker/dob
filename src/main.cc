@@ -33,11 +33,8 @@ int main(int argc, char *argv[]){
   	dbg_print_level = LOG_DBG;
   
   	// Parse commandline
-  	if(!commandLineParser.parseCommandLine(argc, argv)){
-   	 	dbg_printc(LOG_ERR,"Main", "main", "No commandline parameters found");
-   	 	dbg_printc(LOG_ERR,"Main", "main", "Usage: ./dob --config=CONFIGFILE [-d=DEBUG_LEVEL]\n");
-    		return 0;
-  	}
+  	if(!commandLineParser.parseCommandLine(argc, argv)) return 0;
+
 
 	// Parse profiles from configfile
  	profiles = profileFactory.makeProfiles(commandLineParser.getConfigFileName());
