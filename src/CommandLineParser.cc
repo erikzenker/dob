@@ -2,6 +2,7 @@
 
 #include <string>
 #include <dbg_print.h>
+#include <iostream>
 
 // Parse commandline with boost::programm_options
 // http://www.boost.org/doc/libs/1_56_0/doc/html/program_options.html
