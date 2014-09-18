@@ -1,16 +1,4 @@
 
- /***
- * ROADMAP
- * *
- * * Versioning of backup data (Git/Database)
- * * Restart scanning after suspend
- * * Commandline installer/helper
- * * Scanning/polling of server data periodically
- * * Ask in case of big data
- * * Graphical user interface/wizzard
- * *
- ***/
-
 // Include libraries
 #include <vector>
 #include <string>
